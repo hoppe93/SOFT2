@@ -1,0 +1,13 @@
+#ifndef _SOFT_CONFIG_H
+#define _SOFT_CONFIG_H
+
+#include <softlib/config.h>
+
+#cmakedefine COLOR_TERMINAL
+#cmakedefine DEBUG
+
+#define SOFT_GIT_REFSPEC "@GIT_REFSPEC@"
+#define SOFT_GIT_SHA1 "@GIT_SHA1@"
+#define SOFT_GIT_TAG "@GIT_TAG@"
+
+#endif/*_SOFT_CONFIG_H*/

@@ -1,0 +1,22 @@
+# BASIC SOFT RUN SCRIPT
+#
+# This script defines basic settings.
+# #######
+
+@MagneticField MF_UnitQ {
+    type = analytical;
+    B0 = 5.0;
+    Rm = 1.7;
+    rminor = 0.5;
+    qtype  = constant;
+    qa1 = 1.0;
+}
+
+@ParticleGenerator PGen {
+    a = 0.95,2;
+    #ppar = 1,10,2;
+    #pperp = 1,2,2;
+    p=10,20,2;
+    thetap=0.1,0.2,2;
+}
+

@@ -1,0 +1,40 @@
+# BASIC SOFT RUN SCRIPT
+#
+# This script defines basic settings.
+# #######
+
+magnetic_field = MF_UnitQ;
+particle_generator = PGen;
+particle_pusher = PPusher;
+tools = orbits;
+
+@MagneticField MF_UnitQ {
+    type = analytical;
+    B0 = 5.0;
+    Rm = 1.7;
+    rminor = 0.5;
+    qtype  = constant;
+    qa1 = 1.0;
+}
+
+@ParticleGenerator PGen {
+    a = 0.95,0.95,1;
+    p=10,10,1;
+    thetap=0.2,0.2,1;
+}
+
+@ParticlePusher PPusher {
+    equation = particle;
+    timeunit = seconds;
+    time = 5e-8;
+    nt = 100;
+}
+
+@Equation particle {
+    method = rkdp45;
+    tolerance = 1e-5;
+}
+
+@Orbits orbits {
+    output = orbits.mat;
+}

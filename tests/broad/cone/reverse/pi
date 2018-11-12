@@ -1,0 +1,7 @@
+
+<../pi>
+
+@RadiationModel cone {
+    projection = reverse;
+}
+

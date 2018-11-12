@@ -1,0 +1,6 @@
+To generate new tables for comparison, just create a new 'pi' file with an
+inremented name (i.e. if the pi file with the highest number in its name is
+'pi1' currently, give the new file the name 'pi2' etc.). Once you have a
+working, appropriately named pi file, you can generate the tables by invoking
+'gentables.py' (no modification required). Once that is done, just go to the
+build directory and rebuild the tests ('make'). That's it.

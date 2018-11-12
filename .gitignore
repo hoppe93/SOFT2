@@ -1,0 +1,9 @@
+build
+include/config.h
+gmon.out
+tests/broad/cone/*.mat
+tests/broad/cone/reverse/*.mat
+tests/broad/fogc/*.mat
+tests/broad/isotropic/*.mat
+__pychache__
+.gdb_history

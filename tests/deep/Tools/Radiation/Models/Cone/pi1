@@ -1,0 +1,42 @@
+# For SOFTv1
+useequation=guiding-center-relativistic;
+usetool=sycamera;
+debug=2;
+threads=1;
+
+magnetic_field=circular;
+magnetic circular {
+    B0=5;
+    major_radius=1.7;
+    minor_radius=0.5;
+    safety_factor=1;
+}
+domain_has_outer_wall=no;
+
+particles {
+	generation=queue;
+	t=0,-1
+	mass=0.000548579909
+	charge=-1
+	r=1.72,2.16,16;
+	p=3.0e7,3.0e7,1
+	pitch=0.05,1.05,20
+}
+
+tool sycamera {
+	radiation=synchrotron_spectrum;
+	cone=delta;
+	spectrum=5e-7,1e-6
+	toroidal_resolution=500
+	aperture=0.006
+	vision_angle=2.0
+	direction=0,1.0,0
+	position=0,-1.7,0
+	product=image;
+}
+
+sycout image {
+	brightness=intensity;
+	pixels=1000;
+	name=image.mat;
+}

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo -e "\e[1;31m[ERROR]\e[0m   " $1
+exit
+

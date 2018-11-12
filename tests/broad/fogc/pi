@@ -1,0 +1,78 @@
+# BASIC SOFT RUN SCRIPT
+#
+# This script defines basic settings.
+# #######
+
+magnetic_field = MF_UnitQ;
+particle_generator = PGen;
+particle_pusher = PPusher;
+tools = rad;
+#num_threads = 20;
+num_threads = 1;
+include_drifts = no;
+
+@MagneticField MF_UnitQ {
+    type = analytical;
+    B0 = 2.0;
+    Rm = 1.7;
+    rminor = 0.5;
+    qtype  = constant;
+    qa1 = 1.0;
+    sigmaB = ccw;
+}
+
+@ParticleGenerator PGen {
+    a = 0,0.95,200;
+    #a = 0,0.95,4;
+    p=100,100,1;
+    thetap=0.2,0.2,1;
+    #thetap=1.42,1.42,1;
+}
+
+@ParticlePusher PPusher {
+    equation = guiding-center;
+    timeunit = poloidal;
+    time = 1;
+    nt = 1000;
+    #nt = 100;
+}
+
+@Equation guiding-center {
+    method = rkdp45;
+    tolerance = 1e-9;
+}
+
+# Tool stuff
+@Radiation rad {
+    detector = det;
+    ntoroidal = 2500;
+    #ntoroidal = 250;
+    model = angdist;
+    output = image topview;
+    wall_opacity = transparent;
+}
+@Detector det {
+    aperture = 0.006;
+    direction = 0,1.0,0;
+    position = 1.7,-1.7,0;
+    #position = 0.2,-2.5,0;
+    vision_angle = 0.70 fov;
+    #spectrum = 700e-9,800e-9,10;
+    spectrum = no;
+}
+@RadiationModel angdist {
+    emission = synchrotron;
+    nsamples = 1;
+    qagstol = 1e-10;
+}
+@RadiationModel cone {
+    emission = synchrotron;
+}
+@RadiationOutput image {
+    output = angdist.mat;
+    pixels = 300;
+}
+@RadiationOutput topview {
+    output = topview.mat;
+    pixels = 1000;
+}

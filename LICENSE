@@ -1,0 +1,73 @@
+SOFT Software License
+Version 2.0, 5 December 2017
+
+Copyright (c) The SOFT Developers, 2017.
+See <https://github.com/hoppe93/SOFT/blob/master/DEVNOTES.md> for details on
+copyright holders. All rights not expressly granted under this license are
+reserved.
+
+Installation, use, reproduction, display, modification and redistribution of
+this software, with or without modification, in source and binary forms, are
+permitted on a non- exclusive basis. Any exercise of rights by you under this
+license is subject to the following conditions:
+
+1. Redistributions of this software, in whole or in part, with or without
+   modification, must reproduce the above copyright notice and these license
+   conditions in this software, the user documentation and any other materials
+   provided with the redistributed software.
+
+2. The user documentation, if any, included with a redistribution, must include
+   the following notice:
+
+	 "This product includes software developed for SOFT (http://ft.nephy.chalmers.se/)."
+
+   If that is where third-party acknowledgments normally appear, this
+   acknowledgment must be reproduced in the modified version of this software
+   itself.
+
+3. The name "SOFT" may not be used to endorse or promote software, or products
+   derived therefrom, except with prior written permission by the SOFT
+   Developers. If this software is redistributed in modified form, the name
+   and reference of the modified version must be clearly distinguishable from
+   that of this software.
+
+4. Users of SOFT may modify the source code and publish results obtained this
+   way, provided that all deviations from officially released versions are
+   pointed out in the publication. Furthermore, users are encouraged to
+   communicate such modifications to the SOFT Developers. Any modifications
+   subsequently incorporated into the main SOFT repository will be
+   acknowledged.
+
+5. You may not include this software in whole or in part in any patent or
+   patent application in respect of any modification of this software developed
+   by you.
+
+6. All publications containing results obtained with SOFT should include the
+   official code name and some key references describing SOFT, as provided by
+   the SOFT Developers. Users are encouraged to notify the SOFT Developers
+   of such publications. For publications containing results obtained with
+   software derived from SOFT, only key references describing SOFT are
+   required.
+
+7. This license shall terminate with immediate effect and without notice if you
+   fail to comply with any of the terms of this license, or if you institute
+   litigation against any SOFT developer with regard to this software.
+
+8. DISCLAIMER
+
+THIS SOFTWARE IS PROVIDED BY THE SOFT DEVELOPERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, IMPLIED
+WARRANTIES OF MERCHANTABILITY, OF SATISFACTORY QUALITY, AND FITNESS FOR A
+PARTICULAR PURPOSE OR USE ARE DISCLAIMED. THE SOFT DEVELOPERS AND CONTRIBUTORS
+MAKE NO REPRESENTATION THAT THE SOFTWARE AND MODIFICATIONS THEREOF, WILL NOT
+INFRINGE ANY PATENT, COPYRIGHT, TRADE SECRET OR OTHER PROPRIETARY RIGHT.
+
+9. LIMITATION OF LIABILITY
+
+THE SOFT DEVELOPERS AND CONTRIBUTORS SHALL HAVE NO LIABILITY FOR DIRECT,
+INDIRECT, SPECIAL, INCIDENTAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES
+OF ANY CHARACTER INCLUDING, WITHOUT LIMITATION, PROCUREMENT OF SUBSTITUTE
+GOODS OR SERVICES, LOSS OF USE, DATA OR PROFITS, OR BUSINESS INTERRUPTION,
+HOWEVER CAUSED AND ON ANY THEORY OF CONTRACT, WARRANTY, TORT (INCLUDING
+NEGLIGENCE), PRODUCT LIABILITY OR OTHERWISE, ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
