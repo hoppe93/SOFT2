@@ -56,8 +56,12 @@ struct global_settings *InitGlobalSettings(ConfigBlock& global) {
             throw SOFTException("num_threads: Invalid value assigned to parameter. Expected single integer.");
         else
             globset->num_threads = omp_get_max_threads();
-    } else
+    } else {
         globset->num_threads = global.GetSetting("num_threads")->GetUnsignedInteger32();
+
+        if (globset->num_threads == 0)
+            throw SOFTException("num_threads: Invalid number of worker threads specified: %u\n", globset->num_threads);
+    }
 
     // PARTICLE GENERATOR
     if (global.GetSetting("particle_generator")->GetNumberOfValues() != 1)

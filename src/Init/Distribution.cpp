@@ -110,7 +110,7 @@ RadialDistributionFunction *InitCODEDistribution(MagneticField2D *magfield, Conf
     RadialProfile *radprof;
     Setting *set;
     string name;
-    int interptype = NumericMomentumSpaceDistributionFunction::INTERPOLATION_CUBIC;
+    int interptype = CODEDistributionFunction::INTERPOLATION_CSPLINE;
     int timestep = -1;
     
     // Name

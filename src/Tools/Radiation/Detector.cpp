@@ -58,9 +58,13 @@ Detector::Detector(ConfigBlock *conf) {
         throw DetectorException("Detector '%s': No detector aperture has been specified.", this->name.c_str());
     s = conf->GetSetting("aperture");
     if (!s->IsScalar())
-        throw DetectorException("Detector '%s': Invalid specification of detector aperture. Expected real number.", this->name.c_str());
-    else
+        throw DetectorException("Detector '%s': Invalid specification of detector aperture. Expected positive real number.", this->name.c_str());
+    else {
         this->aperture = s->GetScalar();
+
+        if (this->aperture <= 0)
+            throw DetectorException("Detector '%s': Invalid value assigned to detector aperture. Expected positive real number.", this->name.c_str());
+    }
 
     // direction
     if (!conf->HasSetting("direction"))
@@ -72,6 +76,10 @@ Detector::Detector(ConfigBlock *conf) {
         vector<slibreal_t> v = s->GetNumericVector();
         slibreal_t *a = v.data();
         this->direction = Vector<3>(a);
+
+        if (this->direction.Norm() == 0)
+            throw DetectorException("Detector '%s': Null-vector specified as detector viewing direction.", this->name.c_str());
+
         this->direction.Normalize();
     }
 
