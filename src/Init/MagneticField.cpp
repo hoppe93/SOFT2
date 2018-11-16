@@ -62,6 +62,16 @@ MagneticFieldAnalytical2D *InitMagneticFieldAnalytical(ConfigBlock *conf) {
     Rm     = init_get_scalar(conf, "Rm", parent);
     rminor = init_get_scalar(conf, "rminor", parent);
 
+
+    if (B0 <= 0)
+        throw SOFTException("%s: B0: Invalid value assigned to parameter.", parent.c_str());
+    if (Rm <= 0)
+        throw SOFTException("%s: Rm: Invalid value assigned to parameter.", parent.c_str());
+    if (rminor <= 0)
+        throw SOFTException("%s: rminor: Invalid value assigned to parameter.", parent.c_str());
+    if (Rm <= rminor)
+        throw SOFTException("%s: Major radius must be strictly greater than minor radius.", parent.c_str());
+
     // toroidal field sign
     if (!conf->HasSetting("sigmaB"))
         tfs = MFATFS_CW;
@@ -120,9 +130,10 @@ MagneticFieldNumeric2D *InitMagneticFieldNumeric(ConfigBlock *conf) {
     if (conf->HasSetting("filetype")) {
         filetype = init_get_string(conf, "filetype", parent);
         ftype = SFile::GetFileType(filetype);
-    }
+        mf = new MagneticFieldNumeric2D(filename, ftype);
+    } else
+        mf = new MagneticFieldNumeric2D(filename);
 
-    mf = new MagneticFieldNumeric2D(filename, ftype);
     return mf;
 }
 
