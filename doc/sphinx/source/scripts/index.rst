@@ -57,7 +57,7 @@ Configurable modules
 +---------------------------------+-----------------------------------------------------+
 | :ref:`module-distribution`      | Distribution functions                              |
 +---------------------------------+-----------------------------------------------------+
-| :ref:`module-equation`          | Equation to solve: "full orbit" or "guiding-center" |
+| :ref:`module-equation`          | Equation to solve: "particle" or "guiding-center"   |
 +---------------------------------+-----------------------------------------------------+
 | :ref:`module-magneticfield`     | Magnetic field module                               |
 +---------------------------------+-----------------------------------------------------+

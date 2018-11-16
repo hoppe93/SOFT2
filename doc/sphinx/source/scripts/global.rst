@@ -16,8 +16,6 @@ List of global options
 
    More details can be found on the page about :ref:`module-distribution`.
 
-   I wonder if we can ref general stuff :ref:`some_option`.
-
 .. option:: include_drifts
 
    :Default value: ``no``

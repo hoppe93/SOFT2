@@ -51,6 +51,9 @@ be defined and used in SOFT2 simulations::
        Zeff     = 4;             # Effective plasma charge
    }
 
+Common settings
+^^^^^^^^^^^^^^^
+
 .. program:: @Distribution
 
 .. option:: type

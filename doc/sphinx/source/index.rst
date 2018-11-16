@@ -13,6 +13,7 @@ Welcome to SOFTv2's documentation!
    intro
    compiling
    scripts/index
+   magnetic_field
 
 
 Indices and tables

@@ -380,14 +380,15 @@ Orbit *ParticlePusher::Push(Particle *p) {
     if (this->timeunit == ORBITTIMEUNIT_POLOIDAL)
         poltime = FindPoloidalTime(this->equation, this->integrator1);
 
-    if (this->calculateJacobianOrbit)
-        EvaluateSecondaryOrbit(p, Particle::NUDGE_OUTWARDS);
-
     orbit_class_t cl1 = this->equation->ClassifyOrbit(this->integrator1);
-    orbit_class_t cl2 = this->equation->ClassifyOrbit(this->integrator2);
 
-    if (cl1 != cl2)
-        EvaluateSecondaryOrbit(p, Particle::NUDGE_INWARDS);
+    if (this->calculateJacobianOrbit) {
+        EvaluateSecondaryOrbit(p, Particle::NUDGE_OUTWARDS);
+        orbit_class_t cl2 = this->equation->ClassifyOrbit(this->integrator2);
+
+        if (cl1 != cl2)
+            EvaluateSecondaryOrbit(p, Particle::NUDGE_INWARDS);
+    }
 
     // Choose last time step
     switch (this->timeunit) {
