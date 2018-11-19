@@ -72,6 +72,11 @@ void ConeBremsstrahlungEmission::CalculateSpectrum(RadiationParticle *rp) {
     for (unsigned int i = 0; i < nwavelengths; i++) {
         k = wavelengths[i];
 
+        if (k >= gamma - 1) {
+            I[i] = 0;
+            continue;
+        }
+
         E = gamma - k;
         E2 = E*E;
         p2 = E2 - 1.0;
