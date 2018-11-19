@@ -46,6 +46,8 @@ Orbits::Orbits(MagneticField2D *__UNUSED__(mf), ParticleGenerator *pg, ParticleP
     #pragma omp critical (Orbits_Init)
     {
         if (tau == nullptr) {
+            this->allocatedBytes = 0;
+
             Orbits::tau      = Allocate(norbits, ntau, 1);
             Orbits::x        = Allocate(norbits, ntau, 3);
             Orbits::p        = Allocate(norbits, ntau, 3);
@@ -78,6 +80,8 @@ Orbits::Orbits(MagneticField2D *__UNUSED__(mf), ParticleGenerator *pg, ParticleP
 slibreal_t **Orbits::Allocate(unsigned int norbits, unsigned int ntau, unsigned int dims) {
     slibreal_t **p = new slibreal_t*[norbits];
     p[0] = new slibreal_t[norbits*ntau*dims];
+
+    this->allocatedBytes += norbits*ntau*dims * sizeof(slibreal_t);
 
     for (unsigned int i = 1; i < norbits; i++)
         p[i] = p[i-1] + ntau*dims;

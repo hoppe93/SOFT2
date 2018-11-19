@@ -371,7 +371,7 @@ Orbit *ParticlePusher::Push(Particle *p) {
     slibreal_t poltime=0.0;
 
     RunIntegrator(this->equation, this->integrator1, p);
-
+    
     // If the chosen time unit is 'poloidal time', and
     // the particle appears to not move in the poloidal
     // plane, then this particle cannot be pushed any further

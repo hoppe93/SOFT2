@@ -13,6 +13,7 @@ class Orbits : public Tool {
         unsigned int nr, np1, np2;
         unsigned int ntau;
         bool computeJacobian=false;
+        size_t allocatedBytes;
 
         std::string output;
 
