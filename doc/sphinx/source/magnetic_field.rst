@@ -80,24 +80,28 @@ look for in a magnetic field file.
 +-------------------------+----------------+------------------+------------------------------------+
 | :option:`mf desc`       | **Yes**        | String           | (Meta) Description of data         |
 +-------------------------+----------------+------------------+------------------------------------+
-| :option:`mf maxis`      | **Yes**        | 2-by-1 vector    | Location of magnetic axis          |
+| :option:`mf maxis`      | **Yes**        | 2-vector         | Location of magnetic axis          |
 +-------------------------+----------------+------------------+------------------------------------+
 | :option:`mf name`       | **Yes**        | String           | (Meta) Name of magnetic field data |
 +-------------------------+----------------+------------------+------------------------------------+
-| :option:`mf r`          | **Yes**        | nr-by-1 vector   | Radial grid                        |
+| :option:`mf r`          | **Yes**        | nr-vector        | Radial grid                        |
 +-------------------------+----------------+------------------+------------------------------------+
 | :option:`mf separatrix` | **Yes** [#sw]_ | 2-by-many vector | Last closed flux surface contour   |
 +-------------------------+----------------+------------------+------------------------------------+
-| :option:`mf verBphi`    | *No*           | nr-by-1 vector   | Verification array for ``Bphi``    |
+| :option:`mf verBphi`    | *No*           | nr-vector        | Verification array for ``Bphi``    |
 +-------------------------+----------------+------------------+------------------------------------+
-| :option:`mf verBr`      | *No*           | nr-by-1 vector   | Verification array for ``Br``      |
+| :option:`mf verBr`      | *No*           | nr-vector        | Verification array for ``Br``      |
 +-------------------------+----------------+------------------+------------------------------------+
-| :option:`mf verBz`      | *No*           | nr-by-1 vector   | Verification array for ``Bz``      |
+| :option:`mf verBz`      | *No*           | nr-vector        | Verification array for ``Bz``      |
 +-------------------------+----------------+------------------+------------------------------------+
 | :option:`mf wall`       | **Yes** [#sw]_ | 2-by-many vector | Tokamak wall contour               |
 +-------------------------+----------------+------------------+------------------------------------+
-| :option:`mf z`          | **Yes**        | nz-by-1 vector   | Vertical grid                      |
+| :option:`mf z`          | **Yes**        | nz-vector        | Vertical grid                      |
 +-------------------------+----------------+------------------+------------------------------------+
+
+*Beware that some tools handle data in column-major format, whereas SOFT uses column-major format.
+You may therefore have to transpose certain data to have the correct shape. The vectors ``verXXX``
+can be used to ensure that the magnetic field components have the proper format.*
 
 .. [#sw] At least one of the separatrix and wall variables must be present in the file.
 
