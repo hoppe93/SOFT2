@@ -152,14 +152,11 @@ void ConeSynchrotronEmission::__CalculateSpectrum(RadiationParticle *rp) {
  */
 void ConeSynchrotronEmission::IntegrateSpectrum() {
     unsigned int i;
-    slibreal_t s = I[0] + I[nwavelengths-1];
+    slibreal_t s = 0.5*(I[0] + I[nwavelengths-1]);
 
-    // Simpson's rule
-    for (i = 1; i < nwavelengths; i+=2)
-        s += 4.0 * I[i];
-    for (i = 2; i < nwavelengths-1; i+=2)
-        s += 2.0 * I[i];
+    for (i = 1; i < nwavelengths-1; i++)
+        s += I[i];
 
-    this->power = s * (wavelengths[1]-wavelengths[0]) / 3.0;
+    this->power = s * (wavelengths[1]-wavelengths[0]);
 }
 

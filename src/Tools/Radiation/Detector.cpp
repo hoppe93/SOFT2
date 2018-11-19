@@ -171,12 +171,6 @@ void Detector::PrintInfo(const std::string &prefix) const {
 void Detector::SetSpectralRange(slibreal_t w0, slibreal_t w1, unsigned int nw) {
     this->wavelength0 = w0;
     this->wavelength1 = w1;
-
-    // For Simpson's rule, the number of wavelengths
-    // must be odd.
-    if (nw > 1 && nw % 2 == 0)
-        nw++;
-
     this->nwavelengths = nw;
 
     if (nw > 1) {

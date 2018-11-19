@@ -71,6 +71,25 @@ For example, to build ``softlib`` with an official MATLAB distribution, run::
 
 instead of the ``cmake ../`` command shown above.
 
+.. warning::
+
+   When you run ``cmake ../``, CMake will output some information about which
+   compiler and libraries it finds on your system. It can be worth to keep an
+   eye on this output and verify that it agrees with your expectations. For
+   example, if there are multiple compilers installed on the system, CMake may
+   choose the wrong version.
+
+.. note::
+
+   To explicitly tell CMake which C/C++ compilers to use, run the following
+   two commands before running CMake::
+
+      $ export CC="/path/to/c-compiler"
+      $ export CXX="/path/to/c++-compiler"
+
+   (Note that you may have to clean up the ``build`` directory before running
+   ``cmake`` again).
+
 3. Run make
 ***********
 In the final step of the build we run ``make``::
@@ -128,6 +147,25 @@ For example, to disable colored terminal output (useful if you're redirecting
 stdout to a text file for example), run ``cmake`` as::
 
    $ cmake ../ -DCOLOR_TERMINAL=OFF
+
+.. warning::
+
+   When you run ``cmake ../``, CMake will output some information about which
+   compiler and libraries it finds on your system. It can be worth to keep an
+   eye on this output and verify that it agrees with your expectations. For
+   example, if there are multiple compilers installed on the system, CMake may
+   choose the wrong version.
+
+.. note::
+
+   To explicitly tell CMake which C/C++ compilers to use, run the following
+   two commands before running CMake::
+
+      $ export CC="/path/to/c-compiler"
+      $ export CXX="/path/to/c++-compiler"
+
+   (Note that you may have to clean up the ``build`` directory before running
+   ``cmake`` again).
 
 2. Run make
 ***********
