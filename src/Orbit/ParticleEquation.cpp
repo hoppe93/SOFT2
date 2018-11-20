@@ -119,7 +119,7 @@ Vector<6>& ParticleEquation::InitializeParticle(Particle *part, Vector<6>& zval)
     Vector<3> bhat, x;
     slibreal_t Babs;
 
-    x[0] = part->GetActualRho();
+    x[0] = part->GetRho();
     x[1] = 0.0;
     x[2] = magfield->GetMagneticAxisZ();
 

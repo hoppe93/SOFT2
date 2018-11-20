@@ -42,6 +42,12 @@ class ParticlePusher {
         Orbit *retorbit;
         slibreal_t *solution;           // Temporary storage of 6D solution
 
+        // Domain bounds (for quickly checking if
+        // a particle left the plasma)
+        slibreal_t domain_rmin, domain_rmax,
+                   domain_zmin, domain_zmax;
+        bool outside_domain_flag = false;         // Set to true when particle has left domain
+
         // Previous and initial R and Z position of particle
         // (for calculating duration of a poloidal orbit)
         slibreal_t rprev, zprev,
@@ -59,6 +65,9 @@ class ParticlePusher {
 		ParticlePusher(MagneticField2D*, struct global_settings *globset, ConfigBlock*, ConfigBlock*);
 
         static const std::string equation_defaults;
+
+        bool InsideDomainBounds(slibreal_t, slibreal_t);
+        void ResetDomainCheck();
 
         void EvaluateSecondaryOrbit(Particle*, enum Particle::nudge_direction);
 		void InitDefaults();

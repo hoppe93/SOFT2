@@ -41,7 +41,6 @@ const string ParticlePusher::equation_defaults =
 "@Equation guiding-center {\n"
 "   method=rkdp45;\n"
 "   tolerance=1e-9;\n"
-"   drifts=no;\n"
 "}\n"
 "@Equation particle {\n"
 "   method=rkdp45;\n"
@@ -66,6 +65,7 @@ ParticlePusher::ParticlePusher(
 ) {
     this->magfield = mf;
     this->globset = globset;
+    ResetDomainCheck();
     ResetPoloidalTime();
 
 	InitDefaults();
@@ -102,6 +102,9 @@ ParticlePusher::ParticlePusher(
         this->timeunit = ORBITTIMEUNIT_SECONDS;
     else
         throw ParticlePusherException("Unrecognized time unit: '%s'.", settings["timeunit"].c_str());
+
+    // Set domain bounds
+    mf->GetDomainBounds(domain_rmin, domain_rmax, domain_zmin, domain_zmax);
 
     // Number of time steps
     this->ntimesteps = init_get_uint32(&settings, "nt", "ParticlePusher");
@@ -140,13 +143,6 @@ void ParticlePusher::InitEquation(const string& equation, ConfigBlock& eqnconf) 
 
 		GuidingCenterEquation *eq = new GuidingCenterEquation(this->magfield, this->globset);
         this->equation = eq;
-
-        /*if (conf->HasSetting("drifts")) {
-            Setting *s = conf->GetSetting("drifts");
-            if (!s->IsBool())
-                throw ParticlePusherException("guiding-center: Unrecognized drift orbit shift option.");
-            else eq->ToggleDrifts(s->GetBool());
-        } else eq->ToggleDrifts(false);*/
 
 		// Choose integrator
 		this->InitGeneralIntegrator(*conf, eq);
@@ -287,6 +283,13 @@ void ParticlePusher::ResetPoloidalTime() {
 }
 
 /**
+ * Reset the domain check.
+ */
+void ParticlePusher::ResetDomainCheck() {
+    this->outside_domain_flag = false;
+}
+
+/**
  * Returns the radial position of the particle
  * in the current state.
  */
@@ -303,6 +306,24 @@ slibreal_t ParticlePusher::GetPositionZ(SOFTEquation *eqn, Integrator<6> *intg) 
     return eqn->GetPositionZ(
         intg->LastSolution()
     );
+}
+
+/**
+ * Check if the given point lies inside the 'domain bounds'.
+ * This is a weaker condition than checking whether the point
+ * lies within the 'domain'. The 'domain bound' is basically
+ * a bounding box, which contains the domain.
+ *
+ * R: Radial coordinate of point.
+ * Z: Vertical coordinate of point.
+ */
+bool ParticlePusher::InsideDomainBounds(const slibreal_t R, const slibreal_t Z) {
+    bool a =
+        (R < domain_rmin || R > domain_rmax ||
+         Z < domain_zmin || Z > domain_zmax);
+
+    outside_domain_flag = a;
+    return (!a);
 }
 
 /**
@@ -371,11 +392,11 @@ Orbit *ParticlePusher::Push(Particle *p) {
     slibreal_t poltime=0.0;
 
     RunIntegrator(this->equation, this->integrator1, p);
-    
+
     // If the chosen time unit is 'poloidal time', and
     // the particle appears to not move in the poloidal
     // plane, then this particle cannot be pushed any further
-    if (restflag)
+    if (restflag || outside_domain_flag)
         return nullptr;
     if (this->timeunit == ORBITTIMEUNIT_POLOIDAL)
         poltime = FindPoloidalTime(this->equation, this->integrator1);
@@ -419,14 +440,16 @@ void ParticlePusher::RunIntegrator(SOFTEquation *eqn, Integrator<6> *intg, Parti
     this->rprev = this->rinit = GetPositionR(eqn, intg);
     this->zprev = this->zinit = GetPositionZ(eqn, intg);
 
+    ResetDomainCheck();
     ResetPoloidalTime();
 
     // Advance in time
-    slibreal_t T, Z;
+    slibreal_t T, R, Z;
     do {
         T = intg->Step();
+        R = GetPositionR(eqn, intg);
         Z = GetPositionZ(eqn, intg);
-    } while (!MaxTimeReached(T, Z));
+    } while (!MaxTimeReached(T, Z) && InsideDomainBounds(R, Z));
 }
 
 /**
