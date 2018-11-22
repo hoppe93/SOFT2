@@ -203,13 +203,11 @@ slibreal_t ParticlePusher::FindPoloidalTime(SOFTEquation *eqn, Integrator<6> *in
         a = intg->TimeAt(nt-2),
         b = intg->TimeAt(nt-1),
         Rm = magfield->GetMagneticAxisR(),
-        x, z[2], f[2*6], t[2*6];
+        x, za, zx, f[2*6], t[2*6];
 
-    auto gz = [this,&eqn,&intg,&z,&f,&t](slibreal_t a, slibreal_t b) {
-        intg->OutputDense(2, a, b, f, t);
-
-        z[0] = zinit - eqn->GetPositionZ(f);
-        z[1] = zinit - eqn->GetPositionZ(f+NVARIABLES);
+    auto gz = [this,&eqn,&intg,&f,&t](slibreal_t z) {
+        intg->OutputDense(1, z, z, f, t);
+        return (this->zinit - eqn->GetPositionZ(f));
     };
 
     // Do one iteration manually...
@@ -217,26 +215,27 @@ slibreal_t ParticlePusher::FindPoloidalTime(SOFTEquation *eqn, Integrator<6> *in
     for (unsigned int i = 0; i < 2*NVARIABLES; i++)
         f[i] = sol[i];
 
-    z[0] = zinit - eqn->GetPositionZ(f);
-    z[1] = zinit - eqn->GetPositionZ(f+NVARIABLES);
+    za = zinit - eqn->GetPositionZ(f);
+    zx = zinit - eqn->GetPositionZ(f+NVARIABLES);
 
-    if (z[0]*z[1] > 0)
+    if (zx*za > 0)
         throw ParticlePusherException(
             "Unable to determine poloidal time for orbit that does not close on itself."
         );
 
-    x = b - z[1]*((b-a)/(z[1]-z[0]));
-    a = b;
-    b = x;
+    do {
+        x = 0.5*(a+b);
+        zx = gz(x);
 
-    while (fabs(z[1] / Rm) > integrator_tol) {
-        gz(a, b);
-        x = b - z[1]*((b-a)/(z[1]-z[0]));
-        a = b;
-        b = x;
-    }
+        if (zx == 0)
+            return x;
+        else if (zx*za > 0)
+            a = x;
+        else
+            b = x;
+    } while (fabs(zx/Rm) > integrator_tol);
 
-    return b;
+    return x;
 }
 
 /**
@@ -407,7 +406,7 @@ Orbit *ParticlePusher::Push(Particle *p) {
         EvaluateSecondaryOrbit(p, Particle::NUDGE_OUTWARDS);
         orbit_class_t cl2 = this->equation->ClassifyOrbit(this->integrator2);
 
-        if (cl1 != cl2)
+        if (cl1 != cl2 || outside_domain_flag)
             EvaluateSecondaryOrbit(p, Particle::NUDGE_INWARDS);
     }
 

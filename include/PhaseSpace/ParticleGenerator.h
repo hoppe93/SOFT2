@@ -33,14 +33,16 @@ class ParticleGenerator {
         ~ParticleGenerator();
 
 		Particle *AllocateParticle();
-		slibreal_t CalculateOrbitDriftShift(MagneticField2D*, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t);
-		slibreal_t _Calculate_Xpol(MagneticField2D*, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t);
-		bool Generate(Particle*, DistributionFunction *f=nullptr);
+		slibreal_t CalculateRadialOrbitDriftShift(MagneticField2D*, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t);
+        slibreal_t CalculateVerticalOrbitDriftShift(MagneticField2D*, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t);
+		void _Calculate_Xpol(MagneticField2D*, bool, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t, slibreal_t&, slibreal_t&);
+
+		bool Generate(Particle*, MagneticField2D*, DistributionFunction *f=nullptr);
         void GenerateCoordinateGrids();
         void GenerateRhoeffTable(MagneticField2D*);
         void GetRadialCoordinate(ConfigBlock*, const std::string&, slibreal_t, slibreal_t);
 		void InitializeParticle(
-            Particle*, DistributionFunction*,
+            Particle*, DistributionFunction*, MagneticField2D*,
             const slibreal_t, const slibreal_t, const slibreal_t,
             const unsigned int, const unsigned int, const unsigned int
         );

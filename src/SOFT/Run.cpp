@@ -94,7 +94,7 @@ void SOFTLocal::Run(unsigned int *invalid) {
 
     // Main SOFT loop
     while (!this->partgen->IsFinished()) {
-        if (!this->partgen->Generate(p, this->distribution))
+        if (!this->partgen->Generate(p, this->magfield, this->distribution))
             break;
         
         o = pp->Push(p);

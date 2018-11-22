@@ -23,9 +23,10 @@ Particle::Particle() { }
  * rho:           Particle radial position.
  * drift_shift:   Orbit drift shift.
  */
-void Particle::InitializePosition(const int position_type, const slibreal_t rho, const slibreal_t drho, const slibreal_t drift_shift) {
+void Particle::InitializePosition(const int position_type, const slibreal_t rho, const slibreal_t z0, const slibreal_t drho, const slibreal_t drift_shift) {
 	this->position_type = position_type;
 	this->rho = rho;
+    this->z0  = z0;
 	this->drift_shift = drift_shift;
     this->drho = drho;
 
@@ -40,9 +41,9 @@ void Particle::InitializePosition(const int position_type, const slibreal_t rho,
  */
 void Particle::Nudge(const slibreal_t dr, enum nudge_direction nd) {
     if (nd == NUDGE_OUTWARDS)
-        this->InitializePosition(position_type, rho+dr, drho, drift_shift);
+        this->InitializePosition(position_type, rho+dr, z0, drho, drift_shift);
     else
-        this->InitializePosition(position_type, rho-dr, drho, drift_shift);
+        this->InitializePosition(position_type, rho-dr, z0, drho, drift_shift);
 }
 
 /***********

@@ -10,7 +10,8 @@ class Particle {
     public:
         enum nudge_direction { NUDGE_INWARDS, NUDGE_OUTWARDS };
 	private:
-		slibreal_t rho;					// Particle radius (trajectory coordinate)
+		slibreal_t rho,					// Particle radius (trajectory coordinate)
+                   z0;                  // Initial vertical position
 		slibreal_t drift_shift;			// Drift orbit shift (in 1st order GC theory)
 		int position_type;				// Which position is specified (particle or GC).
 										// Values according to 'POSITION_XXX' below.
@@ -70,7 +71,7 @@ class Particle {
 	public:
 		Particle();
 		void InitializeMomentum(const int, const int, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t);
-		void InitializePosition(const int, const slibreal_t, const slibreal_t, const slibreal_t);
+		void InitializePosition(const int, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t);
         void Nudge(const slibreal_t, enum nudge_direction nd=NUDGE_OUTWARDS);
 
 		static const char* GetCoordinateName(const int);
@@ -89,6 +90,7 @@ class Particle {
         slibreal_t GetF()           const { return this->f; }
 		slibreal_t GetRho()         const { return this->rho; }
         slibreal_t GetDRho()        const { return this->drho; }
+        slibreal_t GetZ0()          const { return this->z0; }
 
 		slibreal_t GetGamma()       const { return this->gamma; }
 		slibreal_t GetMomentum()    const { return this->pmag; }

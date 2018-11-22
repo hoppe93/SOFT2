@@ -168,7 +168,7 @@ Vector<6>& GuidingCenterEquation::InitializeParticle(Particle *part, Vector<6>& 
 
     x[0] = part->GetRho();
     x[1] = 0.0;
-    x[2] = magfield->GetMagneticAxisZ();
+    x[2] = part->GetZ0();
 
     Vector<3> B = magfield->Eval(x);
     Babs = B.Norm();

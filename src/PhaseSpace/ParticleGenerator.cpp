@@ -33,6 +33,7 @@
  */
 
 #include <string>
+#include <functional>
 
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
@@ -226,7 +227,8 @@ void ParticleGenerator::SetRadialCoordinate(MagneticField2D *mf, ConfigBlock *co
     if (this->r0 < this->rhomin)
         throw ParticleGeneratorException("Invalid value assigned to inner initial radius. Must be on or to the right of the magnetic axis.");
     else if (this->r1 > this->rhomax)
-        throw ParticleGeneratorException("Invalid value assigned to outer initial radius. Must be inside device/separatrix.");
+        SOFT::PrintWarning("Outer initial radius is outside domain.");
+        //throw ParticleGeneratorException("Invalid value assigned to outer initial radius. Must be inside device/separatrix.");
 }
 
 /**
@@ -316,7 +318,7 @@ void ParticleGenerator::GenerateRhoeffTable(
             p2 = p20 + j*dp2;
             Particle::ToPP(p1, p2, this->mom1type, this->mom2type, &ppar, &pperp);
 
-            rhoeff[i][j] = this->rhomin + CalculateOrbitDriftShift(
+            rhoeff[i][j] = this->rhomin + CalculateRadialOrbitDriftShift(
                 magfield, this->mass, this->charge, ppar, pperp
             );
         }
@@ -349,6 +351,7 @@ Particle *ParticleGenerator::AllocateParticle() {
  *
  * part: Particle object to initialize.
  * f:    Distribution function from which to draw the particle.
+ * mf:   Magnetic field in which particle lives.
  * rho:  Radial location of particle.
  * p1:   Momentum coordinate 1.
  * p2:   Momentum coordinate 2.
@@ -358,24 +361,29 @@ Particle *ParticleGenerator::AllocateParticle() {
  */
 void ParticleGenerator::InitializeParticle(
 	Particle *part, DistributionFunction *f,
+    MagneticField2D *mf,
     const slibreal_t rho, const slibreal_t p1,
     const slibreal_t p2, const unsigned int ir,
     const unsigned int i1, const unsigned int i2
 ) {
-	slibreal_t d=0.0, _dp1=(dp1==0?1:dp1), _dp2=(dp2==0?1:dp2);
+	slibreal_t d=0.0, _dp1=(dp1==0?1:dp1), _dp2=(dp2==0?1:dp2), z0;
     part->SetIndices(ir, i1, i2);
 	part->InitializeMomentum(mom1type, mom2type, p1, p2, _dp1, _dp2);
 
 	if (include_drifts)
         d = this->rhoeff[i1][i2];
 
+    z0 = this->CalculateVerticalOrbitDriftShift(
+        mf, this->mass, this->charge, part->GetPpar(), part->GetPperp(), rho
+    );
+
     // Evaluate distribution function
     part->SetF(f->Eval(rho, part->GetMomentum(), part->GetXi(), d));
 
     if (dr == 0)
-        part->InitializePosition(this->specified_position, rho, 1.0, d);
+        part->InitializePosition(this->specified_position, rho, z0, 1.0, d);
     else
-        part->InitializePosition(this->specified_position, rho, dr, d);
+        part->InitializePosition(this->specified_position, rho, z0, dr, d);
 }
 
 /**
@@ -393,7 +401,7 @@ void ParticleGenerator::InitializeParticle(
  *    the 'part' object has NOT been populated
  *    with any new data.
  */
-bool ParticleGenerator::Generate(Particle *part, DistributionFunction *f) {
+bool ParticleGenerator::Generate(Particle *part, MagneticField2D *mf, DistributionFunction *f) {
 	slibreal_t r, p1, p2;
 	bool success = true;
     unsigned int lir, li1, li2;
@@ -434,9 +442,9 @@ bool ParticleGenerator::Generate(Particle *part, DistributionFunction *f) {
 
 	if (success) {
         if (!include_drifts || r >= this->rhoeff[li1][li2])
-            this->InitializeParticle(part, f, r, p1, p2, lir, li1, li2);
+            this->InitializeParticle(part, f, mf, r, p1, p2, lir, li1, li2);
         else
-            return Generate(part, f);
+            return Generate(part, mf, f);
     }
 
 	return success;
@@ -453,9 +461,10 @@ bool ParticleGenerator::IsFinished() { return this->finished; }
 
 /**
  * Calculates the expected shift of the
- * effective magnetic axis due to orbit drifts.
- * This is done using a basic line search
- * algorithm.
+ * effective magnetic axis due to orbit drifts
+ * in the radial direction. This is done using
+ * a basic line search algorithm, to minimize
+ * the poloidal guiding-center speed.
  *
  * ppar:  Parallel momentum of particle.
  * pperp: Perpendicular momentum of particle.
@@ -464,21 +473,23 @@ bool ParticleGenerator::IsFinished() { return this->finished; }
  * axis is shifted in the radial direction
  * (including sign) due to drifts.
  */
-slibreal_t ParticleGenerator::CalculateOrbitDriftShift(
+slibreal_t ParticleGenerator::CalculateRadialOrbitDriftShift(
     MagneticField2D *magfield, const slibreal_t m, const slibreal_t q,
     const slibreal_t ppar, const slibreal_t pperp
 ) {
-
 	const slibreal_t invphi = 0.5*(sqrt(5.0)-1.0),	// Inverse golden ratio
         invphi2 = invphi*invphi;
 	slibreal_t a = magfield->GetMinRadius(),
 			   b = magfield->GetMaxRadius(),
 			   c, d, h,
 			   rmaj = magfield->GetMagneticAxisR(),
+               zaxis = magfield->GetMagneticAxisZ(),
 			   Xpol_c = 0, Xpol_d = 0;
 	
-    auto xpol = [this, &magfield, &m, &q, &ppar, &pperp](const slibreal_t x) {
-        return _Calculate_Xpol(magfield, m, q, ppar, pperp, x);
+    auto xpol = [this, &magfield, &m, &q, &ppar, &pperp, &zaxis](const slibreal_t x) {
+        slibreal_t Xdotr, Xdotz;
+        _Calculate_Xpol(magfield, true, m, q, ppar, pperp, x, zaxis, Xdotr, Xdotz);
+        return hypot(Xdotr, Xdotz);
     };
 
     h = b-a;
@@ -512,35 +523,140 @@ slibreal_t ParticleGenerator::CalculateOrbitDriftShift(
     else
         return ((b+c)*0.5 - rmaj);
 }
+
+/**
+ * Calculates the expected shift of the
+ * effective magnetic axis due to orbit drifts
+ * in the radial direction. This is done using
+ * a basic line search algorithm, to minimize
+ * the poloidal guiding-center speed.
+ *
+ * ppar:  Parallel momentum of particle.
+ * pperp: Perpendicular momentum of particle.
+ *
+ * RETURNS the amount by which the magnetic
+ * axis is shifted in the radial direction
+ * (including sign) due to drifts.
+ */
+slibreal_t ParticleGenerator::CalculateVerticalOrbitDriftShift(
+    MagneticField2D *magfield, const slibreal_t m, const slibreal_t q,
+    const slibreal_t ppar, const slibreal_t pperp, const slibreal_t r
+) {
+	const slibreal_t invphi = 0.5*(sqrt(5.0)-1.0),	// Inverse golden ratio
+        invphi2 = invphi*invphi;
+	slibreal_t a=0, b=0,
+			   c, d, h,
+			   Xpol_c = 0, Xpol_d = 0;
+	
+    auto xpol = [this, &magfield, &m, &q, &ppar, &pperp, &r](const slibreal_t z) {
+        slibreal_t Xdotr, Xdotz;
+        _Calculate_Xpol(magfield, this->include_drifts, m, q, ppar, pperp, r, z, Xdotr, Xdotz);
+
+        return fabs(Xdotr);
+    };
+
+    // Bracket the interval
+    a = magfield->GetMagneticAxisZ();
+    b = a + SQRT_REAL_EPSILON;
+
+    Xpol_c = xpol(a);
+    Xpol_d = xpol(b);
+    c = xpol(a-SQRT_REAL_EPSILON);
+
+    d = Xpol_d - Xpol_c;        // f(x+h) - f(x)
+    slibreal_t db = 0.05 * magfield->GetMagneticAxisR() * (d>0?(+1):(-1));
+
+    if (d > 0) {
+        b = a - db;
+        Xpol_d = xpol(b);
+    }
+    
+    while ((Xpol_d=xpol(b)) < Xpol_c)
+        b -= db;
+    
+    // Carry out the golden-section search
+    if (a > b) {
+        c = a;
+        a = b;
+        b = c;
+    }
+
+    h = b-a;
+	c = a + h*invphi2;
+	d = a + h*invphi;
+	Xpol_c = xpol(c);
+	Xpol_d = xpol(d);
+
+    unsigned int n = ceil(log(this->drift_shift_tolerance/h) / log(invphi)), i;
+
+    for (i = 0; i < n; i++) {
+		if (Xpol_c < Xpol_d) {
+			b = d;
+			d = c;
+			Xpol_d = Xpol_c;
+            h *= invphi;
+			c = a + h*invphi2;
+			Xpol_c = xpol(c);
+		} else {
+			a = c;
+			c = d;
+			Xpol_c = Xpol_d;
+            h *= invphi;
+			d = a + h*invphi;
+			Xpol_d = xpol(d);
+		}
+	}
+
+    if (Xpol_c < Xpol_d)
+        return ((a+d)*0.5);
+    else
+        return ((b+c)*0.5);
+}
+
 /**
  * INTERNAL ROUTINE
  * Calculates the guiding-center drift speed if the
  * particle has parallel and perpendicular momentum
  * ppar and pperp respectively, in the radial point r.
  *
- * ppar:  Parallel momentum of particle.
- * pperp: Perpendicular momentum of particle.
- * r:     Radial coordinate of particle.
+ * magfield: Magnetic field to evaluate Xpol in.
+ * wdrifts:  Take drifts into account.
+ * m:        Particle mass.
+ * q:        Particle charge.
+ * ppar:     Parallel momentum of particle.
+ * pperp:    Perpendicular momentum of particle.
+ * r:        Radial coordinate of particle.
+ * z:        Vertical coordinate of particle.
+ *
+ * RETURNS
+ * Xdotr:    Radial component of guiding-center velocity.
+ * Xdotz:    Vertical component of guiding-center velocity.
  */
-slibreal_t ParticleGenerator::_Calculate_Xpol(
-    MagneticField2D *magfield, const slibreal_t m, const slibreal_t q,
-    const slibreal_t ppar, const slibreal_t pperp, const slibreal_t r
+void ParticleGenerator::_Calculate_Xpol(
+    MagneticField2D *magfield, bool wdrifts,
+    const slibreal_t m, const slibreal_t q,
+    const slibreal_t ppar, const slibreal_t pperp, const slibreal_t r,
+    const slibreal_t z, slibreal_t &Xdotr, slibreal_t &Xdotz
 ) {
-	struct magnetic_field_data mfd = magfield->EvalDerivatives(r, 0.0, magfield->GetMagneticAxisZ());
-	slibreal_t Beffpar, Xdotr, Xdotz;
+	struct magnetic_field_data mfd = magfield->EvalDerivatives(r, 0, z);
+	slibreal_t Beffpar;
     const slibreal_t
         c  = LIGHTSPEED,
         mu = m*c*c*pperp*pperp / (2.0*mfd.Babs);
 
-	Vector<3> Beff, B(mfd.B), bhat(B/mfd.Babs), gradB(mfd.gradB), curlB(mfd.curlB);
-    Vector<3> bhatXgradB = Vector<3>::Cross(bhat, gradB);
-	
-    Beff = B + (m*c*ppar/(q*mfd.Babs)) * (curlB + bhatXgradB);
-	Beffpar = Beff.Dot(bhat);
+    if (wdrifts) {
+        Vector<3> Beff, B(mfd.B), bhat(B/mfd.Babs), gradB(mfd.gradB), curlB(mfd.curlB);
+        Vector<3> bhatXgradB = Vector<3>::Cross(bhat, gradB);
+        
+        Beff = B + (m*c*ppar/(q*mfd.Babs)) * (curlB + bhatXgradB);
+        Beffpar = Beff.Dot(bhat);
 
-	Xdotr = c*ppar*Beff[0] + mu / q * bhatXgradB[0];
-	Xdotz = c*ppar*Beff[2] + mu / q * bhatXgradB[2];
-
-	return hypot(Xdotr, Xdotz) / Beffpar;
+        Xdotr = (c*ppar*Beff[0] + mu / q * bhatXgradB[0]) / Beffpar;
+        Xdotz = (c*ppar*Beff[2] + mu / q * bhatXgradB[2]) / Beffpar;
+    } else {
+        Vector<3> B(mfd.B), bhat(B / mfd.Babs);
+        Xdotr = bhat[0];
+        Xdotz = bhat[1];
+    }
 }
 
