@@ -35,7 +35,8 @@ const string ParticlePusher_config =
 "equation=guiding-center;\n"
 "timeunit=poloidal;\n"
 "time=1;\n"
-"nt=1e3;\n";
+"nt=1e3;\n"
+"nudgevalue=__default__;\n";
 
 const string ParticlePusher::equation_defaults =
 "@Equation guiding-center {\n"
@@ -83,11 +84,20 @@ ParticlePusher::ParticlePusher(
 	// Interpret settings
 	InitEquation(settings["equation"], *eqnconf);
 
-    // Set the 'nudge' value (radial distance between
-    // orbits when calculating Jacobians).
-    // Note that 'integrator_tol' is initialized when
-    // the integrator is set, in 'InitEquation'.
-    this->nudge_value = sqrt(this->integrator_tol * mf->GetMagneticAxisR());
+    // Override nude value
+    if (settings["nudgevalue"] == "__default__") {
+        // Set the 'nudge' value (radial distance between
+        // orbits when calculating Jacobians).
+        // Note that 'integrator_tol' is initialized when
+        // the integrator is set, in 'InitEquation'.
+        this->nudge_value = sqrt(this->integrator_tol * mf->GetMagneticAxisR());
+    } else {
+        Setting *s = settings.GetSetting("nudgevalue");
+        if (!s->IsScalar())
+            throw ParticlePusherException("Invalid value assigned to parameter 'nudgevalue'. Expected real scalar.");
+
+        this->nudge_value = s->GetScalar();
+    }
 
     // Max time
     this->maxtime = init_get_scalar(&settings, "time", "ParticlePusher");

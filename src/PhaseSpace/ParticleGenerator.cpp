@@ -548,6 +548,9 @@ slibreal_t ParticleGenerator::CalculateVerticalOrbitDriftShift(
 			   c, d, h,
 			   Xpol_c = 0, Xpol_d = 0;
 	
+    if (r == magfield->GetMagneticAxisR())
+        return magfield->GetMagneticAxisZ();
+
     auto xpol = [this, &magfield, &m, &q, &ppar, &pperp, &r](const slibreal_t z) {
         slibreal_t Xdotr, Xdotz;
         _Calculate_Xpol(magfield, this->include_drifts, m, q, ppar, pperp, r, z, Xdotr, Xdotz);
@@ -564,7 +567,7 @@ slibreal_t ParticleGenerator::CalculateVerticalOrbitDriftShift(
     c = xpol(a-SQRT_REAL_EPSILON);
 
     d = Xpol_d - Xpol_c;        // f(x+h) - f(x)
-    slibreal_t db = 0.05 * magfield->GetMagneticAxisR() * (d>0?(+1):(-1));
+    slibreal_t db = 0.05 * (r-magfield->GetMagneticAxisR()) * (d>0?(+1):(-1));
 
     if (d > 0) {
         b = a - db;
