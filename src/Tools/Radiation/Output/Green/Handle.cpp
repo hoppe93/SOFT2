@@ -32,7 +32,8 @@ void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
     if (this->withJacobian)
         diffel = rp->GetRDphi() * rp->GetJdtdrho() * rp->GetJp();
     else
-        diffel = rp->GetRDphi() * rp->GetJp();
+        //diffel = rp->GetRDphi() * rp->GetJp();
+        diffel = 1.0;
 
     if (weighWithDistribution) diffel *= rp->GetF();
     if (!hasP1) diffel *= rp->GetDP1();
