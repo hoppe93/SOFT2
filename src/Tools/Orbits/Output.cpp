@@ -19,6 +19,7 @@ void Orbits::Output() {
 
     if (this->computeJacobian) {
         sf->WriteArray("Jdtdrho", this->Jdtdrho, this->norbits, this->ntau);
+        sf->WriteArray("Jp", this->Jp, this->norbits, this->ntau);
     }
 
     sf->Close();

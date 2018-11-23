@@ -15,6 +15,7 @@ slibreal_t
     **Orbits::ppar,		/* Parallel momentum of particle */
     **Orbits::pperp,	/* Perpendicular momentum of particle */
     **Orbits::Jdtdrho,	/* Trajectory coordinate Jacobian (times dtau * drho) */
+    **Orbits::Jp,
     **Orbits::solution; /* Temporary storage of integrator solution */
 
 /* Related vectors */
@@ -54,6 +55,7 @@ Orbits::Orbits(MagneticField2D *__UNUSED__(mf), ParticleGenerator *pg, ParticleP
             Orbits::ppar     = Allocate(norbits, ntau, 1);
             Orbits::pperp    = Allocate(norbits, ntau, 1);
             Orbits::Jdtdrho  = Allocate(norbits, ntau, 1);
+            Orbits::Jp       = Allocate(norbits, ntau, 1);
             Orbits::solution = Allocate(norbits, ntau, 6);
 
             Orbits::Babs     = Allocate(norbits, ntau, 1);
@@ -107,6 +109,7 @@ void Orbits::Handle(Orbit *o, Particle *__UNUSED__(part)) {
     memcpy(Orbits::ppar[index], o->GetPpar(), ntau*sizeof(slibreal_t));
     memcpy(Orbits::pperp[index], o->GetPperp(), ntau*sizeof(slibreal_t));
     memcpy(Orbits::Jdtdrho[index], o->GetJdtdrho(), ntau*sizeof(slibreal_t));
+    memcpy(Orbits::Jp[index], o->GetJp(), ntau*sizeof(slibreal_t));
     memcpy(Orbits::solution[index], o->GetInternalSolution(), 6*ntau*sizeof(slibreal_t));
 
     memcpy(Orbits::Babs[index], o->GetBabs(), ntau*sizeof(slibreal_t));
