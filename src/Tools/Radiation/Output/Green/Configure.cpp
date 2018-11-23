@@ -156,6 +156,16 @@ void Green::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
         this->subncolpixels = this->ncolpixels;
     }
 
+    // with_jacobian
+    if (conf->HasSetting("with_jacobian")) {
+        s = conf->GetSetting("with_jacobian");
+        if (!s->IsBool())
+            throw GreenException("Invalid value assigned to 'with_jacobian'. Expected 'yes' or 'no'.");
+
+        this->withJacobian = s->GetBool();
+    } else
+        this->withJacobian = true;
+
     if (pixelsset)
         ValidateSubPixels();
 

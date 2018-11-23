@@ -33,6 +33,7 @@ namespace __Radiation {
                 hasP1=false, hasP2=false, hasR=false,
                 hasI=false, hasJ=false, hasW=false,
                 weighWithDistribution = false,
+                withJacobian = true,
                 containsAllMomentumSpaceParameters = false;
 
             // Indices of parameters

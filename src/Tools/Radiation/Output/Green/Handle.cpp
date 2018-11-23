@@ -26,7 +26,13 @@ void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
         index *= 4;
 
     // Compute differential element
-    slibreal_t diffel = rp->GetRDphi() * rp->GetJdtdrho() * rp->GetJp();
+    //slibreal_t diffel = rp->GetRDphi() * rp->GetJdtdrho() * rp->GetJp();
+    slibreal_t diffel;
+
+    if (this->withJacobian)
+        diffel = rp->GetRDphi() * rp->GetJdtdrho() * rp->GetJp();
+    else
+        diffel = rp->GetRDphi() * rp->GetJp();
 
     if (weighWithDistribution) diffel *= rp->GetF();
     if (!hasP1) diffel *= rp->GetDP1();
