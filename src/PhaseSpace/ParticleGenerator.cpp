@@ -573,7 +573,7 @@ slibreal_t ParticleGenerator::CalculateVerticalOrbitDriftShift(
         b = a - db;
         Xpol_d = xpol(b);
     }
-    
+
     while ((Xpol_d=xpol(b)) < Xpol_c)
         b -= db;
     
@@ -585,12 +585,17 @@ slibreal_t ParticleGenerator::CalculateVerticalOrbitDriftShift(
     }
 
     h = b-a;
-	c = a + h*invphi2;
-	d = a + h*invphi;
-	Xpol_c = xpol(c);
-	Xpol_d = xpol(d);
+
+    if (h <= this->drift_shift_tolerance)
+        return 0.5*(a+b);
+
+    c = a + h*invphi2;
+    d = a + h*invphi;
+    Xpol_c = xpol(c);
+    Xpol_d = xpol(d);
 
     unsigned int n = ceil(log(this->drift_shift_tolerance/h) / log(invphi)), i;
+
 
     for (i = 0; i < n; i++) {
 		if (Xpol_c < Xpol_d) {
