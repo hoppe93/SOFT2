@@ -53,13 +53,24 @@ void Topview::Generate() {
     sf->WriteList("detectorVisang", &detvisang, 1);
 
     // Include wall/separatrix data?
-    slibreal_t *domain[2];
-    domain[0] = magfield->GetRDomain();
-    domain[1] = magfield->GetZDomain();
+    unsigned int nwall = magfield->GetNDomain();
+    slibreal_t **domain = new slibreal_t*[2], *rwall, *zwall;
+    domain[0] = new slibreal_t[2*nwall];
+    domain[1] = domain[0]+nwall;
 
-    sf->WriteArray("wall", domain, 2, magfield->GetNDomain());
+    rwall = magfield->GetRDomain();
+    zwall = magfield->GetZDomain();
+    for (unsigned int i = 0; i < nwall; i++) {
+        domain[0][i] = rwall[i];
+        domain[1][i] = zwall[i];
+    }
+
+    sf->WriteArray("wall", domain, 2, nwall);
 
     sf->Close();
+
+    delete [] domain[0];
+    delete [] domain;
 
 #ifdef COLOR_TERMINAL
     // Check if image is empty
