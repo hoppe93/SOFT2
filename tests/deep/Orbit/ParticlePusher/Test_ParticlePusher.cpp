@@ -98,9 +98,9 @@ ParticlePusher *Test_ParticlePusher::GenerateOrbit_push(const slibreal_t r, cons
     Particle *par = new Particle();
     par->InitializeMomentum(Particle::COORDINATE_P, Particle::COORDINATE_THETAP, p, thetap, 1.0, 1.0);
     if (eqn == "guiding-center")
-        par->InitializePosition(Particle::POSITION_GUIDINGCENTER, r, 1.0, 0.0);
+        par->InitializePosition(Particle::POSITION_GUIDINGCENTER, r, 0.0, 1.0, 0.0);
     else if (eqn == "particle")
-        par->InitializePosition(Particle::POSITION_PARTICLE, r, 1.0, 0.0);
+        par->InitializePosition(Particle::POSITION_PARTICLE, r, 0.0, 1.0, 0.0);
 
     pp->ToggleJacobianCalculation(false);
 

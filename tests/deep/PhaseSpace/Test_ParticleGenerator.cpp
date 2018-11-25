@@ -65,7 +65,7 @@ slibreal_t Test_ParticleGenerator::GetDriftShift(
             Particle::COORDINATE_PPAR, Particle::COORDINATE_PPERP,
             ppar, pperp, 1.0, 1.0
         );
-        p.InitializePosition(Particle::POSITION_GUIDINGCENTER, X0, 1.0, 0.0);
+        p.InitializePosition(Particle::POSITION_GUIDINGCENTER, X0, Z0, 1.0, 0.0);
 
         eqn->InitializeParticle(&p, zval);
         eqn->Evaluate(0.0, zval, dzdt);
@@ -154,7 +154,7 @@ bool Test_ParticleGenerator::CheckEffectiveMagneticAxis() {
         for (j = 0; j < effax_npperp; j++) {
             pperp = effax_pperp0 + i*dpperp;
 
-            shift = pg->CalculateOrbitDriftShift(
+            shift = pg->CalculateRadialOrbitDriftShift(
                 mf, p->GetMass(), p->GetCharge(), ppar, pperp
             );
 
@@ -343,7 +343,7 @@ bool Test_ParticleGenerator::Generate(
     for (i = 0; i < np2; i++) {
         for (j = 0; j < np1; j++) {
             for (k = 0; k < nr; k++) {
-                pg->Generate(p);
+                pg->Generate(p, mf);
 
                 sr  = GetValueFromParamName(p, r, mf);
                 sp1 = GetValueFromParamName(p, p1, mf);

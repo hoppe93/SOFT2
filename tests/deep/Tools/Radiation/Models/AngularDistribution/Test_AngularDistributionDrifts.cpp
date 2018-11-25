@@ -110,7 +110,7 @@ Vector<3> Test_AngularDistributionDrifts::GetGuidingCenterMomentum(
         Particle::COORDINATE_PPAR, Particle::COORDINATE_PPERP,
         ppar, pperp, 1.0, 1.0
     );
-    p.InitializePosition(Particle::POSITION_GUIDINGCENTER, X[0], 1.0, 0.0);
+    p.InitializePosition(Particle::POSITION_GUIDINGCENTER, X[0], X[2], 1.0, 0.0);
 
     gce.InitializeParticle(&p, zval);
     gce.Evaluate(0.0, zval, dzdt);
