@@ -21,8 +21,8 @@ using namespace __Radiation;
 void Topview::GetTopviewPixel(RadiationParticle *rp, unsigned int *i, unsigned int *j) {
     Vector<3> &X = rp->GetPosition();
 
-    *i = lround(X[0] / max_radius * npixels * 0.5) + npixels/2;
-    *j = lround(X[1] / max_radius * npixels * 0.5) + npixels/2;
+    *i = lround( X[0] / max_radius * npixels * 0.5) + npixels/2;
+    *j = lround(-X[1] / max_radius * npixels * 0.5) + npixels/2;
 }
 
 /**
