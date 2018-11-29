@@ -22,9 +22,6 @@ void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
 
     GetIndex(det, rp, &index, &wavindex);
 
-    if (storeStokesParameters)
-        index *= 4;
-
     // Compute differential element
     //slibreal_t diffel = rp->GetRDphi() * rp->GetJdtdrho() * rp->GetJp();
     slibreal_t diffel;
@@ -55,18 +52,16 @@ void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
         // Functions for copying either Stokes parameters
         // or spectrum
         auto copyStokes = [this,&I,&Q,&U,&V,&diffel,&inc,&index]() {
-            int i, j;
-            for (i = 0; i < this->nw; i++, index+=inc) {
-                j = index + 4*i;
-
+            size_t i, fsw = this->fsizeWithoutStokes;
+            for (i = 0; i < (unsigned)this->nw; i++, index+=inc) {
                 #pragma omp atomic update
-                this->function[j+0] += I[i] * diffel;
+                this->function[fsw*0 + index + i] += I[i] * diffel;
                 #pragma omp atomic update
-                this->function[j+1] += Q[i] * diffel;
+                this->function[fsw*1 + index + i] += Q[i] * diffel;
                 #pragma omp atomic update
-                this->function[j+2] += U[i] * diffel;
+                this->function[fsw*2 + index + i] += U[i] * diffel;
                 #pragma omp atomic update
-                this->function[j+3] += V[i] * diffel;
+                this->function[fsw*3 + index + i] += V[i] * diffel;
             }
         };
         auto copySpec = [this,&I,&diffel,&inc,&index]() {
@@ -115,23 +110,23 @@ void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
         if (!containsAllMomentumSpaceParameters) {
             if (storeStokesParameters) {
                 #pragma omp atomic update
-                this->function[index+0] += I * diffel;
+                this->function[this->fsizeWithoutStokes*0 + index] += I * diffel;
                 #pragma omp atomic update
-                this->function[index+1] += Q * diffel;
+                this->function[this->fsizeWithoutStokes*1 + index] += Q * diffel;
                 #pragma omp atomic update
-                this->function[index+2] += U * diffel;
+                this->function[this->fsizeWithoutStokes*2 + index] += U * diffel;
                 #pragma omp atomic update
-                this->function[index+3] += V * diffel;
+                this->function[this->fsizeWithoutStokes*3 + index] += V * diffel;
             } else {
                 #pragma omp atomic update
                 this->function[index] += I * diffel;
             }
         } else {
             if (storeStokesParameters) {
-                this->function[index+0] += I * diffel;
-                this->function[index+1] += Q * diffel;
-                this->function[index+2] += U * diffel;
-                this->function[index+3] += V * diffel;
+                this->function[this->fsizeWithoutStokes*0 + index] += I * diffel;
+                this->function[this->fsizeWithoutStokes*1 + index] += Q * diffel;
+                this->function[this->fsizeWithoutStokes*2 + index] += U * diffel;
+                this->function[this->fsizeWithoutStokes*3 + index] += V * diffel;
             } else
                 this->function[index] += I * diffel;
         }

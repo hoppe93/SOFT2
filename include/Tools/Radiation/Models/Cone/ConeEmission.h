@@ -8,7 +8,7 @@
 namespace __Radiation {
     class ConeEmission {
         protected:
-            slibreal_t power;
+            slibreal_t power, totQ, totU, totV;
             slibreal_t *I, *Q, *U, *V, *wavelengths;
             unsigned int nwavelengths = 0;
 
@@ -23,6 +23,9 @@ namespace __Radiation {
             slibreal_t *GetWavelengths() { return this->wavelengths; }
             unsigned int GetNWavelengths() { return this->nwavelengths; }
 
+            slibreal_t GetPowerQ()   { return this->totQ; }
+            slibreal_t GetPowerU()   { return this->totU; }
+            slibreal_t GetPowerV()   { return this->totV; }
             slibreal_t *GetStokesI() { return this->I; }
             slibreal_t *GetStokesQ() { return this->Q; }
             slibreal_t *GetStokesU() { return this->U; }

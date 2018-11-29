@@ -19,7 +19,7 @@ namespace __Radiation {
 
             static slibreal_t *global_function;
             slibreal_t *function;
-            size_t fsize, *factors;
+            size_t fsize, fsizeWithoutStokes, *factors;
 
             slibreal_t *rgrid, *p1grid, *p2grid;
             int p1type, p2type;
@@ -55,7 +55,7 @@ namespace __Radiation {
 
             void AllocateGreen(bool);
             void GetIndex(__Radiation::Detector*, __Radiation::RadiationParticle*, size_t*, size_t*);
-            bool MeasuresPolarization() { return false; }
+            bool MeasuresPolarization() { return storeStokesParameters; }
 
             void ValidateFormat(const std::string&);
             void ValidateSubPixels();

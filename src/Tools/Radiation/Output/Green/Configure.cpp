@@ -22,7 +22,10 @@ using namespace __Radiation;
 void Green::AllocateGreen(bool pixelsset) {
     int i;
 
-    this->fsize = 1;
+    if (this->storeStokesParameters)
+        this->fsize = 4;
+    else
+        this->fsize = 1;
 
     // Set up Green's function "factors"
     // (the "factors" array is an array consisting of the factors
@@ -52,6 +55,8 @@ void Green::AllocateGreen(bool pixelsset) {
         if (i > 0)
             this->factors[i-1] = s;
     }
+
+    this->fsizeWithoutStokes = this->fsize / 4;
 
     // Actually construct factors array
     for (int j = this->nformat-2; j >= 0; j--)

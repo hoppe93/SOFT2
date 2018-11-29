@@ -77,6 +77,10 @@ void Cone::HandleParticle(RadiationParticle *rp, const slibreal_t sinphi, const 
         this->I[i] = s[i] * overlapFraction;
 
     if (this->parent->MeasuresPolarization()) {
+        this->totQ = this->emission->GetPowerQ();
+        this->totU = this->emission->GetPowerU();
+        this->totV = this->emission->GetPowerV();
+
         s = this->emission->GetStokesQ();
         for (i = 0; i < n; i++)
             this->Q[i] = s[i] * overlapFraction;

@@ -19,12 +19,13 @@ void ConeSynchrotronEmission::HandleParticle(RadiationParticle *rp, bool polariz
     if (nwavelengths == 0)
         CalculateTotalEmission(rp);
     else {
-        if (!polarization)
+        if (!polarization) {
             CalculateSpectrum(rp);
-        else
+            IntegrateSpectrum();
+        } else {
             CalculatePolarization(rp);
-        
-        IntegrateSpectrum();
+            IntegrateSpectrumStokes();
+        }
     }
 }
 
@@ -158,5 +159,22 @@ void ConeSynchrotronEmission::IntegrateSpectrum() {
         s += I[i];
 
     this->power = s * (wavelengths[1]-wavelengths[0]);
+}
+
+void ConeSynchrotronEmission::IntegrateSpectrumStokes() {
+    unsigned x;
+    slibreal_t i=0, q=0, u=0;
+
+    for (x = 1; x < nwavelengths-1; x++)
+        i += I[x];
+    for (x = 1; x < nwavelengths-1; x++)
+        q += Q[x];
+    for (x = 1; x < nwavelengths-1; x++)
+        u += U[x];
+
+    this->power = i;
+    this->totQ  = q;
+    this->totU  = u;
+    this->totV  = 0;
 }
 

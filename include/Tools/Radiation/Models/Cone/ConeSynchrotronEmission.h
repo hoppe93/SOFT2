@@ -26,6 +26,7 @@ namespace __Radiation {
             void CalculateTotalEmission(RadiationParticle*);
 
             void IntegrateSpectrum();
+            void IntegrateSpectrumStokes();
     };
 
     class ConeSynchrotronException : public ConeException {
