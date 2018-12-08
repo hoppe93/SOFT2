@@ -19,6 +19,7 @@
 // Output
 #include "Tools/Radiation/Output/Green.h"
 #include "Tools/Radiation/Output/Image.h"
+#include "Tools/Radiation/Output/Space3D.h"
 #include "Tools/Radiation/Output/Spectrum.h"
 #include "Tools/Radiation/Output/Topview.h"
 
@@ -56,10 +57,11 @@ struct radiation_modelspec radmodels[RADIATION_NMODELS] = {
     {"angdist", InitModel<AngularDistribution>}
 };
 
-const unsigned int RADIATION_NOUTPUTS=4;
+const unsigned int RADIATION_NOUTPUTS=5;
 struct radiation_outputspec radoutputs[RADIATION_NOUTPUTS] = {
     {"green", InitRadiationOutput<Green>},
     {"image", InitRadiationOutput<Image>},
+    {"space3d", InitRadiationOutput<Space3D>},
     {"spectrum", InitRadiationOutput<Spectrum>},
     {"topview", InitRadiationOutput<Topview>}
 };

@@ -3,6 +3,12 @@
 
 #include <string>
 #include <softlib/config.h>
+#include <softlib/Configuration.h>
+#include <softlib/MagneticField/MagneticField2D.h>
+#include "Tools/Radiation/Detector.h"
+#include "Tools/Radiation/Output/RadiationOutput.h"
+#include "Tools/Radiation/Output/RadiationOutputException.h"
+#include "Tools/Radiation/RadiationParticle.h"
 
 namespace __Radiation {
     class Space3D : public RadiationOutput {
@@ -15,10 +21,17 @@ namespace __Radiation {
             size_t imagesize;
 
         public:
-            Space3D(Detector *d, MagneticField2D *m) : RadiationOutput(d,m) {}
+            Space3D(Detector*, MagneticField2D*, ParticleGenerator*);
+            virtual ~Space3D();
 
+            virtual void Configure(ConfigBlock*, ConfigBlock*) override;
+            virtual void Finish() override;
+            virtual void Generate() override;
             void GetPoint(ConfigBlock*, const std::string&, Vector<3>&);
+            virtual void Handle(Detector*, Model*, RadiationParticle*);
             void Initialize();
+
+            virtual bool MeasuresPolarization() { return false; }
     };
 
     class Space3DException : public RadiationOutputException {
