@@ -153,6 +153,16 @@ void Green::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
         this->subncolpixels = this->ncolpixels;
     }
 
+    // with_f
+    if (conf->HasSetting("with_f")) {
+        s = conf->GetSetting("with_f");
+        if (!s->IsBool())
+            throw GreenException("Invalid value assigned to 'with_f'. Expected 'yes' or 'no'.");
+
+        this->weighWithDistribution = s->GetBool();
+    } else
+        this->weighWithDistribution = false;
+
     // with_jacobian
     if (conf->HasSetting("with_jacobian")) {
         s = conf->GetSetting("with_jacobian");
