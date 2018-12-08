@@ -3,7 +3,7 @@
 
 namespace __Radiation {
     class Model;
-};
+}
 
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
@@ -50,17 +50,17 @@ namespace __Radiation {
             /****************
              * MODEL COLORS *
              ****************/
-            const std::string CONE_COLOR      = "\e[31;1m"; // Red + bold
-            const std::string ANGDIST_COLOR   = "\e[34;1m"; // Blue + bold
-            const std::string ISOTROPIC_COLOR = "\e[33;1m"; // Yellow + bold
+            const std::string CONE_COLOR      = "\x1B[31;1m"; // Red + bold
+            const std::string ANGDIST_COLOR   = "\x1B[34;1m"; // Blue + bold
+            const std::string ISOTROPIC_COLOR = "\x1B[33;1m"; // Yellow + bold
 
             /*******************
              * EMISSION COLORS *
              *******************/
-            const std::string BREMSSTRAHLUNG_COLOR = "\e[91m"; // Light red
-            const std::string SYNCHROTRON_COLOR    = "\e[94m"; // Ligh blue
-            const std::string UNIT_EMISSION_COLOR  = "\e[93m"; // Light yellow
+            const std::string BREMSSTRAHLUNG_COLOR = "\x1B[91m"; // Light red
+            const std::string SYNCHROTRON_COLOR    = "\x1B[94m"; // Ligh blue
+            const std::string UNIT_EMISSION_COLOR  = "\x1B[93m"; // Light yellow
     };
-};
+}
 
 #endif/*_RADIATION_MODEL_H*/

@@ -69,6 +69,6 @@ namespace __Radiation {
                 AddModule("Green");
             }
     };
-};
+}
 
 #endif/*_RADIATION_GREEN_H*/

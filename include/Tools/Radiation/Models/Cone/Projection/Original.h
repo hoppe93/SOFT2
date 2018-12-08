@@ -48,6 +48,6 @@ namespace __Radiation {
             void SortIntersectionPoints(struct intersection_points&);
             slibreal_t ToPointOnUnitCone(slibreal_t, slibreal_t);
     };
-};
+}
 
 #endif/*_PROJECTION_ORIGINAL_H*/

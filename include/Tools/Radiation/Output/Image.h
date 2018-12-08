@@ -44,6 +44,6 @@ namespace __Radiation {
                 AddModule("Image");
             }
     };
-};
+}
 
 #endif/*_RADIATION_IMAGE_H*/

@@ -1,5 +1,5 @@
 /**
- * Implementation of the image output module.
+ * Implementation of the spectrum output module.
  */
 
 #include <softlib/config.h>

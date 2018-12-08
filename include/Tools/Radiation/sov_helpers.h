@@ -13,6 +13,6 @@ namespace __Radiation {
 
     slibreal_t mod2pi(const slibreal_t);
     void shift3(slibreal_t&, slibreal_t&, slibreal_t&, const slibreal_t);
-};
+}
 
 #endif/*_RADIATION_SOV_HELPERS_H*/

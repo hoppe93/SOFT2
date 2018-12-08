@@ -19,6 +19,6 @@ namespace __Radiation {
             slibreal_t GetParameterT(const slibreal_t, const slibreal_t, const slibreal_t);
             void SetupBasisVectors(Vector<3>&, Vector<3>&, Vector<3>&);
     };
-};
+}
 
 #endif/*_PROJECTION_REVERSE_H*/

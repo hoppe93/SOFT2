@@ -34,7 +34,7 @@ void Isotropic::Configure(struct global_settings *__UNUSED__(globset), ConfigBlo
  */
 const string Isotropic::GetDescription() const {
 #ifdef COLOR_TERMINAL
-    return Model::ISOTROPIC_COLOR+"Isotropic\e[0m";
+    return Model::ISOTROPIC_COLOR+"Isotropic\x1B[0m";
 #else
     return "Isotropic";
 #endif

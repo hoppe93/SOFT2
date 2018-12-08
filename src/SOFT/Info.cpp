@@ -53,7 +53,7 @@ void SOFTLocal::Welcome() {
     // Print Tool introductions
     for (i = 0; i < ntools; i++) {
 #ifdef COLOR_TERMINAL
-        SOFT::PrintInfo("\e[1m:: "+ltools[i]->GetTypeAndName()+"\e[0m");
+        SOFT::PrintInfo("\x1B[1m:: "+ltools[i]->GetTypeAndName()+"\x1B[0m");
 #else
         SOFT::PrintInfo(":: "+ltools[i]->GetTypeAndName());
 #endif

@@ -3,7 +3,7 @@
 
 namespace __Radiation {
     class Radiation;
-};
+}
 
 #include <string>
 #include <softlib/config.h>

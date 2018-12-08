@@ -40,6 +40,6 @@ namespace __Radiation {
                 AddModule("Spectrum");
             }
     };
-};
+}
 
 #endif/*_RADIATION_SPECTRUM_H*/

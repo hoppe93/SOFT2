@@ -91,13 +91,13 @@ void Cone::ConfigureEmission(const string& emname, const slibreal_t zeff) {
  */
 const string Cone::GetDescription() const {
 #ifdef COLOR_TERMINAL
-    string model = Model::CONE_COLOR+"Cone\e[0m  with ";
+    string model = Model::CONE_COLOR+"Cone\x1B[0m  with ";
     if (this->emissionName == "bremsstrahlung")
-        model += Model::BREMSSTRAHLUNG_COLOR+"bremsstrahlung\e[0m";
+        model += Model::BREMSSTRAHLUNG_COLOR+"bremsstrahlung\x1B[0m";
     else if (this->emissionName == "synchrotron")
-        model += Model::SYNCHROTRON_COLOR+"synchrotron\e[0m";
+        model += Model::SYNCHROTRON_COLOR+"synchrotron\x1B[0m";
     else
-        model += Model::UNIT_EMISSION_COLOR+this->emissionName+"\e[0m";
+        model += Model::UNIT_EMISSION_COLOR+this->emissionName+"\x1B[0m";
 
     return model;
 #else

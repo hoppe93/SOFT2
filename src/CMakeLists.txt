@@ -133,9 +133,9 @@ set(tool_radiation_tests
 )
 
 if (DEBUG)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-implicit-fallthrough -Wno-format-security -fopenmp -O0 -g -D_FILE_OFFSET_BITS=64")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wno-format-security -fopenmp -O0 -g -D_FILE_OFFSET_BITS=64")
 else (DEBUG)
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-implicit-fallthrough -Wno-format-security -fopenmp -O3 -D_FILE_OFFSET_BITS=64")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wno-format-security -fopenmp -O3 -D_FILE_OFFSET_BITS=64")
     if (OPTIMIZE_NATIVE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
     endif (OPTIMIZE_NATIVE)

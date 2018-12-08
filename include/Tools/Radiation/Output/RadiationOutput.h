@@ -3,7 +3,7 @@
 
 namespace __Radiation {
     class RadiationOutput;
-};
+}
 
 #include <string>
 #include <softlib/config.h>
@@ -34,6 +34,6 @@ namespace __Radiation {
             const std::string &GetName() const { return this->name; }
             void SetName(const std::string &name) { this->name = name; }
     };
-};
+}
 
 #endif/*_RADIATION_OUTPUT_H*/

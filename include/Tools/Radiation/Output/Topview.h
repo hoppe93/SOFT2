@@ -44,6 +44,6 @@ namespace __Radiation {
                 AddModule("Topview");
             }
     };
-};
+}
 
 #endif/*_RADIATION_TOPVIEW_H*/

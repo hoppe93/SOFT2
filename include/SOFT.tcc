@@ -19,7 +19,7 @@ void SOFT::PrintError(const SOFT::message_t id, const std::string& msg, Args&& .
         return;
 
 #ifdef COLOR_TERMINAL
-    std::string fullmsg = "\e[1;31m[ERROR]\e[0m "+msg+"\n";
+    std::string fullmsg = "\x1B[1;31m[ERROR]\x1B[0m "+msg+"\n";
 #else
     std::string fullmsg = "[ERROR] "+msg+"\n";
 #endif
@@ -45,7 +45,7 @@ void SOFT::PrintWarning(const SOFT::message_t id, const std::string& msg, Args&&
         return;
 
 #ifdef COLOR_TERMINAL
-    std::string fullmsg = "\e[1;33m[WARNING]\e[0m "+msg+"\n";
+    std::string fullmsg = "\x1B[1;33m[WARNING]\x1B[0m "+msg+"\n";
 #else
     std::string fullmsg = "[WARNING] "+msg+"\n";
 #endif

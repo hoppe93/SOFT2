@@ -22,7 +22,7 @@ void Spectrum::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
 
     // output
     if (!conf->HasSetting("output"))
-        throw SpectrumException("No image output name has been specifed. Set the option 'output'.");
+        throw SpectrumException("No spectrum output name has been specifed. Set the option 'output'.");
     else
         this->output = (*conf)["output"];
 }

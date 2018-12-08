@@ -191,4 +191,4 @@ slibreal_t find_root(
 
     return mod2pi(0.5*(a+b));
 }
-};//namespace __Radiation
+}//namespace __Radiation

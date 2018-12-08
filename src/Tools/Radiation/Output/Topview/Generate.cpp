@@ -85,7 +85,7 @@ void Topview::Generate() {
     }
 
     if (empty)
-        SOFT::PrintInfo("Wrote \e[1;33mempty\e[0m topview to '%s'.", this->output.c_str());
+        SOFT::PrintInfo("Wrote \x1B[1;33mempty\x1B[0m topview to '%s'.", this->output.c_str());
     else
 #endif
     SOFT::PrintInfo("Wrote topview to '%s'.", this->output.c_str());

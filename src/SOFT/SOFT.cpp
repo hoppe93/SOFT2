@@ -6,8 +6,8 @@
 
 bool SOFT::message_checklist[MESSAGE_LAST] = {false};
 #ifdef COLOR_TERMINAL
-    const std::string SOFT::PRINT_YES="\e[1;32mYES\e[0m";
-    const std::string SOFT::PRINT_NO ="\e[1;31mNO\e[0m";
+    const std::string SOFT::PRINT_YES="\x1B[1;32mYES\x1B[0m";
+    const std::string SOFT::PRINT_NO ="\x1B[1;31mNO\x1B[0m";
 #else
     const std::string SOFT::PRINT_YES="YES";
     const std::string SOFT::PRINT_NO ="NO";
