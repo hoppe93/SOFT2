@@ -50,7 +50,13 @@ void Topview::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
         else
             throw TopviewException("Invalid specification of 'pixels'.");
     }
+}
 
+/**
+ * Initialize this output after configuration
+ * but before being used.
+ */
+void Topview::Initialize() {
     AllocateTopview();
 }
 

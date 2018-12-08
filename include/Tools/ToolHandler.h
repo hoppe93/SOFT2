@@ -16,6 +16,7 @@ class ToolHandler {
         void AddTool(Tool*);
         void Finish();
         void Handle(Orbit*, Particle*);
+        void Initialize();
         void Output();
 
         const std::vector<Tool*> &GetTools() const { return tools; }

@@ -17,6 +17,7 @@ class Tool {
         virtual void Configure(struct global_settings*, ConfigBlock*, ConfigBlock*) = 0;
         virtual void Finish() = 0;
         virtual void Handle(Orbit*, Particle*) = 0;
+        virtual void Initialize() = 0;
         virtual void Output() = 0;
         virtual void Welcome(const std::string &prefix="  ") = 0;
 

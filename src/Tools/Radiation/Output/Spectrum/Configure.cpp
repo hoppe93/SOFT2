@@ -27,3 +27,9 @@ void Spectrum::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
         this->output = (*conf)["output"];
 }
 
+/**
+ * Initialize this output after configuration,
+ * but before being used.
+ */
+void Spectrum::Initialize() { }
+

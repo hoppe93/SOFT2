@@ -15,11 +15,8 @@ using namespace __Radiation;
 
 /**
  * Allocate memory for the image.
- * 
- * pixelsset: True if the number of pixels has been set.
- *            False otherwise.
  */
-void Green::AllocateGreen(bool pixelsset) {
+void Green::PrepareAllocateGreen() {
     int i;
 
     if (this->storeStokesParameters)
@@ -62,15 +59,10 @@ void Green::AllocateGreen(bool pixelsset) {
     for (int j = this->nformat-2; j >= 0; j--)
         this->factors[j] *= this->factors[j+1];
 
-    if ((this->hasI || this->hasJ) && !pixelsset)
+    if ((this->hasI || this->hasJ) && !this->pixelsset)
         throw GreenException("Green's function contains pixels, but the number of pixels was not set.");
 
-    this->function = new slibreal_t[this->fsize];
     this->containsAllMomentumSpaceParameters = (this->hasP1 && this->hasP2 && this->hasR);
-
-    // Initialize function
-    for (size_t i = 0; i < this->fsize; i++)
-        this->function[i] = 0;
 }
 
 /**
@@ -82,8 +74,8 @@ void Green::AllocateGreen(bool pixelsset) {
  */
 void Green::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
     Setting *s;
-    bool pixelsset = false;
 
+    this->pixelsset = false;
     this->SetName(conf->GetName());
 
     // format
@@ -113,7 +105,7 @@ void Green::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
         } else
             throw GreenException("Invalid specification of 'pixels'.");
 
-        pixelsset = true;
+        this->pixelsset = true;
     }
 
     // stokesparams
@@ -156,7 +148,7 @@ void Green::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
             this->subncolpixels = s->GetUnsignedInteger32(1);
         } else
             throw GreenException("Invalid specification of 'subpixels'.");
-    } else if (pixelsset) {
+    } else if (this->pixelsset) {
         this->subnrowpixels = this->nrowpixels;
         this->subncolpixels = this->ncolpixels;
     }
@@ -171,10 +163,21 @@ void Green::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
     } else
         this->withJacobian = true;
 
-    if (pixelsset)
+    if (this->pixelsset)
         ValidateSubPixels();
 
-    AllocateGreen(pixelsset);
+    PrepareAllocateGreen();
+}
+
+/**
+ * Initialize this output module (after configuration).
+ */
+void Green::Initialize() {
+    this->function = new slibreal_t[this->fsize];
+
+    // Initialize function
+    for (size_t i = 0; i < this->fsize; i++)
+        this->function[i] = 0;
 }
 
 /**

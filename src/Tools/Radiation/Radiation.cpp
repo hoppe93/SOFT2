@@ -47,6 +47,15 @@ void Radiation::Handle(Orbit *o, Particle *p) {
 }
 
 /**
+ * Initialize this tool before using it.
+ */
+void Radiation::Initialize() {
+    for (unsigned int i = 0; i < this->noutput; i++) {
+        this->output[i]->Initialize();
+    }
+}
+
+/**
  * Check if the given point is within the field-of-view.
  *
  * x, y, z: Cartesian coordinates of point to check.

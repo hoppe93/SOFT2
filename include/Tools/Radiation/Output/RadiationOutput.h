@@ -28,6 +28,8 @@ namespace __Radiation {
             virtual void Finish() = 0;
             virtual void Generate() = 0;
             virtual void Handle(Detector*, Model*, RadiationParticle*) = 0;
+            virtual void Initialize() = 0;
+            virtual void Welcome(const std::string&) = 0;
 
             virtual bool MeasuresPolarization() = 0;
 

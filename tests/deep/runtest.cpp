@@ -76,18 +76,18 @@ int has_test(const char *name) {
  * RETURNS 1 if the test failed, 0 otherwise.
  */
 int run_test(int index, bool runningAll) {
-    cout << "\e[1m:: " << tests[index]->GetName() << "\e[0m" << endl;
+    cout << "\x1B[1m:: " << tests[index]->GetName() << "\x1B[0m" << endl;
     try {
         if (tests[index]->Run(runningAll)) {
-            cout << "\e[1;32m[SUCCESS]\e[0m Test '" << tests[index]->GetName() << "' completed successfully." << endl;
+            cout << "\x1B[1;32m[SUCCESS]\x1B[0m Test '" << tests[index]->GetName() << "' completed successfully." << endl;
             return 0;
         } else {
-            cout << "\e[1;31m[FAIL]\e[0m    Test '" << tests[index]->GetName() << "' failed." << endl;
+            cout << "\x1B[1;31m[FAIL]\x1B[0m    Test '" << tests[index]->GetName() << "' failed." << endl;
             return 1;
         }
     } catch (SOFTLibException& ex) {
-        cout << "\e[1;31m[ERROR]\e[0m   --> " << ex.whats() << endl;
-        cout << "\e[1;31m[FAIL]\e[0m    Test '" << tests[index]->GetName() << "' unexpectedly threw exception." << endl;
+        cout << "\x1B[1;31m[ERROR]\x1B[0m   --> " << ex.whats() << endl;
+        cout << "\x1B[1;31m[FAIL]\x1B[0m    Test '" << tests[index]->GetName() << "' unexpectedly threw exception." << endl;
     }
 
     return 1;
@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
 			if ((t=has_test(argv[i]))>=0) {
 				failed += run_test(t, (argc>2));
 			} else {
-				cerr << "\e[1;31m[ERROR]\e[0m   Unrecognized test: '" << argv[i] << "'." << endl;
+				cerr << "\x1B[1;31m[ERROR]\x1B[0m   Unrecognized test: '" << argv[i] << "'." << endl;
 				failed++;
 			}
 		}

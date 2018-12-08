@@ -27,11 +27,13 @@ namespace __Radiation {
             virtual void Configure(ConfigBlock*, ConfigBlock*) override;
             virtual void Finish() override;
             virtual void Generate() override;
-            void GetPoint(ConfigBlock*, const std::string&, Vector<3>&);
-            virtual void Handle(Detector*, Model*, RadiationParticle*);
-            void Initialize();
+            virtual void Handle(Detector*, Model*, RadiationParticle*) override;
+            virtual void Initialize() override;
+            virtual void Welcome(const std::string&) override;
 
-            virtual bool MeasuresPolarization() { return false; }
+            void GetPoint(ConfigBlock*, const std::string&, Vector<3>&);
+
+            virtual bool MeasuresPolarization() override { return false; }
     };
 
     class Space3DException : public RadiationOutputException {

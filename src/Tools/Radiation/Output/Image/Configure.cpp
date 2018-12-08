@@ -53,7 +53,13 @@ void Image::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
         } else
             throw ImageException("Invalid specification of 'pixels'.");
     }
+}
 
+/**
+ * Initialize this output module (after configuration,
+ * but before being used).
+ */
+void Image::Initialize() {
     AllocateImage();
 }
 

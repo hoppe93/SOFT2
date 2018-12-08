@@ -22,14 +22,16 @@ namespace __Radiation {
             Spectrum(Detector*, MagneticField2D*, ParticleGenerator*);
             ~Spectrum();
 
-            void Configure(ConfigBlock*, ConfigBlock*);
-            void Finish();
-            void Handle(Detector*, Model*, RadiationParticle*);
+            virtual void Configure(ConfigBlock*, ConfigBlock*) override;
+            virtual void Finish() override;
+            virtual void Handle(Detector*, Model*, RadiationParticle*) override;
+            virtual void Initialize() override;
+            virtual void Welcome(const std::string&) override;
 
             // Only called on root thread
-            void Generate();
+            virtual void Generate() override;
 
-            bool MeasuresPolarization() { return false; }
+            virtual bool MeasuresPolarization() override { return false; }
     };
 
     class SpectrumException : public RadiationOutputException {

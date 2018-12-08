@@ -27,5 +27,6 @@ void Radiation::Welcome(const string &prefix) {
 
     for (unsigned int i = 0; i < noutput; i++) {
         SOFT::PrintInfo(prefix+prefix+this->output[i]->GetName());
+        this->output[i]->Welcome(prefix+prefix+prefix);
     }
 }

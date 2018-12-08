@@ -23,12 +23,14 @@ namespace __Radiation {
             Topview(Detector*, MagneticField2D*, ParticleGenerator*);
             ~Topview();
 
-            void Configure(ConfigBlock*, ConfigBlock*);
-            void Finish();
-            void Handle(Detector*, Model*, RadiationParticle*);
+            virtual void Configure(ConfigBlock*, ConfigBlock*) override;
+            virtual void Finish() override;
+            virtual void Handle(Detector*, Model*, RadiationParticle*) override;
+            virtual void Initialize() override;
+            virtual void Welcome(const std::string&) override;
 
             // Only called on root thread
-            void Generate();
+            virtual void Generate() override;
 
             void AllocateTopview();
             void GetTopviewPixel(RadiationParticle*, unsigned int*, unsigned int*);

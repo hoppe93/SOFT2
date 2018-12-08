@@ -43,8 +43,6 @@ void Space3D::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
     // point0
     GetPoint(conf, "point0", point0);
     GetPoint(conf, "point1", point1);
-    
-    Initialize();
 }
 
 /**

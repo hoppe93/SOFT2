@@ -53,6 +53,16 @@ void ToolHandler::Handle(Orbit *o, Particle *p) {
 }
 
 /**
+ * Initialize tool after configuration, but
+ * before starting to use the tool.
+ */
+void ToolHandler::Initialize() {
+    for (size_t i = 0; i < tools.size(); i++) {
+        tools[i]->Initialize();
+    }
+}
+
+/**
  * Calls the 'Output' method on each of the tools
  * handled by this ToolHandler object.
  */

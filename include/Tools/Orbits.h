@@ -45,6 +45,7 @@ class Orbits : public Tool {
         virtual void Configure(struct global_settings*, ConfigBlock*, ConfigBlock*) override;
         virtual void Finish() override {}
         virtual void Handle(Orbit*, Particle*) override;
+        virtual void Initialize() override;
         virtual void Output() override;
         void ToggleJacobianCalculation(bool);
         virtual void Welcome(const std::string &prefix="  ") override;

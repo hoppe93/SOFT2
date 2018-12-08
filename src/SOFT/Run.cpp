@@ -92,6 +92,8 @@ void SOFTLocal::Run(unsigned int *invalid) {
     if (this->id == 0)
         Welcome();
 
+    this->thandler->Initialize();
+
     // Main SOFT loop
     while (!this->partgen->IsFinished()) {
         if (!this->partgen->Generate(p, this->magfield, this->distribution))

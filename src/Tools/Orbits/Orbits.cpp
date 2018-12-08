@@ -122,6 +122,12 @@ void Orbits::Handle(Orbit *o, Particle *__UNUSED__(part)) {
 }
 
 /**
+ * Initialize this tool before using it (but after
+ * configuration).
+ */
+void Orbits::Initialize() { }
+
+/**
  * Enables or disables computation of the Jacobian's related
  * to the orbit.
  */

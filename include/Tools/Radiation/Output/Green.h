@@ -34,7 +34,8 @@ namespace __Radiation {
                 hasI=false, hasJ=false, hasW=false,
                 weighWithDistribution = false,
                 withJacobian = true,
-                containsAllMomentumSpaceParameters = false;
+                containsAllMomentumSpaceParameters = false,
+                pixelsset = false;      // True of the number of pixels has been set
 
             // Indices of parameters
             int
@@ -49,11 +50,13 @@ namespace __Radiation {
             virtual void Configure(ConfigBlock*, ConfigBlock*) override;
             virtual void Finish() override;
             virtual void Handle(Detector*, Model*, RadiationParticle*) override;
+            virtual void Initialize() override;
+            virtual void Welcome(const std::string&) override;
 
             // Only called on root thread
             void Generate();
 
-            void AllocateGreen(bool);
+            void PrepareAllocateGreen();
             void GetIndex(__Radiation::Detector*, __Radiation::RadiationParticle*, size_t*, size_t*);
             bool MeasuresPolarization() { return storeStokesParameters; }
 

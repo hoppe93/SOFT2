@@ -86,6 +86,7 @@ namespace __Radiation {
             virtual void Configure(struct global_settings*, ConfigBlock*, ConfigBlock*) override;
             virtual void Finish() override;
             virtual void Handle(Orbit*, Particle*) override;
+            virtual void Initialize() override;
             virtual void Output() override;
             void RegisterOutput(RadiationParticle*);
             Model *SetupRadiationModel(struct global_settings*, ConfigBlock*, ConfigBlock*);
