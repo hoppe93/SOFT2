@@ -16,8 +16,11 @@ namespace __Radiation {
             std::string output;
             int nrowpixels, ncolpixels, ntotpixels;
 
-            slibreal_t *image;
-            static slibreal_t *global_image;
+            slibreal_t *image, *imageQ, *imageU, *imageV;
+            static slibreal_t *global_image,
+                *global_imageQ, *global_imageU, *global_imageV;
+
+            bool storeStokesParameters = false;
         public:
             Image(Detector*, MagneticField2D*, ParticleGenerator*);
             ~Image();
@@ -35,7 +38,7 @@ namespace __Radiation {
             void GetImagePixel(Detector*, RadiationParticle*, int&, int&);
             static void GetImagePixel(Detector*, RadiationParticle*, int, int, int&, int&);
 
-            virtual bool MeasuresPolarization() override { return false; }
+            virtual bool MeasuresPolarization() override { return storeStokesParameters; }
     };
 
     class ImageException : public RadiationOutputException {

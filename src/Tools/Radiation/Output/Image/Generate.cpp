@@ -10,7 +10,10 @@
 
 using namespace __Radiation;
 
-slibreal_t *Image::global_image = nullptr;
+slibreal_t *Image::global_image = nullptr,
+           *Image::global_imageQ = nullptr,
+           *Image::global_imageU = nullptr,
+           *Image::global_imageV = nullptr;
 
 /**
  * Finish gathering output and merge output
@@ -22,10 +25,23 @@ void Image::Finish() {
     {
         if (global_image == nullptr) {
             global_image = this->image;
+            
+            if (this->MeasuresPolarization()) {
+                global_imageQ = this->imageQ;
+                global_imageU = this->imageU;
+                global_imageV = this->imageV;
+            }
         } else {
             for (int i = 0; i < this->ntotpixels; i++)
                 global_image[i] += this->image[i];
 
+            if (this->MeasuresPolarization()) {
+                for (int i = 0; i < this->ntotpixels; i++) {
+                    global_imageQ[i] += this->imageQ[i];
+                    global_imageU[i] += this->imageU[i];
+                    global_imageV[i] += this->imageV[i];
+                }
+            }
             delete [] this->image;
         }
     }
@@ -47,7 +63,25 @@ void Image::Generate() {
     for (int i = 0; i < this->nrowpixels; i++)
         img[i] = global_image+(i*this->ncolpixels);
 
-    sf->WriteArray("image", img, this->nrowpixels, this->ncolpixels);
+    if (!this->MeasuresPolarization())
+        sf->WriteArray("image", img, this->nrowpixels, this->ncolpixels);
+    else {
+        slibreal_t **imgQ = new slibreal_t*[this->nrowpixels];
+        slibreal_t **imgU = new slibreal_t*[this->nrowpixels];
+        slibreal_t **imgV = new slibreal_t*[this->nrowpixels];
+
+        for (int i = 0; i < this->nrowpixels; i++) {
+            imgQ[i] = global_imageQ+(i*this->ncolpixels);
+            imgU[i] = global_imageU+(i*this->ncolpixels);
+            imgV[i] = global_imageV+(i*this->ncolpixels);
+        }
+
+        sf->WriteArray("StokesI", img, this->nrowpixels, this->ncolpixels);
+        sf->WriteArray("StokesQ", imgQ, this->nrowpixels, this->ncolpixels);
+        sf->WriteArray("StokesU", imgU, this->nrowpixels, this->ncolpixels);
+        sf->WriteArray("StokesV", imgV, this->nrowpixels, this->ncolpixels);
+    }
+
     sf->WriteList("detectorPosition", detpos, 3);
     sf->WriteList("detectorDirection", detdir, 3);
     sf->WriteList("detectorVisang", &detvisang, 1);

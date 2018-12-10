@@ -55,5 +55,11 @@ void Image::Handle(Detector *det, Model *model, RadiationParticle *rp) {
     f = rp->GetF();
 
     this->image[i*this->ncolpixels + j] += model->GetPower() * diffel * f;
+
+    if (this->MeasuresPolarization()) {
+        this->imageQ[i*this->ncolpixels + j] += model->GetPowerQ() * diffel * f;
+        this->imageU[i*this->ncolpixels + j] += model->GetPowerU() * diffel * f;
+        this->imageV[i*this->ncolpixels + j] += model->GetPowerV() * diffel * f;
+    }
 }
 

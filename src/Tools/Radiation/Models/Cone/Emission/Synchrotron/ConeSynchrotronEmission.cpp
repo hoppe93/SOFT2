@@ -100,9 +100,7 @@ void ConeSynchrotronEmission::__CalculateSpectrum(RadiationParticle *rp) {
         lc = 4.0*M_PI*m*c*gammapar / (3*gamma2*e*B), ikf;
 
     if (calculatePolarization) {
-        Vector<3> &e1 = detector->GetEHat1(),
-                  &e2 = detector->GetEHat2(),
-                  &nhat = detector->GetDirection(),
+        Vector<3> &e2 = detector->GetEHat2(),
                   rcp = rp->GetRCP(),
                   &phat = rp->GetPHat();
 
@@ -111,20 +109,14 @@ void ConeSynchrotronEmission::__CalculateSpectrum(RadiationParticle *rp) {
         slibreal_t
             nb = rcp.Dot(phat),
             nb2 = nb*nb,
-            divfac = 1.0 / sqrt(1.0-nb2),
-            nDotNhat = rcp.Dot(nhat);
+            divfac = 1.0 / sqrt(1.0-nb2);
 
         cosb =-divfac * (
-            e1[0] * (phat[1]*rcp[2] - phat[2]*rcp[1]) +
-            e1[1] * (phat[2]*rcp[0] - phat[0]*rcp[2]) +
-            e1[2] * (phat[0]*rcp[1] - phat[1]*rcp[0])
-        ) / sqrt(1-nDotNhat*nDotNhat);
-
-        sinb = divfac * (
             e2[0] * (phat[1]*rcp[2] - phat[2]*rcp[1]) +
             e2[1] * (phat[2]*rcp[0] - phat[0]*rcp[2]) +
             e2[2] * (phat[0]*rcp[1] - phat[1]*rcp[0])
-        ) / sqrt(1-nDotNhat*nDotNhat);
+        );
+        sinb = sqrt(1.0 - cosb*cosb);
 
         betaparpar = ppar2 / sqrt(gamma2*gamma2 - gamma2);
         prefactorpol = 

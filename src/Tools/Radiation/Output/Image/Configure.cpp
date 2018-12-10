@@ -20,6 +20,18 @@ void Image::AllocateImage() {
     // Initialize
     for (int i = 0; i < this->ntotpixels; i++)
         this->image[i] = 0.0;
+
+    if (this->MeasuresPolarization()) {
+        this->imageQ = new slibreal_t[this->ntotpixels];
+        this->imageU = new slibreal_t[this->ntotpixels];
+        this->imageV = new slibreal_t[this->ntotpixels];
+
+        for (int i = 0; i < this->ntotpixels; i++) {
+            this->imageQ[i] = 0.0;
+            this->imageU[i] = 0.0;
+            this->imageV[i] = 0.0;
+        }
+    }
 }
 
 /**
@@ -53,6 +65,17 @@ void Image::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
         } else
             throw ImageException("Invalid specification of 'pixels'.");
     }
+
+    // stokesparams
+    if (conf->HasSetting("stokesparams")) {
+        s = conf->GetSetting("stokesparams");
+
+        if (!s->IsBool())
+            throw ImageException("Invalid value assigned to parameter 'stokesparams'. Expected 'yes' or 'no'.");
+
+        this->storeStokesParameters = s->GetBool();
+    } else
+        this->storeStokesParameters = false;
 }
 
 /**
