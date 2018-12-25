@@ -19,9 +19,9 @@ namespace __Radiation {
             virtual void InitializeToroidalStep(const slibreal_t, const slibreal_t) = 0;
             virtual void Prepare(RadiationParticle*, bool) = 0;
 
-            virtual slibreal_t CalculateAngularDistribution(Vector<3>&, slibreal_t, slibreal_t) = 0;
-            virtual slibreal_t CalculatePolarization(Vector<3>&, slibreal_t, slibreal_t) = 0;
-            virtual slibreal_t CalculateSpectrum(Vector<3>&, slibreal_t, slibreal_t) = 0;
+            virtual void CalculateAngularDistribution(Vector<3>&, slibreal_t, slibreal_t) = 0;
+            virtual void CalculatePolarization(Vector<3>&, slibreal_t, slibreal_t) = 0;
+            virtual void CalculateSpectrum(Vector<3>&, slibreal_t, slibreal_t) = 0;
 
             slibreal_t *GetSpectrum() const { return this->I; }
             slibreal_t GetTotalEmission() const { return this->power; }

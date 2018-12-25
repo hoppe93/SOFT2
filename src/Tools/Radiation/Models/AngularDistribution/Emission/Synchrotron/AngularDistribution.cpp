@@ -44,13 +44,13 @@ void ADSynchrotronEmission::PrepareAngularDistribution(RadiationParticle *rp) {
 /**
  * Calculate the plain angular distribution of synchrotron radiation.
  */
-slibreal_t ADSynchrotronEmission::CalculateAngularDistribution(
+void ADSynchrotronEmission::CalculateAngularDistribution(
     Vector<3> &n, slibreal_t sinMu, slibreal_t cosMu
 ) {
     if (!includeDrifts)
-        return CalculateAngularDistribution_ZerothOrderGC(sinMu, cosMu);
+        CalculateAngularDistribution_ZerothOrderGC(sinMu, cosMu);
     else
-        return CalculateAngularDistribution_FirstOrderGC(n, sinMu, cosMu);
+        CalculateAngularDistribution_FirstOrderGC(n, sinMu, cosMu);
 }
 
 /**

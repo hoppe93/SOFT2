@@ -34,7 +34,6 @@ slibreal_t ADSynchrotronEmission::CalculateAngularDistribution_FirstOrderGC(
     );
 
     this->power = this->prefactor * pwr * (1.0 - this->beta*this->cosThetap*cosMu);
-
     return this->power;
 }
 

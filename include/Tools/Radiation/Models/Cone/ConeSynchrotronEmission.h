@@ -6,9 +6,6 @@
 #include "Tools/Radiation/Radiation.h"
 #include "Tools/Radiation/RadiationParticle.h"
 
-slibreal_t synchrotron_func1(const slibreal_t);
-slibreal_t synchrotron_func2(const slibreal_t);
-
 namespace __Radiation {
     class ConeSynchrotronEmission : public ConeEmission {
         protected:

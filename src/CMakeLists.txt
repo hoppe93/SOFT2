@@ -91,7 +91,7 @@ set(tool_radiation
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Emission/Bremsstrahlung/ConeBremsstrahlungEmission.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Emission/Bremsstrahlung/dilog_func.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Emission/Synchrotron/ConeSynchrotronEmission.cpp"
-    "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Emission/Synchrotron/synchrotron_func.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/synchrotron_func.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Emission/Unit/ConeUnitEmission.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Projection/Original.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Projection/Reverse.cpp"
