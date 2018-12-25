@@ -7,7 +7,8 @@ magnetic_field = MF_UnitQ;
 particle_generator = PGen;
 particle_pusher = PPusher;
 tools = rad;
-num_threads = 20;
+#include_drifts = no;
+include_drifts = yes;
 
 @MagneticField MF_UnitQ {
     type = analytical;
@@ -20,7 +21,7 @@ num_threads = 20;
 }
 
 @ParticleGenerator PGen {
-    a = 0,0.95,100;
+    a = 0,0.95,400;
     p=60,60,1;
     thetap=0.2,0.2,1;
 }
@@ -29,12 +30,13 @@ num_threads = 20;
     equation = guiding-center;
     timeunit = poloidal;
     time = 1;
-    nt = 1000;
+    nt = 5000;
+    force_numerical_jacobian = yes;
 }
 
-@Equation guiding-center {
+@EquationGuidingCenter guiding-center {
     method = rkdp45;
-    tolerance = 1e-5;
+    tolerance = 1e-8;
 }
 
 # Tool stuff
@@ -55,11 +57,11 @@ num_threads = 20;
 }
 @RadiationModel cone {
     emission = synchrotron;
-    projection = original;
+    projection = reverse;
 }
 @RadiationOutput image {
     output = cone.mat;
-    pixels = 1000;
+    pixels = 600;
 }
 @RadiationOutput topview {
     output = topview.mat;

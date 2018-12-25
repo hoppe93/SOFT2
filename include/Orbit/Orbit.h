@@ -36,8 +36,6 @@ class Orbit {
 			*ppar,		/* Parallel momentum of particle */
 			*pperp,		/* Perpendicular momentum of particle */
 			*Jdtdrho,	/* Trajectory coordinate Jacobian (times dtau * drho) */
-            *Jp,        /* Momentum-space jacobian (from transformation between
-                           instantaneous to orbit-label coordinates). */
             *_solution, /* Temporary storage of integrator solution */
             *_solution2;/* Temporary storage of secondary integrator solution */
 
@@ -77,8 +75,6 @@ class Orbit {
         slibreal_t GetPperp(unsigned int ti) const { return this->pperp[ti]; }
         slibreal_t *GetJdtdrho() const { return this->Jdtdrho; }
         slibreal_t GetJdtdrho(unsigned int ti) const { return this->Jdtdrho[ti]; }
-        slibreal_t *GetJp() const { return this->Jp; }
-        slibreal_t GetJp(unsigned int ti) const { return this->Jp[ti]; }
 
         orbit_class_t GetClassification() const { return this->orbitClass; }
         void SetClassification(const orbit_class_t v) { this->orbitClass = v; }

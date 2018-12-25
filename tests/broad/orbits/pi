@@ -30,7 +30,7 @@ tools = orbits;
     nt = 100;
 }
 
-@Equation particle {
+@EquationParticle particle {
     method = rkdp45;
     tolerance = 1e-5;
 }
