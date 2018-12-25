@@ -103,7 +103,7 @@ void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution
                 T1 + T2 - T3
             ) * dtau * this->particle->GetDRho());
 
-            printf("T2/T1 = %e, T3/T1 = %e\n", T2/T1, T3/T1);
+            //printf("T2/T1 = %e, T3/T1 = %e\n", T2/T1, T3/T1);
         } else {
             J = u0 / (B0*g0) * fabs((dpsi_dR*xi0) * dtau * this->particle->GetDRho());
         }
