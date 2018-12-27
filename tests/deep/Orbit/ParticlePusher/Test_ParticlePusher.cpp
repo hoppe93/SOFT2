@@ -88,7 +88,8 @@ ParticlePusher *Test_ParticlePusher::GenerateOrbit_push(const slibreal_t r, cons
 
     Configuration *conf1 = new Configuration();
     Configuration *conf2 = new Configuration();
-    CONFBLOCK_EQUATION = conf2->RegisterBlockType("@Equation");
+    CONFBLOCK_EQUATION_GC = conf2->RegisterBlockType("@EquationGuidingCenter");
+    CONFBLOCK_EQUATION_PARTICLE = conf2->RegisterBlockType("@EquationParticle");
 
     ConfigBlock cb = conf1->FromString(config, "config");
     ConfigBlock eq = conf2->FromString(eqconfig, "eqndefaults");

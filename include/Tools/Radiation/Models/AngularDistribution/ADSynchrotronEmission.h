@@ -41,7 +41,7 @@ namespace __Radiation {
             // Internal cache variables
             slibreal_t 
                 B, beta, gamma, gamma3, igamma, igamma2, sinThetap, cosThetap,
-                p, pperp, prefactor, lambdac;
+                p, pperp, prefactor, lambdac, betapar;
             struct angdist_params angdistParams;
 
             static void _Rotate(Vector<3>&, const slibreal_t, const slibreal_t);

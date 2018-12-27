@@ -20,15 +20,19 @@ void ADSynchrotronEmission::PrepareSpectrum(RadiationParticle *rp) {
 
     slibreal_t
         m = rp->GetMass(),
-        q = rp->GetCharge(),
+        q = fabs(rp->GetCharge()),
         B = rp->GetB(),
         p2 = rp->GetP2(),
+        p = sqrt(p2),
         beta2 = p2 / (1.0 + p2),
         betapar2 = rp->GetPpar()*rp->GetPpar() / (1.0 + p2),
         gammapar = 1.0 / sqrt(1.0 - betapar2);
 
     this->prefactor = q*q*q*beta2*B / (16.0*M_PI*EPS0*gamma*m);
     this->beta = sqrt(beta2);
+    this->cosThetap = rp->GetPpar() / p;
+    this->sinThetap = rp->GetPperp() / p;
+    this->betapar = beta*cosThetap;
 
     this->lambdac = 4.0*M_PI*LIGHTSPEED*gammapar*igamma2*m / (3.0*q*B);
 }
@@ -69,11 +73,19 @@ void ADSynchrotronEmission::__CalculateSpectrum(
         mcospsi = 1.0-beta*cosPsi,
         xifac = gamma3*lambdac*sqrt(mcospsi*mcospsi*mcospsi/(0.5*beta*cosPsi));
 
+    if (cosPsi < 0) {
+        for (i = 0; i < nwavelengths; i++)
+            I[i] = 0.0;
+        return;
+    }
+
     for (i = 0; i < nwavelengths; i++) {
-        slibreal_t l = wavelengths[i];
-        slibreal_t pfac = this->prefactor/(l*l * beta*cosPsi*(1.0 - beta*cosPsi));
-        slibreal_t fac13 = (0.5*beta*cosPsi*sinPsi2)/(1.0 - beta*cosPsi);
-        slibreal_t xi = xifac / l;
+        slibreal_t
+            l = wavelengths[i],
+            pfac = this->prefactor/(l*l * beta*cosPsi*(1.0 - beta*cosPsi)) * (1 - betapar*cosMu),
+            //pfac = 1.0/(l*l * beta*cosPsi*(1.0 - beta*cosPsi)) * (1 - betapar*cosMu),
+            fac13 = (0.5*beta*cosPsi*sinPsi2)/(1.0 - beta*cosPsi),
+            xi = xifac / l;
 
         slibreal_t
             xK13 = synchrotron_func3(xi),

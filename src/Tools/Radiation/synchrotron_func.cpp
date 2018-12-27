@@ -43,6 +43,9 @@ slibreal_t synchrotron_func2(const slibreal_t x) {
  * (Based on implementation in GSL)
  */
 slibreal_t synchrotron_func3(const slibreal_t x) {
-    return (slibreal_t)(x*gsl_sf_bessel_Knu(1.0/3.0, x));
+    if (x >= GSL_LOG_DBL_MIN)
+        return 0.0;
+    else
+        return (slibreal_t)(x*gsl_sf_bessel_Knu(1.0/3.0, x));
 }
 
