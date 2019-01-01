@@ -188,6 +188,12 @@ void ParticlePusher::InitGeneralIntegrator(ConfigBlock& conf, IntegratorEquation
 			throw ParticlePusherException("Assigned tolerance value is not a scalar.");
 
         integrator_tol = s->GetScalar();
+        
+        if (integrator_tol >= 1.0)
+            throw ParticlePusherException("Assigned relative tolerance is greater than one.");
+        else if (integrator_tol <= REAL_EPSILON)
+            throw ParticlePusherException("Assigned relative tolerance is smaller than the machine epsilon (%e).", REAL_EPSILON);
+
 		RKDP45<6> *rkdp45_1 = new RKDP45<6>(integrator_tol),
                   *rkdp45_2 = new RKDP45<6>(integrator_tol);
 		rkdp45_1->SetEquation(eq);
