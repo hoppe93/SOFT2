@@ -31,7 +31,7 @@ void Image::GetImagePixel(Detector *det, RadiationParticle *rp, int nrowpixels, 
     ii = ltilde.Dot(det->GetEHat1());
     jj = ltilde.Dot(det->GetEHat2());
 
-    lfov = sqrt(2.0) * nDotRcp * det->GetTanVisionAngleImage();
+    lfov = sqrt(2.0) * nDotRcp * det->GetTanVisionAngleFOV();
     i = lround(nrowpixels*(ii+0.5*lfov) / lfov);
     j = lround(ncolpixels*(jj+0.5*lfov) / lfov);
 }
