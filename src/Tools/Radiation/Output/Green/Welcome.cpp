@@ -13,6 +13,41 @@
 using namespace __Radiation;
 using namespace std;
 
+string Green::TranslateFormat(const string& fmt) {
+    string s = "";
+
+    auto capitalize = [](const string& ts) {
+        string s(ts);
+        for (auto& x : s)
+            x = toupper(x);
+
+        return s;
+    };
+
+    for (string::const_iterator it = fmt.begin(); it != fmt.end(); ++it) {
+        if (it != fmt.begin())
+            s += " x ";
+
+        switch (*it) {
+            case '1':
+                s += capitalize(Particle::GetCoordinateName(this->p1type));
+                break;
+            case '2':
+                s += capitalize(Particle::GetCoordinateName(this->p2type));
+                break;
+            case 'i': s += "PIXEL-I"; break;
+            case 'j': s += "PIXEL-J"; break;
+            case 'r': s += "RADIUS"; break;
+            case 'w': s += "WAVELENGTH"; break;
+            default:
+                s += "<UNKN>";
+                break;
+        }
+    }
+    
+    return s;
+}
+
 /**
  * Print info/welcome message.
  */
@@ -28,7 +63,8 @@ void Green::Welcome(const string &prefix) {
         unit++;
     }
 
-    SOFT::PrintInfo(prefix+"Function format:     %s", format.c_str());
+    string fmt = TranslateFormat(format);
+    SOFT::PrintInfo(prefix+"Function format:     %s", fmt.c_str());
     SOFT::PrintInfo(prefix+"Function size:       %.1f %s (%zu bytes)",
         gfsize, gfsize_prefix[unit], this->fsize
     );
