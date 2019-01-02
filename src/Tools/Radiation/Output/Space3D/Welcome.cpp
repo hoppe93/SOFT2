@@ -17,7 +17,8 @@ using namespace std;
  * Print info/welcome message.
  */
 void Space3D::Welcome(const string &prefix) {
-    slibreal_t isize = this->imagesize;
+    size_t totalsize = this->imagesize * sizeof(slibreal_t);
+    slibreal_t isize = totalsize;
     int unit = 0;
     char isize_prefix[8][4] = {
         "B", "kiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB"
@@ -29,7 +30,7 @@ void Space3D::Welcome(const string &prefix) {
     }
 
     SOFT::PrintInfo(prefix+"S3D size:            %.1f %s (%zu bytes)",
-        isize, isize_prefix[unit], this->imagesize
+        isize, isize_prefix[unit], totalsize
     );
 }
 

@@ -24,8 +24,9 @@ void Space3D::Finish() { }
 void Space3D::Generate() {
     SFile *sf = SFile::Create(this->output, SFILE_MODE_WRITE);
 
-    slibreal_t pixls[3] = {(slibreal_t)pixelsX, (slibreal_t)pixelsY, (slibreal_t)pixelsZ};
-    sf->WriteList("pixels", pixls, 3);
+    //slibreal_t pixls[3] = {(slibreal_t)pixelsX, (slibreal_t)pixelsY, (slibreal_t)pixelsZ};
+    //sf->WriteList("pixels", pixls, 3);
+    sf->WriteScalar("pixels", pixelsX);
     sf->WriteList("image", this->s3dimage, this->imagesize);
 
     sf->WriteList("xmin", &(this->point0[0]), 1);

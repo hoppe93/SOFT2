@@ -108,8 +108,8 @@ void Particle::InitializeMomentum(const int t1, const int t2, const slibreal_t p
 			throw ParticleException("Unrecognized type of first momentum coordinate: "+t1);
 	}
 
-    this->dparam1 *= dp1;
-    this->dparam2 *= dp2;
+    this->dparam1 *= fabs(dp1);
+    this->dparam2 *= fabs(dp2);
 
 	this->momentum_initialized = true;
 }
@@ -543,6 +543,6 @@ void Particle::Init_PPerpXi(const slibreal_t pperp, const slibreal_t xi, slibrea
 	this->gamma = sqrt(this->pmag*this->pmag + 1.0);
 
 	*dpperp = pperp*pperp;
-	*dxi    = 1.0 / (sinThetap2 * sinThetap);
+	*dxi    = 1.0 / fabs(sinThetap2 * sinThetap);
 }
 

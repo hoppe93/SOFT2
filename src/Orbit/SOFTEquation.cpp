@@ -60,6 +60,7 @@ void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution
     slibreal_t
         *p = o->GetP(),
         *Babs = o->GetBabs(),
+        *Beffpar = o->GetBeffpar(),
         *ppar = o->GetPpar(),
         *gamma = o->GetGamma(),
         *Jdtdrho = o->GetJdtdrho(),
@@ -92,7 +93,8 @@ void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution
                 Jdtdrho[i] *= this->particle->GetDRho();
         }
 
-        Jp[i] = Babs[i] / Babs[0] * fabs(ppar[0] / ppar[i]);
+        //Jp[i] = Babs[i] / Babs[0] * fabs(ppar[0] / ppar[i]);
+        Jp[i] = Beffpar[i] / Babs[0] * fabs(ppar[0] / ppar[i]);
     }
 }
 
