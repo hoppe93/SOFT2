@@ -175,6 +175,44 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
             throw ParticleGeneratorException("Invalid value assigned to 'driftshifttol'.");
     }
 
+    if (conf->HasSetting("progress")) {
+        size_t nprint_progress = 10;
+        ProgressTracker::ProgressType ptype = ProgressTracker::PROGRESS_LINES;
+        const bool ESTIMATE_PROGRESS = true;
+
+        s = conf->GetSetting("progress");
+
+        if (s->IsBool(0))
+            print_progress = s->GetBool(0);
+        else if (s->IsUnsignedInteger32(0)) {
+            print_progress = true;
+            nprint_progress = s->GetUnsignedInteger32(0);
+
+            if (nprint_progress == 0)
+                throw ParticleGeneratorException("Invalid value assigned to 'progress'. Must be greater than zero.");
+        } else
+            throw ParticleGeneratorException("Invalid value assigned to 'progress'.");
+
+        if (s->GetNumberOfValues() == 2) {
+            if (s->GetString(1) == "lines")
+                ptype = ProgressTracker::PROGRESS_LINES;
+            else
+                throw ParticleGeneratorException("Unrecognized progress type assigned to 'progress': '%s'.", s->GetString(1).c_str());
+        } else if (s->GetNumberOfValues() > 2)
+            throw ParticleGeneratorException("Too many values assigned to 'progress'. Expected one (1) or two (2) values.");
+
+        if (print_progress) {
+            size_t total = ((size_t)nr) * ((size_t)n1) * ((size_t)n2);
+
+#ifdef COLOR_TERMINAL
+            progress = new ProgressTracker(total, nprint_progress, ptype, true, ESTIMATE_PROGRESS);
+#else
+            progress = new ProgressTracker(total, nprint_progress, ptype, false, ESTIMATE_PROGRESS);
+#endif
+        }
+    } else
+        print_progress = false;
+
     // Generate table of effective magnetic axis location
     // (if drifts are enabled)
     if (this->include_drifts)
@@ -441,6 +479,11 @@ bool ParticleGenerator::Generate(Particle *part, MagneticField2D *mf, Distributi
 	}
 
 	if (success) {
+        if (print_progress) {
+            size_t indx = ((size_t)lir) + ((size_t)nr)*(((size_t)li1) + ((size_t)n1)*((size_t)li2));
+            progress->PrintProgress(indx);
+        }
+
         if (!include_drifts || r >= this->rhoeff[li1][li2])
             this->InitializeParticle(part, f, mf, r, p1, p2, lir, li1, li2);
         else
