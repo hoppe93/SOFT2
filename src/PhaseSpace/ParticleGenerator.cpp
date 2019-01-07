@@ -442,7 +442,7 @@ void ParticleGenerator::InitializeParticle(
 bool ParticleGenerator::Generate(Particle *part, MagneticField2D *mf, DistributionFunction *f) {
 	slibreal_t r, p1, p2;
 	bool success = true;
-    unsigned int lir, li1, li2;
+    unsigned int lir=ir, li1=i1, li2=i2;
 
 	#pragma omp critical (ParticleGenerator_Generate)
 	{
@@ -478,12 +478,12 @@ bool ParticleGenerator::Generate(Particle *part, MagneticField2D *mf, Distributi
 		}
 	}
 
-	if (success) {
-        if (print_progress) {
-            size_t indx = ((size_t)lir) + ((size_t)nr)*(((size_t)li1) + ((size_t)n1)*((size_t)li2));
-            progress->PrintProgress(indx);
-        }
+    if (print_progress) {
+        size_t indx = ((size_t)lir) + ((size_t)nr)*(((size_t)li1) + ((size_t)n1)*((size_t)li2));
+        progress->PrintProgress(indx+1);
+    }
 
+	if (success) {
         if (!include_drifts || r >= this->rhoeff[li1][li2])
             this->InitializeParticle(part, f, mf, r, p1, p2, lir, li1, li2);
         else
