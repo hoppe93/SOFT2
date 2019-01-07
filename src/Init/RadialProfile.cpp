@@ -28,16 +28,16 @@ RadialProfile *InitRadialProfile(MagneticField2D *magfield, Setting *rpset, Conf
         throw SOFTException("Distribution function '%s': radprof: Invalid value assigned to parameter. Expected string.", dfname.c_str());
 
     string name = rpset->GetString();
-    if (!root->HasSubBlock(CONFBLOCK_DISTRIBUTION, name)) {
+    if (!root->HasSubBlock(CONFBLOCK_RADIALPROFILE, name)) {
         if (name == "uniform")
             return new UniformRadialProfile();
         else if (name == "linear")
             return InitLinearRadialProfile(magfield);
         else
-            throw SOFTException("Distribution function '%s': No radial profile named '%s' defined in the configuration.", dfname.c_str());
+            throw SOFTException("Distribution function '%s': No radial profile named '%s' defined in the configuration.", dfname.c_str(), name.c_str());
     }
 
-    ConfigBlock *conf = root->GetConfigBlock(CONFBLOCK_DISTRIBUTION, name);
+    ConfigBlock *conf = root->GetConfigBlock(CONFBLOCK_RADIALPROFILE, name);
 
     if (!conf->HasSetting("type"))
         throw SOFTException("Radial profile '%s': Type of radial profile not specified.");
@@ -140,7 +140,7 @@ void InitRadialProfile_get_radial_limits(
         *r1 = rmax;
 
     if (*r0 >= rmax)
-        throw SOFTException("Radial profile '%s': Inner radius is larger than outer radius.");
+        throw SOFTException("Radial profile '%s': Inner radius is larger than outer radius.", conf->GetName().c_str());
 }
 
 /**
@@ -162,7 +162,7 @@ slibreal_t InitRadialProfile_get_radial_limits_inner(
         );
 
     tmp = set->GetScalar();
-    if (tmp < uplim || tmp > lowlim)
+    if (tmp > uplim || tmp < lowlim)
         throw SOFTException(
             "Radial profile '%s': %s: Invalid value assigned to parameter. Must be on interval [%f, %f].",
             rpname.c_str(), set->GetName().c_str(), lowlim, uplim
