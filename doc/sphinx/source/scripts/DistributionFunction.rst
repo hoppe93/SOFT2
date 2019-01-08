@@ -91,7 +91,7 @@ avalanche
    :Default value: Uniform radial profile
    :Allowed values: Name of any defined :ref:`module-radialprofile`
 
-   Specifies the radial profile object to use for to generate a radial profile.
+   Specifies the radial profile object to use to generate a radial profile.
 
 .. option:: Zeff
 
@@ -128,7 +128,7 @@ code
    :Default value: Uniform radial profile
    :Allowed values: Name of any defined :ref:`module-radialprofile`
 
-   Specifies the radial profile object to use for to generate a radial profile.
+   Specifies the radial profile object to use to generate a radial profile.
 
 .. option:: time
 

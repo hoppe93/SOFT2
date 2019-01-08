@@ -33,17 +33,17 @@ The radial profile of the safety factor can take four different forms in SOFT:
 
 .. math::
 
-   q_{\rm const}(a) &= q_{a1},
+   q_{\rm const}(r) &= q_{a1},
 
-   q_{\rm lin}(a)   &= q_{a1} a + q_{a2},
+   q_{\rm lin}(r)   &= q_{a1} r/r_0 + q_{a2},
 
-   q_{\rm quad}(a)  &= q_{a1} a^2 + q_{a2},
+   q_{\rm quad}(r)  &= q_{a1} (r/r_0)^2 + q_{a2},
 
-   q_{\rm exp}(a)   &= e^{q_{a1} a} + q_{a2},
+   q_{\rm exp}(r)   &= e^{q_{a1} r/r_0} + q_{a2},
 
-where :math:`a` is the minor radius, normalized to the minor radius at the
-last closed flux surface, and :math:`q_{a1}` and :math:`q_{a2}` are constants
-set by the user.
+where :math:`r_0` is the tokamak minor radius, :math:`r` is the minor radius
+coordinate, ranging between 0 and :math:`r_0`, and :math:`q_{a1}` and
+:math:`q_{a2}` are constants set by the user.
 
 *More information about how to configure an analytical magnetic field can
 be found at* :ref:`module-magneticfield`.
@@ -83,6 +83,8 @@ look for in a magnetic field file.
 | :option:`mf maxis`      | **Yes**        | 2-vector         | Location of magnetic axis          |
 +-------------------------+----------------+------------------+------------------------------------+
 | :option:`mf name`       | **Yes**        | String           | (Meta) Name of magnetic field data |
++-------------------------+----------------+------------------+------------------------------------+
+| :option:`mf Psi`        | *No*           | nz-by-nr matrix  | Poloidal magnetic flux             |
 +-------------------------+----------------+------------------+------------------------------------+
 | :option:`mf r`          | **Yes**        | nr-vector        | Radial grid                        |
 +-------------------------+----------------+------------------+------------------------------------+
@@ -145,6 +147,21 @@ Parameter details
    :Mandatory: **Yes**
 
    Radial and vertical coordinates of the magnetic axis: :math:`(R_{\rm axis}, Z_{\rm axis})`.
+
+.. option:: Psi
+
+   :Shape: nz-by-nr
+   :Mandatory: *No*
+
+   The poloidal magnetic flux, :math:`\Psi`, given on the same :math:`R`-:math:`Z`
+   grid as the magnetic field components. If the magnetic flux is provided,
+   SOFT can evaluate the Jacobian for the guiding-center transformation using an
+   analytical expression instead of numerically (which is forced otherwise).
+
+   *Numerical evaluation of the Jacobian is associated with instabilities in
+   certain parts of phase space and its accuracy can at most be computed to a
+   relative error equal to the square root of the tolerance used for solving
+   the guiding-center orbit.*
 
 .. option:: r
 
