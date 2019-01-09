@@ -196,6 +196,9 @@ void Radiation::Configure(
             throw RadiationException("Invalid value assigned to 'torthreshold'. Expected real value.");
 
         this->torthreshold = s->GetScalar();
+
+        if (this->torthreshold < 0 || this->torthreshold > 1)
+            throw RadiationException("Invalid value assigned to 'torthreshold'. Must be between 0 and 1.");
     }
 
     // torquad
