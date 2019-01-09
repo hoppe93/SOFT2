@@ -98,7 +98,7 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
 		if (coordvals[i].size() != 3)
 			throw ParticleGeneratorException(
 				"Coordinate %s: Expected exactly arguments to the coordinate. Syntax: %s=[start],[end],[number of points].",
-				pg_coordinate_names[coordinates[i]], pg_coordinate_names[coordinates[i]]
+				pg_coordinate_names[coordinates[i]].c_str(), pg_coordinate_names[coordinates[i]].c_str()
 			);
 	}
 
