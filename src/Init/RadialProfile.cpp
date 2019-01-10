@@ -21,7 +21,6 @@ using namespace std;
  * momentum space distribution function.
  */
 RadialProfile *InitRadialProfile(MagneticField2D *magfield, Setting *rpset, ConfigBlock *root, const string &dfname) {
-    Setting *set;
     string type;
 
     if (rpset->GetNumberOfValues() != 1)
@@ -42,11 +41,7 @@ RadialProfile *InitRadialProfile(MagneticField2D *magfield, Setting *rpset, Conf
     if (!conf->HasSetting("type"))
         throw SOFTException("Radial profile '%s': Type of radial profile not specified.");
 
-    set = conf->GetSetting("type");
-    if (set->GetNumberOfValues() != 1)
-        throw SOFTException("Radial profile '%s': type: Invalid value assigned to parameter. Expected string.", conf->GetName().c_str());
-
-    type = set->GetString();
+    type = conf->GetSecondaryType();
     if (type == "linear")
         return InitLinearRadialProfile(magfield, conf);
     else if (type == "power")

@@ -7,8 +7,7 @@
 #include "Init/InitConfig.h"
 #include "Init/Tools.h"
 
-int CONFBLOCK_EQUATION_GC,
-    CONFBLOCK_EQUATION_PARTICLE,
+int CONFBLOCK_EQUATION,
     CONFBLOCK_MAGNETICFIELD,
     CONFBLOCK_PARTICLEGENERATOR,
     CONFBLOCK_PARTICLEPUSHER,
@@ -26,8 +25,7 @@ int CONFBLOCK_EQUATION_GC,
  *       configuration file yet.
  */
 void InitConfig(Configuration *conf) {
-    CONFBLOCK_EQUATION_GC       = conf->RegisterBlockType("@EquationGuidingCenter");
-    CONFBLOCK_EQUATION_PARTICLE = conf->RegisterBlockType("@EquationParticle");
+    CONFBLOCK_EQUATION          = conf->RegisterBlockType("@Equation");
     CONFBLOCK_MAGNETICFIELD     = conf->RegisterBlockType("@MagneticField");
     CONFBLOCK_PARTICLEGENERATOR = conf->RegisterBlockType("@ParticleGenerator");
     CONFBLOCK_PARTICLEPUSHER    = conf->RegisterBlockType("@ParticlePusher");
