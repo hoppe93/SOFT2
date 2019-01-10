@@ -9,7 +9,7 @@ as its position, viewing direction, field-of-view, spectral range and more.
 When specifying detector position, the following illustration of the coordinate
 system assumed in SOFT can be useful:
 
-.. image:: ../figs/detector_coordinates.svg
+.. image:: ../_static/figs/detector_coordinates.svg
    :width: 70%
    :align: center
 
