@@ -40,11 +40,11 @@ const string ParticlePusher_config =
 "nudgevalue=__default__;\n";
 
 const string ParticlePusher::equation_defaults =
-"@EquationGuidingCenter guiding-center {\n"
+"@Equation guiding-center (guiding-center) {\n"
 "   method=rkdp45;\n"
 "   tolerance=1e-9;\n"
 "}\n"
-"@EquationParticle particle {\n"
+"@Equation particle (particle) {\n"
 "   method=rkdp45;\n"
 "   tolerance=1e-7;\n"
 "}\n"
@@ -154,16 +154,19 @@ void ParticlePusher::InitDefaults() {
 void ParticlePusher::InitEquation(const string& equation, ConfigBlock& eqnconf) {
 	ConfigBlock *conf;
 
-    if (eqnconf.HasSubBlock(CONFBLOCK_EQUATION_GC, equation)) {
-		conf = eqnconf.GetConfigBlock(CONFBLOCK_EQUATION_GC, equation);
+    if (eqnconf.HasSubBlock(CONFBLOCK_EQUATION, equation))
+		conf = eqnconf.GetConfigBlock(CONFBLOCK_EQUATION, equation);
+    else
+		throw ParticlePusherException("No equation named '"+equation+"' specified in configuration.");
 
+    if (conf->GetSecondaryType() == "guiding-center") {
 		GuidingCenterEquation *eq = new GuidingCenterEquation(this->magfield, this->globset);
         this->equation = eq;
 
 		// Choose integrator
 		this->InitGeneralIntegrator(*conf, eq);
-    } else if (eqnconf.HasSubBlock(CONFBLOCK_EQUATION_PARTICLE, equation)) {
-		conf = eqnconf.GetConfigBlock(CONFBLOCK_EQUATION_PARTICLE, equation);
+    } else if (conf->GetSecondaryType() == "particle") {
+		conf = eqnconf.GetConfigBlock(CONFBLOCK_EQUATION, equation);
 		
 		ParticleEquation *eq = new ParticleEquation(this->magfield, this->globset);
         this->equation = eq;
@@ -171,7 +174,7 @@ void ParticlePusher::InitEquation(const string& equation, ConfigBlock& eqnconf) 
 		// Choose integrator
 		this->InitGeneralIntegrator(*conf, eq);
     } else
-		throw ParticlePusherException("Unrecognized equation '"+equation+"'.");
+        throw ParticlePusherException("Unrecognized equation type '%s'.", conf->GetSecondaryType().c_str());
 }
 
 /**

@@ -75,7 +75,7 @@ ParticlePusher *Test_ParticlePusher::GenerateOrbit_push(const slibreal_t r, cons
     ss2 << ORBIT_TOLERANCE;
     
     string tol = ss2.str();
-    string eqconfig  = "@Equation guiding-center {\n";
+    string eqconfig  = "@Equation guiding-center (guiding-center) {\n";
     eqconfig += "    method = rkdp45;\n";
     eqconfig += "    tolerance = "+tol+";\n";
 
@@ -88,8 +88,7 @@ ParticlePusher *Test_ParticlePusher::GenerateOrbit_push(const slibreal_t r, cons
 
     Configuration *conf1 = new Configuration();
     Configuration *conf2 = new Configuration();
-    CONFBLOCK_EQUATION_GC = conf2->RegisterBlockType("@EquationGuidingCenter");
-    CONFBLOCK_EQUATION_PARTICLE = conf2->RegisterBlockType("@EquationParticle");
+    CONFBLOCK_EQUATION = conf2->RegisterBlockType("@EquationGuiding");
 
     ConfigBlock cb = conf1->FromString(config, "config");
     ConfigBlock eq = conf2->FromString(eqconfig, "eqndefaults");
