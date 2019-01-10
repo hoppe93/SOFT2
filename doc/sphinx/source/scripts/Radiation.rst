@@ -73,6 +73,35 @@ Summary of options
 
 Example configuration
 ---------------------
+The ``@Radiation`` is merely the parent of a set modules which together produce
+the desired simulation output. As such, we must specify both the detector, the
+radiation model and output type. An example configuration of a ``@Radiation``
+module, along with its required sub-modules, is::
+
+   @Radiation rad {
+       detector     = det;
+       model        = cone;
+       ntoroidal    = 7500;
+       output       = image topview;
+   }
+
+   @Detector det {
+       aperture     = 0.006;
+       direction    = 0, 1, 0;
+       position     = 0, 1.7, 0;
+       vision_angle = 1.25 fov;
+       spectrum     = 440e-9, 790e-9, 40;
+   }
+
+   @RadiationModel cone (cone) {
+       emission = synchrotron;
+   }
+
+   @RadiationOutput image (image) {
+       pixels = 600;
+       output = "myimage.mat";
+   }
+
 
 Available sub-modules
 ---------------------
@@ -84,6 +113,11 @@ model must specified as well as *at least* one output module.
 
 Output sub-modules
 ^^^^^^^^^^^^^^^^^^
+
+Radiation output modules are specified with the block type
+:ref:`module-radiationoutput`. The secondary type of the block (in parentheses
+after the block name) determines which type of output the block configures.
+The available secondary types of :ref:`module-radiationoutput` are
 
 +---------------------------------+-------------------------------+
 | **Module name**                 | **Output description**        |
@@ -104,6 +138,11 @@ Output sub-modules
 
 Radiation model sub-modules
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Radiation model modules are specified with the block type
+:ref:`module-radiationmodel`. The secondary type of the block (in parentheses
+after the block name) determines which type of model the block configures.
+The available secondary types of :ref:`module-radiationmodel` are
 
 +--------------------------------------+-------------------------------------------------------+
 | **Module name**                      | **Model description**                                 |

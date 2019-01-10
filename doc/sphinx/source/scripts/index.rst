@@ -24,7 +24,7 @@ to any specific module, but are rather used by *all* modules.
 
 Module parameters are assigned using the syntax shown below::
 
-   @ModuleName blockName {
+   @ModuleName blockName (secondary-type) {
        parameterName1 = value1;
        ...
    }
@@ -43,23 +43,39 @@ the ``@Equation`` module (which defines which equations of motion to solve) is
 used by the ``@ParticlePusher`` module, and hence we could define the equation
 to solve using the following code::
 
+   particle_pusher = PPusher;
+
    @ParticlePusher PPusher {
        ...
        equation = gcEquation;
        ...
    }
-   @EquationGuidingCenter gcEquation {
+   @Equation gcEquation (guiding-center) {
        tolerance = 1e-9;
    }
-   @EquationParticle pEquation {
+   @Equation pEquation (particle) {
        tolerance = 1e-9;
    }
 
 Here we define two separate equations but we only use one. This is due to that
 we assign the configuration block ``gcEquation`` to the ``equation`` parameter
-in the ``PPusher`` configuration block. The ``@ParticlePusher`` is an example of
-a module that provides core functionality in SOFT and is therefore selected
-using a global parameter.
+in the ``PPusher`` configuration block. Note also the parentheses after the
+block names in the configuration blocks of the equations. The parentheses
+surround the "secondary type" of the block, which determines exactly which
+parameters can be set. In the example above, the secondary types determine
+whether SOFT follows particles or guiding-centers. The secondary type can also
+be omitted, but then the name of the configuration block must be that of the
+secondary type, i.e. in the example above we could define ``gcEquation`` as::
+
+   @Equation guiding-center {
+       tolerance = 1e-9;
+   }
+
+of course making sure to change the setting ``equation`` in ``PPusher``.
+
+Note also that the ``@ParticlePusher`` is an example of a module that provides
+core functionality in SOFT. It is therefore selected using the global parameter
+``particle_pusher``, as indicated above.
 
 Comments
 ********
@@ -158,8 +174,7 @@ Configurable modules
 
    Detector
    DistributionFunction
-   EquationGuidingCenter
-   EquationParticle
+   Equation
    MagneticField
    Orbits
    ParticleGenerator
@@ -174,9 +189,7 @@ Configurable modules
 +---------------------------------+-----------------------------------------------------+
 | :ref:`module-distribution`      | Distribution functions                              |
 +---------------------------------+-----------------------------------------------------+
-| :ref:`module-equation-gc`       | Guiding-center equations of motion                  |
-+---------------------------------+-----------------------------------------------------+
-| :ref:`module-equation-particle` | Particle equations of motion                        |
+| :ref:`module-equation`          | Equations of motion to solve                        |
 +---------------------------------+-----------------------------------------------------+
 | :ref:`module-magneticfield`     | Magnetic field module                               |
 +---------------------------------+-----------------------------------------------------+
