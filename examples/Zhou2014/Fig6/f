@@ -1,0 +1,10 @@
+
+<Fig6base>
+
+# Override settings from the baseline scenario
+@MagneticField EAST { qa1 = 4; }
+
+# Specify output file names
+@RadiationOutput image   { output = "data/f-image.mat"; }
+@RadiationOutput topview { output = "data/f-topview.mat"; }
+

@@ -1,0 +1,15 @@
+
+<../baseline>
+
+@MagneticField EAST {
+    qtype = quadratic;
+    qa1   = 3;
+    qa2   = 1;
+}
+
+# Override settings from the baseline scenario
+@ParticleGenerator PGen {
+    r      = 0.15, 0.30, 200;
+    thetap = 0.12, 0.12, 1;
+}
+

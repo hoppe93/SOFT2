@@ -5,8 +5,8 @@
 This module specifies which equations of motion to solve, and the details of how
 to solve them.
 
-Secondary types
-^^^^^^^^^^^^^^^
+Types
+^^^^^
 This module has two secondary types. The secondary type, given in parentheses
 after the configuration block name, specifies which set of equations to solve.
 Note that the module settings listed under :ref:`module-equation-all-options`

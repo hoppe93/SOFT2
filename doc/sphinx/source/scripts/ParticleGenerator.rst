@@ -34,9 +34,9 @@ and the two momentum parameters chosen must span all of momentum space together.
 +--------------------------------------+----------+-----------------------------------------------------------------------------------------------------+
 | :option:`@ParticleGenerator a`       | Spatial  | Normalized minor radius (0 on magnetic axis; 1 on last closed flux surface).                        |
 +--------------------------------------+----------+-----------------------------------------------------------------------------------------------------+
-| :option:`@ParticleGenerator r`       | Spatial  | Minor radius.                                                                                       |
+| :option:`@ParticleGenerator r`       | Spatial  | Minor radius (meters).                                                                              |
 +--------------------------------------+----------+-----------------------------------------------------------------------------------------------------+
-| :option:`@ParticleGenerator rho`     | Spatial  | Major radius.                                                                                       |
+| :option:`@ParticleGenerator rho`     | Spatial  | Major radius (meters).                                                                              |
 +--------------------------------------+----------+-----------------------------------------------------------------------------------------------------+
 | :option:`@ParticleGenerator gamma`   | Momentum | Particle energy, normalized to the particle rest mass (= Lorentz factor).                           |
 +--------------------------------------+----------+-----------------------------------------------------------------------------------------------------+

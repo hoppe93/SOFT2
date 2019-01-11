@@ -1,0 +1,7 @@
+
+<Fig7base>
+
+# Specify output file names
+@RadiationOutput image   { output = "data/b-image.mat"; }
+@RadiationOutput topview { output = "data/b-topview.mat"; }
+
