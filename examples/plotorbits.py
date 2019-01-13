@@ -28,7 +28,8 @@ import matplotlib.ticker
 # Configuration
 FONTSIZE         = 16
 LINEWIDTH        = 2
-LINESTYLE        = 'k-'
+#LINESTYLE        = 'k-'
+LINESTYLE        = '-'
 
 
 def loadOrbits(filename):

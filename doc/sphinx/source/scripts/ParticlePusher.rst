@@ -50,7 +50,7 @@ Options
 .. option:: equation
 
    :Default value: ``guiding-center``
-   :Allowed values: Name of any :ref:`module-equation-gc` or :ref:`module-equation-particle`.
+   :Allowed values: Name of any :ref:`module-equation` configuration block.
 
    Specifies which equation to use. The two equations ``guiding-center`` and
    ``particle`` are pre-defined by this module with default settings. The

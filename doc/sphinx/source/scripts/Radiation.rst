@@ -122,7 +122,7 @@ The available secondary types of :ref:`module-radiationoutput` are
 +---------------------------------+-------------------------------+
 | **Module name**                 | **Output description**        |
 +---------------------------------+-------------------------------+
-| :ref:`module-ro-greensfunction` | Green's/weight functions      |
+| :ref:`module-ro-green`          | Green's/weight functions      |
 +---------------------------------+-------------------------------+
 | :ref:`module-ro-image`          | Camera images                 |
 +---------------------------------+-------------------------------+

@@ -12,6 +12,30 @@ subdirectory of the `SOFT2 <https://github.com/hoppe93/SOFT2>`_ repository.
 Orbits
 ------
 
+.. toctree::
+   :hidden:
+
+   examples/Orbits
+
+.. container:: floatblock
+
+   .. container:: leftside
+
+      .. figure:: _static/figs/examples/orbits-particle.png
+         :height: 200px
+         :target: examples/Orbits.html
+
+   .. container:: rightside
+
+      **Orbits**
+
+      This example illustrates how guiding-center and particle orbits can be
+      computed using the :ref:`module-orbits` module of SOFT.
+
+      **Simulation time:** Short
+
+      Check out: :ref:`example-orbits`.
+
 Radiation images
 ----------------
 
@@ -27,13 +51,14 @@ Radiation images
 
       .. figure:: _static/figs/examples/Zhou2014.png
          :height: 200px
+         :target: examples/Zhou2014.html
 
    .. container:: rightside
 
       **Synchrotron images from Zhou et al. (2014)**
 
       An example showing how to reproduce Figs. 5, 6 and 7 of
-      `Zhou et al., PoP 21 (2014) <https://doi.org/10.1063/1.4881469>`.
+      `Zhou et al., PoP 21 (2014) <https://doi.org/10.1063/1.4881469>`_.
 
       **Simulation time:** Short
 

@@ -1,0 +1,7 @@
+# Simulate guiding-center orbits
+
+<baseline>
+
+@ParticlePusher PPusher { equation = guiding-center; }
+@Orbits orbits { output = "data/guiding-center.mat"; }
+
