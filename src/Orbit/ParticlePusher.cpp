@@ -36,7 +36,7 @@ const string ParticlePusher_config =
 "timeunit=poloidal;\n"
 "time=1;\n"
 "nt=1e3;\n"
-"force_numerical_jacobian=no;\n"
+"force_numerical_jacobian=yes;\n"
 "nudgevalue=__default__;\n";
 
 const string ParticlePusher::equation_defaults =
@@ -101,11 +101,12 @@ ParticlePusher::ParticlePusher(
     }
 
     // Force numerical calculation of Jacobian determinant?
-    Setting *s = settings.GetSetting("force_numerical_jacobian");
+    this->forceNumericalJacobian = true;
+    /*Setting *s = settings.GetSetting("force_numerical_jacobian");
     if (!s->IsBool())
         throw ParticlePusherException("Invalid value assigned to parameter 'force_numerical_jacobian'. Expected boolean value.");
     else
-        this->forceNumericalJacobian = s->GetBool();
+        this->forceNumericalJacobian = s->GetBool();*/
 
     // Max time
     this->maxtime = init_get_scalar(&settings, "time", "ParticlePusher");

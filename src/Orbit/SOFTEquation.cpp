@@ -1,5 +1,4 @@
-/**
- * Implementation of basic methods in SOFTEquation.
+/** * Implementation of basic methods in SOFTEquation.
  */
 
 #include <omp.h>
@@ -114,7 +113,7 @@ void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution
         // Calculate spatial Jacobian?
         /*if (hasFlux) {
             Jdtdrho[i] = J;
-        } else if (solution2 != nullptr) {*/
+        } else */if (solution2 != nullptr) {
             slibreal_t dR_dt, dZ_dt, dR_drho, dZ_drho,
                 X1, Y1, Z1, X2, Y2, Z2, R1;
 
@@ -137,7 +136,9 @@ void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution
             if (this->particle != 0)
                 Jdtdrho[i] *= this->particle->GetDRho();
 
-            Jp[i] = Beffpar[i] / Babs[0] * fabs(ppar[0] / ppar[i]);
+            // Jp
+            Jdtdrho[i] *= Beffpar[i] / Babs[0] * fabs(ppar[0] / ppar[i]);
+        }
     }
 }
 
