@@ -56,19 +56,19 @@ slibreal_t SOFTEquation::GetPositionZ(const Vector<6>& x) {
  */
 void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution2, Orbit *o, slibreal_t nudge) {
     unsigned int i, ti, nt = o->GetNTau();
-    bool hasFlux = false;
+    //bool hasFlux = false;
 
     slibreal_t
         *p = o->GetP(),
-        *p2 = o->GetP2(),
+        //*p2 = o->GetP2(),
         *Babs = o->GetBabs(),
         *ppar = o->GetPpar(),
         *gamma = o->GetGamma(),
         *Jdtdrho = o->GetJdtdrho(),
-        dtau = o->GetTau()[1]-o->GetTau()[0],
-        J;
+        dtau = o->GetTau()[1]-o->GetTau()[0];
+        //J;
 
-    if (magfield->HasMagneticFlux()) {
+    /*if (magfield->HasMagneticFlux()) {
         hasFlux = true;
 
         slibreal_t
@@ -107,13 +107,13 @@ void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution
         } else {
             J = u0 / (B0*g0) * fabs((dpsi_dR*xi0) * dtau * this->particle->GetDRho());
         }
-    }
+    }*/
 
     for (i = 0; i < nt; i++) {
         // Calculate spatial Jacobian?
-        if (hasFlux) {
+        /*if (hasFlux) {
             Jdtdrho[i] = J;
-        } else if (solution2 != nullptr) {
+        } else if (solution2 != nullptr) {*/
             slibreal_t dR_dt, dZ_dt, dR_drho, dZ_drho,
                 X1, Y1, Z1, X2, Y2, Z2, R1;
 
@@ -138,7 +138,7 @@ void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution
 
             // Momentum-part (in SOFT paper)
             Jdtdrho[i] *= Babs[i] / Babs[0] * fabs(ppar[0] / ppar[i]);
-        }
+        //}
     }
 }
 
