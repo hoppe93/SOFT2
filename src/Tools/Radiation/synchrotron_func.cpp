@@ -12,24 +12,6 @@
  *
  *   F(x) = x * Integral[ K_{5/3}(t), {t, x, inf}]
  *
- * (Based on [Aharonian et al. (2010; Appendix D)],
- *  https://doi.org/10.1103/PhysRevD.82.043002)
- */
-/*slibreal_t synchrotron_func(const slibreal_t x) {
-    slibreal_t x13 = cbrt(x),
-               x23 = x13*x13,
-               x43 = x23*x23;
-
-    return 2.15*x13* sqrt(cbrt(1.0 + 3.06*x)) *
-        (1.0 + 0.884*x23 + 0.471*x43) / (1.0 + 1.64*x23 + 0.974*x43) * exp(-x);
-}
-*/
-
-/**
- * Evaluates the first synchrotron function:
- *
- *   F(x) = x * Integral[ K_{5/3}(t), {t, x, inf}]
- *
  * (Based on the implementation in GSL)
  */
 slibreal_t synchrotron_func1(const slibreal_t x) {
@@ -51,5 +33,19 @@ slibreal_t synchrotron_func2(const slibreal_t x) {
         return 0.0; /* Beyond machine precision */
     else
         return (slibreal_t)gsl_sf_synchrotron_2(x);
+}
+
+/**
+ * Evaluates the "third" synchrotron function (our terminology):
+ *
+ *   F(x) = x * K_{1/3}(x)
+ *
+ * (Based on implementation in GSL)
+ */
+slibreal_t synchrotron_func3(const slibreal_t x) {
+    if (x >= GSL_LOG_DBL_MIN)
+        return 0.0;
+    else
+        return (slibreal_t)(x*gsl_sf_bessel_Knu(1.0/3.0, x));
 }
 

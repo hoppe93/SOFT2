@@ -30,29 +30,22 @@ using namespace std;
  */
 DistributionFunction *InitDistributionFunction(MagneticField2D *magfield, ConfigBlock *conf, ConfigBlock *root) {
     DistributionFunction *df;
-    Setting *type;
 
-    if (!conf->HasSetting("type"))
-        throw SOFTException("Type of distribution function '%s' not specified.", conf->GetName().c_str());
-
-    type = conf->GetSetting("type");
-    if (type->GetNumberOfValues() != 1)
-        throw SOFTException("Distribution function '%s': type: Invalid value assigned to parameter. Expected single string.", conf->GetName().c_str());
-
-    if (type->GetString() == "avalanche")
+    string type = conf->GetSecondaryType();
+    if (type == "avalanche")
         df = InitAvalancheDistribution(magfield, conf, root);
-    else if (type->GetString() == "code")
+    else if (type == "code")
         df = InitCODEDistribution(magfield, conf, root);
-    else if (type->GetString() == "luke")
+    else if (type == "luke")
         df = InitLUKEDistribution(conf);
-    else if (type->GetString() == "norse")
+    else if (type == "norse")
         df = InitNORSEDistribution(magfield, conf, root);
-    else if (type->GetString() == "numerical")
+    else if (type == "numerical")
         df = InitNumericalDistribution(conf);
-    else if (type->GetString() == "unit")
+    else if (type == "unit")
         df = new UnitDistributionFunction();
     else
-        throw SOFTException("Distribution function '%s': type: Unrecognized distribution function type: '%s'.", conf->GetName().c_str(), type->GetString().c_str());
+        throw SOFTException("Distribution function '%s': type: Unrecognized distribution function type: '%s'.", conf->GetName().c_str(), type.c_str());
 
     return df;
 }

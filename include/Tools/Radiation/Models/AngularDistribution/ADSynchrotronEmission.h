@@ -40,8 +40,8 @@ namespace __Radiation {
 
             // Internal cache variables
             slibreal_t 
-                B, beta, gamma, igamma, igamma2, sinThetap, cosThetap,
-                p, pperp, prefactor;
+                B, beta, gamma, gamma3, igamma, igamma2, sinThetap, cosThetap,
+                p, pperp, prefactor, lambdac, betapar;
             struct angdist_params angdistParams;
 
             static void _Rotate(Vector<3>&, const slibreal_t, const slibreal_t);
@@ -54,11 +54,11 @@ namespace __Radiation {
 
             virtual slibreal_t Evaluate(Vector<3>&, slibreal_t, slibreal_t, bool) override;
 
-            virtual slibreal_t CalculateAngularDistribution(Vector<3>&, slibreal_t, slibreal_t) override;
-            virtual slibreal_t CalculatePolarization(Vector<3>&, slibreal_t, slibreal_t) override;
-            virtual slibreal_t CalculateSpectrum(Vector<3>&, slibreal_t, slibreal_t) override;
+            virtual void CalculateAngularDistribution(Vector<3>&, slibreal_t, slibreal_t) override;
+            virtual void CalculatePolarization(Vector<3>&, slibreal_t, slibreal_t) override;
+            virtual void CalculateSpectrum(Vector<3>&, slibreal_t, slibreal_t) override;
             template<bool calculatePolarization>
-            slibreal_t __CalculateSpectrum(Vector<3>&, slibreal_t, slibreal_t);
+            void __CalculateSpectrum(Vector<3>&, slibreal_t, slibreal_t);
 
             struct angdist_params *GetParams() { return &angdistParams; }
 

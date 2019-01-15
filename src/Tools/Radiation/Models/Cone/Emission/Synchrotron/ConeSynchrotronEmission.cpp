@@ -3,6 +3,7 @@
  * the cone model.
  */
 
+#include "Tools/Radiation/synchrotron_func.h"
 #include "Tools/Radiation/Models/Cone/ConeSynchrotronEmission.h"
 #include "Tools/Radiation/RadiationParticle.h"
 

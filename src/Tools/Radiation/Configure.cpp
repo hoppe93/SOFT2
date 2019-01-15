@@ -198,6 +198,9 @@ void Radiation::Configure(
             throw RadiationException("Invalid value assigned to 'torthreshold'. Expected real value.");
 
         this->torthreshold = s->GetScalar();
+
+        if (this->torthreshold < 0 || this->torthreshold > 1)
+            throw RadiationException("Invalid value assigned to 'torthreshold'. Must be between 0 and 1.");
     }
 
     // torquad
@@ -255,15 +258,15 @@ void Radiation::PrepareConfiguration(Configuration *conf) {
  *       possible sub-modules).
  */
 Model *Radiation::SetupRadiationModel(struct global_settings *globset, ConfigBlock *conf, ConfigBlock *root) {
-    string name = conf->GetName();
+    string stype = conf->GetSecondaryType();
 
     for (unsigned int i = 0; i < RADIATION_NMODELS; i++) {
-        if (radmodels[i].name == name) {
+        if (radmodels[i].name == stype) {
             return radmodels[i].init(globset, conf, root, this);
         }
     }
 
-    throw RadiationException("No radiation model named '%s' available in this version of SOFT.", name.c_str());
+    throw RadiationException("No radiation model of type '%s' available in this version of SOFT.", stype.c_str());
 }
 
 /**
@@ -274,14 +277,14 @@ Model *Radiation::SetupRadiationModel(struct global_settings *globset, ConfigBlo
  *       possible sub-modules).
  */
 RadiationOutput *Radiation::SetupRadiationOutput(ConfigBlock *conf, ConfigBlock *root) {
-    string name = conf->GetName();
+    string stype = conf->GetSecondaryType();
 
     for (unsigned int i = 0; i < RADIATION_NOUTPUTS; i++) {
-        if (radoutputs[i].name == name) {
+        if (radoutputs[i].name == stype) {
             return radoutputs[i].init(conf, root, detector, magfield, pgen);
         }
     }
 
-    throw RadiationException("No radiation output module named '%s' available in this version of SOFT.", name.c_str());
+    throw RadiationException("No radiation output module of type '%s' available in this version of SOFT.", stype.c_str());
 }
 

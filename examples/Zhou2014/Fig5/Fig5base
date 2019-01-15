@@ -1,0 +1,8 @@
+
+<../baseline>
+
+@MagneticField EAST {
+    qtype = constant;
+    qa1   = 2;
+}
+

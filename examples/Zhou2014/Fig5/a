@@ -1,0 +1,26 @@
+#
+# Fig. 5(a)
+#
+# This figure shows a set of guiding-center orbits, neglecting
+# drifts (so i.e. flux surfaces), and reuires us to use the
+# "@Orbits" tool instead.
+########################
+
+<Fig5base>
+
+tools = orbs;
+
+@ParticleGenerator PGen {
+    r      = 0.03, 0.3, 10;     # Just 10 orbits
+    thetap = 0.12, 0.12, 1;     # Pitch angle (arbitrary; unspecified in [Zhou et al. (2014)])
+}
+
+# We don't need as many time steps to get good orbits
+@ParticlePusher PPusher {
+    nt = 100;
+}
+
+@Orbits orbs {
+    output = "data/a-orbits.mat";
+}
+

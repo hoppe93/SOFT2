@@ -98,7 +98,7 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
 		if (coordvals[i].size() != 3)
 			throw ParticleGeneratorException(
 				"Coordinate %s: Expected exactly arguments to the coordinate. Syntax: %s=[start],[end],[number of points].",
-				pg_coordinate_names[coordinates[i]], pg_coordinate_names[coordinates[i]]
+				pg_coordinate_names[coordinates[i]].c_str(), pg_coordinate_names[coordinates[i]].c_str()
 			);
 	}
 
@@ -150,6 +150,8 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
 
     if (conf->HasSetting("mass")) {
         s = conf->GetSetting("mass");
+        if (s->GetScalar() <= 0.0)
+            throw ParticleGeneratorException("Invalid mass assigned to particle. Mass must be positive.");
         this->mass = s->GetScalar() * MASS_UNIT;
     } else this->mass = 1.0 * MASS_UNIT;
 
@@ -169,7 +171,7 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
     // Other settings
     if (conf->HasSetting("driftshifttol")) {
         s = conf->GetSetting("driftshifttol");
-        if (s->IsScalar())
+        if (s->IsScalar() && s->GetScalar() < 1.0 && s->GetScalar() > REAL_EPSILON)
             this->drift_shift_tolerance = s->GetScalar();
         else
             throw ParticleGeneratorException("Invalid value assigned to 'driftshifttol'.");

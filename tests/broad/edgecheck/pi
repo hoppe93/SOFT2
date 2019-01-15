@@ -35,7 +35,7 @@ include_drifts = no;
     #nt = 100;
 }
 
-@Equation guiding-center {
+@EquationGuidingCenter guiding-center {
     method = rkdp45;
     tolerance = 1e-9;
 }

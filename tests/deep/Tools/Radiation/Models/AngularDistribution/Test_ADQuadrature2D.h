@@ -16,9 +16,9 @@ class Test_ADQuadrature2D_Emission : public __Radiation::ADEmission {
         virtual void InitializeToroidalStep(const slibreal_t, const slibreal_t) override {}
         virtual void Prepare(__Radiation::RadiationParticle*, bool) override {}
 
-        virtual slibreal_t CalculateAngularDistribution(Vector<3>&, slibreal_t, slibreal_t) override;
-        virtual slibreal_t CalculatePolarization(Vector<3>&, slibreal_t, slibreal_t) override;
-        virtual slibreal_t CalculateSpectrum(Vector<3>&, slibreal_t, slibreal_t) override;
+        virtual void CalculateAngularDistribution(Vector<3>&, slibreal_t, slibreal_t) override;
+        virtual void CalculatePolarization(Vector<3>&, slibreal_t, slibreal_t) override;
+        virtual void CalculateSpectrum(Vector<3>&, slibreal_t, slibreal_t) override;
 };
 
 class Test_ADQuadrature2D : public UnitTest {

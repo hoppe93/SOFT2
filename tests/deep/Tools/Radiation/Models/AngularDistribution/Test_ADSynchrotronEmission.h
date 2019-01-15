@@ -21,6 +21,12 @@ class Test_ADSynchrotronEmission : public UnitTest {
             __Radiation::RadiationParticle*,
             slibreal_t
         );
+        bool CheckAngularSpectralDistribution(
+            __Radiation::ADSynchrotronEmission&,
+            __Radiation::RadiationParticle*,
+            slibreal_t
+        );
+        slibreal_t GetLambdaC(__Radiation::RadiationParticle*);
         slibreal_t Larmor(__Radiation::RadiationParticle*);
         __Radiation::Detector *GetDetector(unsigned int, slibreal_t l0=4e-7, slibreal_t l1=1e-6);
         __Radiation::RadiationParticle *GetRadiationParticle(unsigned int, __Radiation::Detector*);

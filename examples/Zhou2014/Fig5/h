@@ -1,0 +1,9 @@
+
+<d>
+
+include_drifts = yes;
+
+# Specify output file names
+@RadiationOutput image   { output = "data/h-image.mat"; }
+@RadiationOutput topview { output = "data/h-topview.mat"; }
+

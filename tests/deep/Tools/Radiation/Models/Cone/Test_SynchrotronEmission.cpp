@@ -185,7 +185,7 @@ RadiationParticle *Test_SynchrotronEmission::GetRadiationParticle(unsigned int i
         throw SOFTException("Trying to access non-existant test-particle.");
 
     slibreal_t
-        Jdtdrho = 1.0, Jp = 1.0,
+        Jdtdrho = 1.0,
         gamma = TESTPARTICLES[i][IGAMMA],
         p2 = gamma*gamma - 1.0,
         p  = sqrt(p2),
@@ -202,7 +202,7 @@ RadiationParticle *Test_SynchrotronEmission::GetRadiationParticle(unsigned int i
 
     return new RadiationParticle(
         X, P,
-        Jdtdrho, Jp, ppar, pperp,
+        Jdtdrho, ppar, pperp,
         gamma, p2, det->GetPosition(),
         B, Bvec, bHat, m, q, 0, 0, 0
     );

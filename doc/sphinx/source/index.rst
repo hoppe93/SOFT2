@@ -14,6 +14,8 @@ Welcome to SOFTv2's documentation!
    compiling
    scripts/index
    magnetic_field
+   dominant
+   examples
 
 
 Indices and tables

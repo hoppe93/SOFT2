@@ -1,0 +1,62 @@
+# Baseline configuration for EAST-like simulation
+#
+# Based on Zhou et al., PoP 21 (2014)
+# https://doi.org/10.1063/1.4881469
+##############################
+
+magnetic_field     = "EAST";
+tools              = rad;
+
+# Configuration of EAST-like magnetic equilibrium
+@MagneticField EAST (analytical) {
+    B0     = 2;     # On-axis field strength (T)
+    Rm     = 1.85;  # Major radius (m) (source: Wikipedia)
+    rminor = 0.45;  # Minor radius (m) (source: Wikipedia)
+
+    # Safety-factor (overriden in other scripts)
+    qtype  = constant;
+    qa1    = 1;
+    sigmaB = ccw;
+}
+
+# Phase space grid
+@ParticleGenerator PGen {
+    r      = 0, 0.3, 400;  # Minor radius
+    gamma  = 60, 60, 1;    # Energy (mc^2) (approx. 30 MeV)
+
+    # NOTE: Pitch-angle and energy are set separately for each run
+}
+
+# Orbit generator
+@ParticlePusher PPusher {
+    nt       = 5000;        # Number of timesteps per orbit (resolution parameter)
+}
+
+# Radiation tool
+@Radiation rad {
+    detector  = "det";      # Name of detector configuration (quotations optional)
+    ntoroidal = 7000;       # No. of toroidal sections in tokamak (resolution parameter)
+    model     = cone;       # Radiation model to use
+    output    = image topview;  # List of configuration of output
+}
+
+# Detector properties
+@Detector det {
+    aperture     = 0.006;           # Detector size (unspecified in [Zhou et al. 2014])
+    position     = 1.48, 1.85, 0;   # (m), according to Fig. 4
+    direction    = -1, 0, 0;        # according to Fig. 4
+    vision_angle = 0.6 fov;         # Field-of-view size (unspecified in [Zhou et al. 2014])
+    #spectrum     = 0.38e-6, 0.75e-6, 40;  # Spectral range & resolution (Sec. IIC in [Zhou et al. 2014])
+    spectrum     = no;              # Better for comparison
+}
+
+@RadiationModel cone (cone) {
+    emission = synchrotron;
+}
+@RadiationOutput image (image) {
+    pixels = 600;
+}
+@RadiationOutput topview (topview) {
+    pixels = 1000;
+}
+

@@ -1,0 +1,9 @@
+
+<b>
+
+include_drifts = yes;
+
+# Specify output file names
+@RadiationOutput image   { output = "data/f-image.mat"; }
+@RadiationOutput topview { output = "data/f-topview.mat"; }
+

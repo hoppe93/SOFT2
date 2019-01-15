@@ -18,7 +18,7 @@ using namespace __Radiation;
 RadiationParticle::RadiationParticle(Orbit *o, unsigned int ti, Vector<3>& detpos) :
     RadiationParticle(
         o->GetX(ti), o->GetP(ti), o->GetJdtdrho(ti),
-        o->GetJp(ti), o->GetPpar(ti), o->GetPperp(ti),
+        o->GetPpar(ti), o->GetPperp(ti),
         o->GetGamma(ti), o->GetP2(ti), detpos,
         o->GetBabs(ti), o->GetB(ti), o->GetBhat(ti),
         o->GetMass(), o->GetCharge(), o->GetIndexR(),
@@ -27,7 +27,7 @@ RadiationParticle::RadiationParticle(Orbit *o, unsigned int ti, Vector<3>& detpo
     ) {}
 RadiationParticle::RadiationParticle(
     const Vector<3>& x, const Vector<3>& p, slibreal_t Jdtdrho,
-    slibreal_t Jp, slibreal_t ppar, slibreal_t pperp,
+    slibreal_t ppar, slibreal_t pperp,
     slibreal_t gamma, slibreal_t p2, const Vector<3>& detpos,
     slibreal_t B, const Vector<3>& Bvec, const Vector<3>& bHat,
     slibreal_t m, slibreal_t q, unsigned int ir, unsigned int ip1,
@@ -37,7 +37,6 @@ RadiationParticle::RadiationParticle(
     this->x = x;
     this->p = p;
     this->Jdtdrho = Jdtdrho;
-    this->Jp = Jp;
     this->ppar = ppar;
     this->pperp = pperp;
     this->gamma = gamma;
@@ -96,8 +95,6 @@ RadiationParticle::~RadiationParticle() {
  * drho: Step length of radial coordinate.
  * dp1:  Step length of momentum coordinate 1.
  * dp2:  Step length of momentum coordinate 2.
- * Jp1:  Jacobian of momentum coordinate 1.
- * Jp2:  Jacobian of momentum coordinate 2.
  */
 void RadiationParticle::SetDifferentialElements(
     slibreal_t dphi, slibreal_t drho,
@@ -109,7 +106,7 @@ void RadiationParticle::SetDifferentialElements(
     this->dp1 = dp1;
     this->dp2 = dp2;
 
-    this->diffel = Jp * Jdtdrho*Rdphi * dp1*dp2;
+    this->diffel = Jdtdrho*Rdphi * dp1*dp2;
 }
 
 /**

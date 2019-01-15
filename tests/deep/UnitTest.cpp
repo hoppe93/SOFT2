@@ -58,7 +58,7 @@ void UnitTest::PrintError(const string& s, ...) {
     va_list args;
     va_start(args, s);
 
-    fprintf(stderr, "\e[1;31m[ERROR]\e[0m   ");
+    fprintf(stderr, "\x1B[1;31m[ERROR]\x1B[0m   ");
     vfprintf(stderr, s.c_str(), args);
     fprintf(stderr, "\n");
 
@@ -72,7 +72,7 @@ void UnitTest::PrintOK(const string& s, ...) {
     va_list args;
     va_start(args, s);
 
-    fprintf(stderr, "\e[1;32m[OK]\e[0m      --> ");
+    fprintf(stderr, "\x1B[1;32m[OK]\x1B[0m      --> ");
     vfprintf(stderr, s.c_str(), args);
     fprintf(stderr, "\n");
 
@@ -99,7 +99,7 @@ void UnitTest::PrintWarning(const string& s, ...) {
     va_list args;
     va_start(args, s);
 
-    fprintf(stderr, "\e[1;93m[WARNING]\e[0m ");
+    fprintf(stderr, "\x1B[1;93m[WARNING]\x1B[0m ");
     vfprintf(stderr, s.c_str(), args);
     fprintf(stderr, "\n");
 

@@ -135,7 +135,7 @@ RadiationParticle *Test_AngularDistributionDrifts::GetRadiationParticle(Magnetic
         throw SOFTException("Trying to access non-existant test particle.");
     
     slibreal_t
-        Jdtdrho = 1.0, Jp = 1.0,
+        Jdtdrho = 1.0,
         gamma = TESTPARTICLES[i][IGAMMA],
         p2 = gamma*gamma - 1.0,
         p = sqrt(p2),
@@ -157,7 +157,7 @@ RadiationParticle *Test_AngularDistributionDrifts::GetRadiationParticle(Magnetic
     Vector<3> B(mfd.B), bHat(B/mfd.Babs);
     
     return new RadiationParticle(
-        XX, PP, Jdtdrho, Jp, ppar, pperp,
+        XX, PP, Jdtdrho, ppar, pperp,
         gamma, p2, det->GetPosition(),
         mfd.Babs, B, bHat, m, q, 0, 0, 0,
         mfd.gradB, mfd.curlB, mfd.J
@@ -397,7 +397,8 @@ double Test_AngularDistributionDrifts::EvaluateMuIntegral_inner(
     double sinmu = sin(mu), cosmu = cos(mu);
     Vector<3> n =-p->ade->GetParams()->bHat * cosmu + p->ade->GetParams()->oneHat*sinmu;
 
-    return (double)p->ade->CalculateAngularDistribution(n, sinmu, cosmu) * sinmu / (1.0-p->betapar*cos(mu));
+    p->ade->CalculateAngularDistribution(n, sinmu, cosmu);
+    return (double)p->ade->GetTotalEmission() * sinmu / (1.0-p->betapar*cos(mu));
 }
 /**
  * Evaluate the integral of the angular distribution of
@@ -448,7 +449,8 @@ slibreal_t Test_AngularDistributionDrifts::EvaluateMuIntegral(
             sinmu = sin(mu);
 
             nHat =-ade.GetParams()->bHat * cosmu + ade.GetParams()->oneHat * sinmu;
-            I += 4.0 * ade.CalculateAngularDistribution(nHat, sinmu, cosmu) * sinmu / (1.0 - betapar*cosmu);
+            ade.CalculateAngularDistribution(nHat, sinmu, cosmu);
+            I += 4.0 * ade.GetTotalEmission() * sinmu / (1.0 - betapar*cosmu);
         }
         for (i = 2; i < n-1; i+=2) {
             mu = i*dMu;
@@ -456,7 +458,8 @@ slibreal_t Test_AngularDistributionDrifts::EvaluateMuIntegral(
             sinmu = sin(mu);
 
             nHat =-ade.GetParams()->bHat * cosmu + ade.GetParams()->oneHat * sinmu;
-            I += 2.0 * ade.CalculateAngularDistribution(nHat, sinmu, cosmu) * sinmu / (1.0 - betapar*cosmu);
+            ade.CalculateAngularDistribution(nHat, sinmu, cosmu);
+            I += 2.0 * ade.GetTotalEmission() * sinmu / (1.0 - betapar*cosmu);
         }
 
         I *= dMu / 3.0;
