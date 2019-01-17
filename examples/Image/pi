@@ -15,15 +15,15 @@ tools              = rad;
     qtype  = linear;
     qa1    = 2;
     qa2    = 1;
+
+    sigmaB = ccw;
 }
 
 # Phase space grid
 @ParticleGenerator PGen {
-    a      = 0.0, 0.95, 20; # Normalized minor radius
+    a      = 0.0, 0.95, 600; # Normalized minor radius
     p      = 60, 60, 1;
     thetap = 0.2, 0.2, 1;
-
-    progress = 10;
 }
 
 # Orbit generator
@@ -46,7 +46,7 @@ tools              = rad;
     aperture     = 0.006;
     position     = 0.68, -0.68, 0;
     direction    = 0, 1, 0;
-    vision_angle = 0.78 fov;
+    vision_angle = 0.55 fov;
     spectrum     = no;
 }
 
@@ -56,6 +56,7 @@ tools              = rad;
 }
 
 @RadiationOutput image (image) {
+    pixels = 600;
     output = "data/image.mat";
 }
 

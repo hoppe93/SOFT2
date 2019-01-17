@@ -42,8 +42,27 @@ Radiation images
 .. toctree::
    :hidden:
 
+   examples/Image
    examples/Zhou2014
    examples/AngularDistribution
+
+.. container:: floatblock
+
+   .. container:: leftside
+
+      .. figure:: _static/figs/examples/Image.png
+         :height: 200px
+         :target: examples/Image.html
+
+   .. container:: rightside
+
+      **Basic synchrotron image**
+
+      An example of a basic synchrotron radiation image.
+
+      **Simulation time:** Short
+
+      Check out: :ref:`example-image`
 
 .. container:: floatblock
 
@@ -108,6 +127,32 @@ Spectrometer output
 
 Green's function output
 ^^^^^^^^^^^^^^^^^^^^^^^
+
+.. toctree::
+   :hidden:
+
+   examples/Green
+
+.. container:: floatblock
+
+   .. container:: leftside
+      
+      .. figure:: _static/figs/examples/Green.png
+         :height: 200px
+         :target: examples/Green.html
+
+   .. container:: rightside
+
+      **Green's functions**
+
+      Generate a SOFT Green's function. This example illustrates how to generate
+      a simple momentum-space Green's function for computing total radiated
+      power, but can be readily generalized for any set of Green's function
+      parameters.
+
+      **Simulation time:** Medium
+
+      Check out :ref:`example-green`
 
 Advanced input
 --------------
