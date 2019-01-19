@@ -60,6 +60,7 @@ namespace __Radiation {
             void GetIndex(__Radiation::Detector*, __Radiation::RadiationParticle*, size_t*, size_t*);
             bool MeasuresPolarization() { return storeStokesParameters; }
 
+            std::string TranslateFormat(const std::string&);
             void ValidateFormat(const std::string&);
             void ValidateSubPixels();
     };

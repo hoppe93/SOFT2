@@ -41,6 +41,7 @@ void SOFTLocal::Welcome() {
     SOFT::PrintInfo("This is SOFT v2 (commit %s)\n", soft_git_sha1);
 
     SOFT::PrintInfo("No. threads:         %u", globset->num_threads);
+    SOFT::PrintInfo("Including drifts:    "+(globset->include_drifts?SOFT::PRINT_YES:SOFT::PRINT_NO));
     SOFT::PrintInfo("Magnetic field:      %s", globset->magnetic_field.c_str());
     SOFT::PrintInfo("Particle generator:  %s", globset->particle_generator.c_str());
     SOFT::PrintInfo("Enabled tools (%2u):  %s", ntools, tools.c_str());

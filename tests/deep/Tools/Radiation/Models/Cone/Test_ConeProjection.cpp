@@ -65,7 +65,6 @@ bool Test_ConeProjection::CompareModelToTable(ConeProjection *cp, unsigned int t
 RadiationParticle *Test_ConeProjection::GetRadiationParticle(const struct conemodel_spec *tbl, unsigned int index, Detector *det) {
     const struct conemodel_spec *cs = tbl+index;
     slibreal_t Jdtdrho = 1.0,
-               Jp = 1.0,
                ppar = cs->ppar,
                pperp = cs->pperp,
                p2 = ppar*ppar + pperp*pperp,
@@ -81,7 +80,7 @@ RadiationParticle *Test_ConeProjection::GetRadiationParticle(const struct conemo
     p = ppar * p;
 
     return new RadiationParticle(
-        cs->x, p, Jdtdrho, Jp, ppar, pperp,
+        cs->x, p, Jdtdrho, ppar, pperp,
         gamma, p2, det->GetPosition(), B,
         Bvec, Bvec, m, q, 0, 0, 0
     );

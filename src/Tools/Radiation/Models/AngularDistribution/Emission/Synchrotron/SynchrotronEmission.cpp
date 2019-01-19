@@ -56,7 +56,7 @@ slibreal_t ADSynchrotronEmission::Evaluate(
     Vector<3> &n, slibreal_t sinMu,  slibreal_t cosMu, bool pol
 ) {
     if (nwavelengths == 0) {
-        return CalculateAngularDistribution(n, sinMu, cosMu);
+        CalculateAngularDistribution(n, sinMu, cosMu);
     } else {
         if (!pol)
             CalculateSpectrum(n, sinMu, cosMu);
@@ -100,7 +100,12 @@ void ADSynchrotronEmission::Prepare(RadiationParticle *rp, bool pol) {
  * Integrate the calculated spectrum.
  */
 void ADSynchrotronEmission::IntegrateSpectrum() {
-    // TODO
-    throw AngularDistributionException("Integration of the spectrum has not been implemented yet.");
+    unsigned int i;
+    slibreal_t s = 0.5*(I[0] + I[nwavelengths-1]);
+
+    for (i = 1; i < nwavelengths-1; i++)
+        s += I[i];
+
+    this->power = s * (wavelengths[1]-wavelengths[0]);
 }
 

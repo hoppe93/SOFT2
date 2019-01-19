@@ -25,21 +25,14 @@ using namespace std;
  */
 MagneticField2D *InitMagneticField(ConfigBlock *conf) {
     MagneticField2D *mf;
-    Setting *type;
 
-    if (!conf->HasSetting("type"))
-        throw SOFTException("Type of magnetic field '%s' not specified.", conf->GetName().c_str());
-    
-    type = conf->GetSetting("type");
-    if (type->GetNumberOfValues() != 1)
-        throw SOFTException("Magnetic field '%s': type: Invalid value assigned to parameter. Expected single string.", conf->GetName().c_str());
-
-    if (type->GetString() == "analytical")
+    string type = conf->GetSecondaryType();
+    if (type == "analytical")
         mf = InitMagneticFieldAnalytical(conf);
-    else if (type->GetString() == "numeric")
+    else if (type == "numeric")
         mf = InitMagneticFieldNumeric(conf);
     else
-        throw SOFTException("Magnetic field '%s': type: Unrecognized magnetic field type: %s.", conf->GetName().c_str(), type->GetString().c_str());
+        throw SOFTException("Magnetic field '%s': type: Unrecognized magnetic field type: %s.", conf->GetName().c_str(), type.c_str());
 
     return mf;
 }

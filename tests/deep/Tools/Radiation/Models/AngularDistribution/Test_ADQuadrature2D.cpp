@@ -52,7 +52,7 @@ Detector *Test_ADQuadrature2D::GetDetector(unsigned int nwavelengths) {
  */
 RadiationParticle *Test_ADQuadrature2D::GetRadiationParticle(unsigned int i, Detector *det) {
     slibreal_t
-        Jdtdrho = 1.0, Jp = 1.0,
+        Jdtdrho = 1.0,
         ppar = 1.0, pperp = 1.0,
         gamma = 1.0, p2 = 1.0,
         B = 1.0, m = 1.0, q = 1.0,
@@ -65,7 +65,7 @@ RadiationParticle *Test_ADQuadrature2D::GetRadiationParticle(unsigned int i, Det
 
     return new RadiationParticle(
         test_particles[i], P,
-        Jdtdrho, Jp, ppar, pperp,
+        Jdtdrho, ppar, pperp,
         gamma, p2, det->GetPosition(),
         B, Bvec, bHat, m, q, 0, 0, 0
     );

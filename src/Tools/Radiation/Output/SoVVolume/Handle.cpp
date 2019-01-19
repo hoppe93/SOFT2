@@ -21,7 +21,7 @@ void SoVVolume::Handle(Detector*, Model*, RadiationParticle *rp) {
         i = rp->GetIndexP1(),
         j = rp->GetIndexP2();
 
-    slibreal_t diffel = rp->GetRDphi() * rp->GetJdtdrho() * rp->GetJp();
+    slibreal_t diffel = rp->GetRDphi() * rp->GetJdtdrho();
 
     this->volumearray[i*this->np2 + j] += diffel;
 }

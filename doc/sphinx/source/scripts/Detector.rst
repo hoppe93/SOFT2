@@ -6,6 +6,13 @@ The ``@Detector`` module is a submodule of the :ref:`module-radiation` tool.
 This module configures the radiation detector to use, and sets properties such
 as its position, viewing direction, field-of-view, spectral range and more.
 
+When specifying detector position, the following illustration of the coordinate
+system assumed in SOFT can be useful:
+
+.. image:: ../_static/figs/detector_coordinates.svg
+   :width: 70%
+   :align: center
+
 Summary of options
 ^^^^^^^^^^^^^^^^^^
 

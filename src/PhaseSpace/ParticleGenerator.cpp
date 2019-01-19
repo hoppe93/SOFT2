@@ -98,7 +98,7 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
 		if (coordvals[i].size() != 3)
 			throw ParticleGeneratorException(
 				"Coordinate %s: Expected exactly arguments to the coordinate. Syntax: %s=[start],[end],[number of points].",
-				pg_coordinate_names[coordinates[i]], pg_coordinate_names[coordinates[i]]
+				pg_coordinate_names[coordinates[i]].c_str(), pg_coordinate_names[coordinates[i]].c_str()
 			);
 	}
 
@@ -150,6 +150,8 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
 
     if (conf->HasSetting("mass")) {
         s = conf->GetSetting("mass");
+        if (s->GetScalar() <= 0.0)
+            throw ParticleGeneratorException("Invalid mass assigned to particle. Mass must be positive.");
         this->mass = s->GetScalar() * MASS_UNIT;
     } else this->mass = 1.0 * MASS_UNIT;
 
@@ -169,11 +171,49 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
     // Other settings
     if (conf->HasSetting("driftshifttol")) {
         s = conf->GetSetting("driftshifttol");
-        if (s->IsScalar())
+        if (s->IsScalar() && s->GetScalar() < 1.0 && s->GetScalar() > REAL_EPSILON)
             this->drift_shift_tolerance = s->GetScalar();
         else
             throw ParticleGeneratorException("Invalid value assigned to 'driftshifttol'.");
     }
+
+    if (conf->HasSetting("progress")) {
+        size_t nprint_progress = 10;
+        ProgressTracker::ProgressType ptype = ProgressTracker::PROGRESS_LINES;
+        const bool ESTIMATE_PROGRESS = true;
+
+        s = conf->GetSetting("progress");
+
+        if (s->IsBool(0))
+            print_progress = s->GetBool(0);
+        else if (s->IsUnsignedInteger32(0)) {
+            print_progress = true;
+            nprint_progress = s->GetUnsignedInteger32(0);
+
+            if (nprint_progress == 0)
+                throw ParticleGeneratorException("Invalid value assigned to 'progress'. Must be greater than zero.");
+        } else
+            throw ParticleGeneratorException("Invalid value assigned to 'progress'.");
+
+        if (s->GetNumberOfValues() == 2) {
+            if (s->GetString(1) == "lines")
+                ptype = ProgressTracker::PROGRESS_LINES;
+            else
+                throw ParticleGeneratorException("Unrecognized progress type assigned to 'progress': '%s'.", s->GetString(1).c_str());
+        } else if (s->GetNumberOfValues() > 2)
+            throw ParticleGeneratorException("Too many values assigned to 'progress'. Expected one (1) or two (2) values.");
+
+        if (print_progress) {
+            size_t total = ((size_t)nr) * ((size_t)n1) * ((size_t)n2);
+
+#ifdef COLOR_TERMINAL
+            progress = new ProgressTracker(total, nprint_progress, ptype, true, ESTIMATE_PROGRESS);
+#else
+            progress = new ProgressTracker(total, nprint_progress, ptype, false, ESTIMATE_PROGRESS);
+#endif
+        }
+    } else
+        print_progress = false;
 
     // Generate table of effective magnetic axis location
     // (if drifts are enabled)
@@ -404,7 +444,7 @@ void ParticleGenerator::InitializeParticle(
 bool ParticleGenerator::Generate(Particle *part, MagneticField2D *mf, DistributionFunction *f) {
 	slibreal_t r, p1, p2;
 	bool success = true;
-    unsigned int lir, li1, li2;
+    unsigned int lir=ir, li1=i1, li2=i2;
 
 	#pragma omp critical (ParticleGenerator_Generate)
 	{
@@ -439,6 +479,11 @@ bool ParticleGenerator::Generate(Particle *part, MagneticField2D *mf, Distributi
 			}
 		}
 	}
+
+    if (print_progress) {
+        size_t indx = ((size_t)lir) + ((size_t)nr)*(((size_t)li1) + ((size_t)n1)*((size_t)li2));
+        progress->PrintProgress(indx+1);
+    }
 
 	if (success) {
         if (!include_drifts || r >= this->rhoeff[li1][li2])

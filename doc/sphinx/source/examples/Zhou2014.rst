@@ -1,0 +1,232 @@
+.. |zhou2014| replace:: [Zhou et al. 2014]
+.. _zhou2014: https://doi.org/10.1063/1.4881469
+
+.. _example-zhou2014:
+
+Synchrotron images from Zhou et al. (2014)
+------------------------------------------
+This example reproduces Figs. 5, 6 and 7 of
+|zhou2014|_. Many other
+figures of that paper can also be reproduced with slight modifications to these
+examples.
+
+.. image:: ../_static/figs/examples/Zhou2014_6.png
+   :width: 100%
+
+**Figure 6** *from |zhou2014|_, simulated using SOFT2. This figure illustrates
+how the radiation spot varies with the magnetic field safety factor.*
+
+Tokamak and detector properties
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+|zhou2014|_ use an analytical magnetic field with circular flux surfaces, which
+happens to also be implemented in SOFT. The parameters of the magnetic field are
+as follows:
+
++--------------------------+-------------------------+
+| **Parameter**            | **Value**               |
++--------------------------+-------------------------+
+| Magnetic field on-axis   | 2 T                     |
++--------------------------+-------------------------+
+| Major radius             | 185 cm                  |
++--------------------------+-------------------------+
+| Minor radius             | 45 cm                   |
++--------------------------+-------------------------+
+| Toroidal field direction | Counter-clockwise (CCW) |
++--------------------------+-------------------------+
+
+For the detector, the parameters used in |zhou2014|_ are (note the directions
+of the axes in Fig. 4, which are different from how the corresponding axes are
+defined in SOFT)
+
++-------------------+--------------------------------------------+
+| **Parameter**     | **Value**                                  |
++-------------------+--------------------------------------------+
+| Position          | :math:`148\hat{x} + 185\hat{y}\,\text{cm}` |
++-------------------+--------------------------------------------+
+| Viewing direction | :math:`\hat{y}`                            |
++-------------------+--------------------------------------------+
+
+Configuration scripts
+^^^^^^^^^^^^^^^^^^^^^
+Since all synchrotron images of |zhou2014|_ are generated in very similar
+setups, we can benefit from splitting the configuration into multiple files.
+To this end, we have divided the problem into three levels.
+
+The first level configures everything that is the same in all figures and is
+represented by the file ``baseline`` in the top-level directory. Next, all
+subfigures of each figure share some characteristics which are configured in
+the files named ``FigXbase`` (with ``X`` replaced by the figure number). These
+files include the ``baseline`` file at the top of the script. Finally, each
+individual subfigure has its own configuration script. These configuration
+scripts include the corresponding ``FigXbase`` script at the top.
+
+.. |baseline| replace:: **baseline**
+.. _baseline: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/baseline
+
+.. |Fig5base| replace:: *Fig5/Fig5base*
+.. _Fig5base: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig5/Fig5base
+.. |Fig5a| replace:: Fig5/a
+.. _Fig5a: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig5/a
+.. |Fig5b| replace:: Fig5/b
+.. _Fig5b: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig5/b
+.. |Fig5c| replace:: Fig5/c
+.. _Fig5c: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig5/c
+.. |Fig5d| replace:: Fig5/d
+.. _Fig5d: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig5/d
+.. |Fig5e| replace:: Fig5/e
+.. _Fig5e: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig5/e
+.. |Fig5f| replace:: Fig5/f
+.. _Fig5f: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig5/f
+.. |Fig5g| replace:: Fig5/g
+.. _Fig5g: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig5/g
+.. |Fig5h| replace:: Fig5/h
+.. _Fig5h: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig5/h
+
+.. |Fig6base| replace:: *Fig6/Fig6base*
+.. _Fig6base: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig6/Fig6base
+.. |Fig6e| replace:: Fig6/e
+.. _Fig6e: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig6/e
+.. |Fig6f| replace:: Fig6/f
+.. _Fig6f: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig6/f
+.. |Fig6g| replace:: Fig6/e
+.. _Fig6g: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig6/g
+.. |Fig6h| replace:: Fig6/h
+.. _Fig6h: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig6/h
+
+.. |Fig7base| replace:: *Fig7/Fig7base*
+.. _Fig7base: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig7/Fig7base
+.. |Fig7a| replace:: Fig7/a
+.. _Fig7a: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig7/a
+.. |Fig7b| replace:: Fig7/b
+.. _Fig7b: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig7/b
+.. |Fig7c| replace:: Fig7/c
+.. _Fig7c: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig7/c
+.. |Fig7d| replace:: Fig7/d
+.. _Fig7d: https://github.com/hoppe93/SOFT2/blob/master/examples/Zhou2014/Fig7/d
+
+.. note::
+   **Tip 1** ---
+   While giving the camera a spectral range corresponding to the visible range
+   (for example between 380-750 nm, as was used in the experiments) is more
+   physically accurate, it makes comparison between SOFT simulations and
+   |zhou2014|_ more difficult, since |zhou2014|_ only consider the spot shape
+   and not the distribution of radiation across the spot.
+
++-------------+----------------------------------------------------+
+| **File**    | **Description**                                    |
++-------------+----------------------------------------------------+
+| |baseline|_ | Baseline configuration applied to all simulations. |
++-------------+----------------------------------------------------+
+| |Fig5base|_ | Baseline for all subfigures of Fig. 5              |
++-------------+----------------------------------------------------+
+| |Fig5a|_    | Configuration of Fig. 5(a).                        |
++-------------+----------------------------------------------------+
+| |Fig5b|_    | Configuration of Fig. 5(b).                        |
++-------------+----------------------------------------------------+
+| |Fig5c|_    | Configuration of Fig. 5(c).                        |
++-------------+----------------------------------------------------+
+| |Fig5d|_    | Configuration of Fig. 5(d).                        |
++-------------+----------------------------------------------------+
+| |Fig5e|_    | Configuration of Fig. 5(e).                        |
++-------------+----------------------------------------------------+
+| |Fig5f|_    | Configuration of Fig. 5(f).                        |
++-------------+----------------------------------------------------+
+| |Fig5g|_    | Configuration of Fig. 5(g).                        |
++-------------+----------------------------------------------------+
+| |Fig5h|_    | Configuration of Fig. 5(h).                        |
++-------------+----------------------------------------------------+
+| |Fig6base|_ | Baseline for all subfigures of Fig. 5              |
++-------------+----------------------------------------------------+
+| |Fig6e|_    | Configuration of Fig. 6(e).                        |
++-------------+----------------------------------------------------+
+| |Fig6f|_    | Configuration of Fig. 6(f).                        |
++-------------+----------------------------------------------------+
+| |Fig6g|_    | Configuration of Fig. 6(g).                        |
++-------------+----------------------------------------------------+
+| |Fig6h|_    | Configuration of Fig. 6(h).                        |
++-------------+----------------------------------------------------+
+| |Fig7base|_ | Baseline for all subfigures of Fig. 7              |
++-------------+----------------------------------------------------+
+| |Fig7a|_    | Configuration of Fig. 7(a).                        |
++-------------+----------------------------------------------------+
+| |Fig7b|_    | Configuration of Fig. 7(b).                        |
++-------------+----------------------------------------------------+
+| |Fig7c|_    | Configuration of Fig. 7(c).                        |
++-------------+----------------------------------------------------+
+| |Fig7d|_    | Configuration of Fig. 7(d).                        |
++-------------+----------------------------------------------------+
+
+..
+   Components of simulation
+   ^^^^^^^^^^^^^^^^^^^^^^^^
+   @MagneticField
+   **************
+   We need to configure a :ref:`module-magneticfield` according to the above table.
+   The magnetic field needs to be of type ``analytical``. Different figures use
+   different safety factors, so this needs to be configured individually for each
+   figure according to how it is specified in |zhou2014|_. A possible baseline
+   configuration that can be used is::
+
+      magnetic_field = EAST;
+      @MagneticField EAST (analytical) {
+          B0     = 2;
+          Rm     = 1.85;
+          rminor = 0.45;
+          qtype  = constant;
+          qa1    = 1;
+          sigmaB = ccw;
+      }
+
+   @ParticleGenerator
+   ******************
+   The :ref:`module-particlegenerator` has to be tweaked for each figure. Most
+   figures distribute particles radially between 0 and 30 cm however, and commonly
+   the runaways are given an energy of 30 MeV. A possible baseline configuration is
+   therefore::
+
+      @ParticleGenerator PGen {
+          r     = 0.0, 0.3, 400;
+          gamma = 60, 60, 1;
+      }
+
+   .. note::
+
+      We could explicitly set the global setting ``particle_pusher`` to ``PGen``,
+      the name of our particle generator. This is however not required if there is
+      only one particle generator defined in the configuration file.
+
+   @Radiation
+   **********
+   For the :ref:`module-radiation` module we need to specify at least three things:
+   (i) the detector to use, (ii) the radiation model to use, and (iii) the output
+   modules to use. We must also add the radiation module we configure to the
+   global ``tools`` setting::
+
+      tools = rad;
+      @Radiation rad {
+          detector  = det;
+          model     = cone;
+          output    = image;
+      }
+
+   .. note::
+
+      It is often useful to set the ``ntoroidal`` resolution parameter of the
+      :ref:`module-radiation` module. This controls the number of toroidal sections
+      that the tokamak is divided into.
+
+   @RadiationModel
+   ***************
+
+   .. note::
+
+      Although it is not necessary to explicitly configure the
+      :ref:`module-particlepusher` for these simulations, it can be configured if
+      if better control of the time step resolution is desired. Time step control
+      is achieved with the ``nt`` setting of the :ref:`module-particlepusher`.
+
+      As for the :ref:`module-particlegenerator`, we could explicitly set the
+      ``particle_generator`` setting to the name of our particle generator, but if
+      only one particle generator is defined in the configuration file this is not
+      required.
+

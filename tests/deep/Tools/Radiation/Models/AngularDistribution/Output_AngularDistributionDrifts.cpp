@@ -122,7 +122,7 @@ RadiationParticle *Output_AngularDistributionDrifts::GetRadiationParticle(Magnet
         throw SOFTException("Trying to access non-existant test particle.");
     
     slibreal_t
-        Jdtdrho = 1.0, Jp = 1.0,
+        Jdtdrho = 1.0,
         gamma = TESTPARTICLES[i][IGAMMA],
         p2 = gamma*gamma - 1.0,
         p = sqrt(p2),
@@ -144,7 +144,7 @@ RadiationParticle *Output_AngularDistributionDrifts::GetRadiationParticle(Magnet
     Vector<3> B(mfd.B), bHat(B/mfd.Babs);
     
     return new RadiationParticle(
-        XX, PP, Jdtdrho, Jp, ppar, pperp,
+        XX, PP, Jdtdrho, ppar, pperp,
         gamma, p2, det->GetPosition(),
         mfd.Babs, B, bHat, m, q, 0, 0, 0,
         mfd.gradB, mfd.curlB, mfd.J

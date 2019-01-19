@@ -41,7 +41,7 @@ void AngularDistribution::Configure(struct global_settings *globset, ConfigBlock
     // qrule2d  -- Quadruature rule to use for the 2D integral
     //             (must be done after 'emission')
     if (nsamples == 1) {
-        if (conf->HasSetting("qrule2D"))
+        if (conf->HasSetting("qrule2d"))
             SOFT::PrintInfo("Number of samples on detector surface is 1. Ignoring setting 'qrule2d'.");
         this->quadrature2d = new ADEval2D(this->emission, this->parent->detector);
     } else if (conf->HasSetting("qrule2d")) {

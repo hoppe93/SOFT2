@@ -1,0 +1,16 @@
+
+<pi>
+
+distribution_function = dist;
+
+@DistributionFunction dist (avalanche) {
+    EHat = 15;
+    lnLambda = 18;
+    Zeff = 3;
+}
+
+@RadiationOutput green (green) {
+    with_f = yes;
+    output = "data/dominant.mat";
+}
+

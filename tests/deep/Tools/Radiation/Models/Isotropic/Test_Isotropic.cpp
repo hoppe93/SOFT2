@@ -36,7 +36,7 @@ bool Test_Isotropic::CheckIsotropicEmission(Isotropic *iso) {
                Bvec[3] = {1.0,0.0,0.0};
     Detector *det = iso->GetParent()->detector;
     RadiationParticle *rp = new RadiationParticle(
-        x, p, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, det->GetPosition(), B, Bvec, Bvec, m, q, 0, 0, 0
+        x, p, 0.0, 0.0, 0.0, 0.0, 0.0, det->GetPosition(), B, Bvec, Bvec, m, q, 0, 0, 0
     );
 
     iso->HandleParticle(rp, 0.0, 1.0);

@@ -43,6 +43,8 @@ void Space3D::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
     // point0
     GetPoint(conf, "point0", point0);
     GetPoint(conf, "point1", point1);
+
+    this->imagesize = pixelsX*pixelsY*pixelsZ;
 }
 
 /**
@@ -78,7 +80,6 @@ void Space3D::Initialize() {
     #pragma omp critical (Space3D_Initialize)
     {
         if (s3dimage == nullptr) {
-            imagesize = pixelsX*pixelsY*pixelsZ;
             s3dimage = new slibreal_t[imagesize];
 
             for (size_t i = 0; i < imagesize; i++)

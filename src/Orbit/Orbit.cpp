@@ -24,12 +24,12 @@ Orbit::Orbit(unsigned int nt, bool calcBDerivatives) {
     this->ppar       = new slibreal_t[nt];
     this->pperp      = new slibreal_t[nt];
     this->Jdtdrho    = new slibreal_t[nt];
-    this->Jp         = new slibreal_t[nt];
     this->_solution  = new slibreal_t[nt*6];
     this->_solution2 = new slibreal_t[nt*6];
 
     this->Babs    = new slibreal_t[nt];
     this->B       = new slibreal_t[nt*3];
+    this->Beffpar = new slibreal_t[nt];
     this->bhat    = new slibreal_t[nt*3];
     this->p2      = new slibreal_t[nt];
     this->ppar2   = new slibreal_t[nt];
@@ -69,10 +69,10 @@ Orbit::~Orbit() {
     delete [] this->bhat;
     delete [] this->B;
     delete [] this->Babs;
+    delete [] this->Beffpar;
 
     delete [] this->_solution2;
     delete [] this->_solution;
-    delete [] this->Jp;
     delete [] this->Jdtdrho;
     delete [] this->pperp;
     delete [] this->ppar;
@@ -101,11 +101,11 @@ void Orbit::CopyTo(Orbit *o) {
     memcpy(o->GetPpar(), ppar, ntau*sizeof(slibreal_t));
     memcpy(o->GetPperp(), pperp, ntau*sizeof(slibreal_t));
     memcpy(o->GetJdtdrho(), Jdtdrho, ntau*sizeof(slibreal_t));
-    memcpy(o->GetJp(), Jp, ntau*sizeof(slibreal_t));
     memcpy(o->GetInternalSolution(), _solution, 6*ntau*sizeof(slibreal_t));
     memcpy(o->GetInternalSolutionSecondary(), _solution2, 6*ntau*sizeof(slibreal_t));
     memcpy(o->GetBabs(), Babs, ntau*sizeof(slibreal_t));
     memcpy(o->GetB(), B, 3*ntau*sizeof(slibreal_t));
+    memcpy(o->GetBeffpar(), Beffpar, ntau*sizeof(slibreal_t));
     memcpy(o->GetBhat(), bhat, 3*ntau*sizeof(slibreal_t));
     memcpy(o->GetP2(), p2, ntau*sizeof(slibreal_t));
     memcpy(o->GetPpar2(), ppar2, ntau*sizeof(slibreal_t));

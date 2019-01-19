@@ -31,7 +31,7 @@ bool Test_ConeProjectionReverse::Run(bool) {
     ConeProjectionReverse *cp = new ConeProjectionReverse(det);
 
     RadiationParticle *rp = new RadiationParticle(
-        X, phat, 1.0, 1.0, ppar, pperp, gamma, p2, Rd, 1.0, BB, BB, m, q, 0, 0, 0
+        X, phat, 1.0, ppar, pperp, gamma, p2, Rd, 1.0, BB, BB, m, q, 0, 0, 0
     );
 
     printf("Fraction = %.16e\n", cp->ComputeOverlappingFraction(rp));

@@ -10,7 +10,7 @@ namespace __Radiation {
             slibreal_t **jacobianB=nullptr;
             slibreal_t B, R, diffel;
             slibreal_t ppar, pperp, gamma, p2;
-            slibreal_t dphi, Rdphi, Jdtdrho, Jp, drho;
+            slibreal_t dphi, Rdphi, Jdtdrho, drho;
             slibreal_t dp1, dp2;
 
             slibreal_t rcp2, rcplen;
@@ -22,7 +22,7 @@ namespace __Radiation {
             RadiationParticle(Orbit*, unsigned int, Vector<3>&);
             RadiationParticle(
                 const Vector<3>&, const Vector<3>&, slibreal_t, slibreal_t,
-                slibreal_t, slibreal_t, slibreal_t, slibreal_t, const Vector<3>&,
+                slibreal_t, slibreal_t, slibreal_t, const Vector<3>&,
                 slibreal_t, const Vector<3>&, const Vector<3>&,
                 slibreal_t, slibreal_t, unsigned int, unsigned int, unsigned int,
                 slibreal_t *gradB=nullptr, slibreal_t *curlB=nullptr, slibreal_t **jacobianB=nullptr
@@ -40,7 +40,6 @@ namespace __Radiation {
             slibreal_t GetDphi()                const { return dphi; }       // Toroidal step (angular difference)
             slibreal_t GetRDphi()               const { return Rdphi; }     // Radial (cylindrical) particle distance times dphi
             slibreal_t GetJdtdrho()             const { return Jdtdrho; } // Spatial Jacobian (times drho and dtau)
-            slibreal_t GetJp()                  const { return Jp; }           // Momentum space Jacobian
             slibreal_t GetDrho()                const { return drho; }       // Radial step
             slibreal_t GetDifferentialElement() const { return diffel; }  // "Total" real+momentum space differential element
 

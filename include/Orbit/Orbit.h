@@ -36,8 +36,6 @@ class Orbit {
 			*ppar,		/* Parallel momentum of particle */
 			*pperp,		/* Perpendicular momentum of particle */
 			*Jdtdrho,	/* Trajectory coordinate Jacobian (times dtau * drho) */
-            *Jp,        /* Momentum-space jacobian (from transformation between
-                           instantaneous to orbit-label coordinates). */
             *_solution, /* Temporary storage of integrator solution */
             *_solution2;/* Temporary storage of secondary integrator solution */
 
@@ -45,6 +43,7 @@ class Orbit {
         slibreal_t
             *Babs,          /* Magnetic field strength vector (1-dimensional) */
             *B,             /* Magnetic field vector (3-dimensional) */
+            *Beffpar,       /* Parallel component of effective magnetic field ("Bstar") */
             *bhat,          /* Magnetic field unit vector (3-dimensional) */
             *p2,            /* Momentum squared */
             *ppar2,         /* Parallel momentum squared */
@@ -77,8 +76,6 @@ class Orbit {
         slibreal_t GetPperp(unsigned int ti) const { return this->pperp[ti]; }
         slibreal_t *GetJdtdrho() const { return this->Jdtdrho; }
         slibreal_t GetJdtdrho(unsigned int ti) const { return this->Jdtdrho[ti]; }
-        slibreal_t *GetJp() const { return this->Jp; }
-        slibreal_t GetJp(unsigned int ti) const { return this->Jp[ti]; }
 
         orbit_class_t GetClassification() const { return this->orbitClass; }
         void SetClassification(const orbit_class_t v) { this->orbitClass = v; }
@@ -92,6 +89,8 @@ class Orbit {
         slibreal_t GetBabs(unsigned int ti) const { return this->Babs[ti]; }
         slibreal_t *GetB() const { return this->B; }
         slibreal_t *GetB(unsigned int ti) const { return (this->B+3*ti); }
+        slibreal_t *GetBeffpar() const { return this->Beffpar; }
+        slibreal_t GetBeffpar(unsigned int ti) const { return this->Beffpar[ti]; }
         slibreal_t *GetBhat() const { return this->bhat; }
         slibreal_t *GetBhat(unsigned int ti) const { return (this->bhat+3*ti); }
         slibreal_t *GetGradB() const { if (hasBDerivatives) return this->gradB; else return nullptr; }

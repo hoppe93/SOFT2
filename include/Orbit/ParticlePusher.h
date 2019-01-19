@@ -29,6 +29,8 @@ class ParticlePusher {
         struct global_settings* globset;
         SOFTEquation *equation;
 
+        bool forceNumericalJacobian = false;
+
         slibreal_t integrator_tol;
         slibreal_t maxtime;
         enum orbittimeunit timeunit;

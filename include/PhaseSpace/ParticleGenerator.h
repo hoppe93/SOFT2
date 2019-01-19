@@ -3,6 +3,7 @@
 
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
+#include <softlib/ProgressTracker.h>
 
 class ParticleGenerator;
 
@@ -28,6 +29,9 @@ class ParticleGenerator {
 		/* Flags */
 		bool include_drifts=false;			// Account for drifts when calculating radial position of particles
 		bool finished=false;				// true if all particles have been generated. false otherwise.
+        bool print_progress=false;          // Print phase space progress continuously
+
+        ProgressTracker *progress;
 	public:
 		ParticleGenerator(MagneticField2D*, ConfigBlock*, struct global_settings*);
         ~ParticleGenerator();

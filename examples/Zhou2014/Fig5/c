@@ -1,0 +1,12 @@
+
+<Fig5base>
+
+# Override settings from the baseline scenario
+@ParticleGenerator PGen {
+    thetap = 0.12, 0.12, 1; # Pitch angle (rad)
+}
+
+# Specify output file names
+@RadiationOutput image   { output = "data/c-image.mat"; }
+@RadiationOutput topview { output = "data/c-topview.mat"; }
+

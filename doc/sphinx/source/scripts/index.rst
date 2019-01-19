@@ -7,6 +7,138 @@ as a list of available modules and options that can be configured.
 
 Scripting language
 ------------------
+SOFT uses a custom language for configuring runs. The language is used for
+assigning values to configuration parameters, and as such, the most common
+construct found in a SOFT configuration file is::
+
+   parameterName = value;
+
+This assigns the value ``value`` to the parameter named ``parameterName``. Note
+the semi-colon at the end of the line, which is mandatory.
+
+Parameters exist on many levels---they can apply globally or to specific modules
+used in the simulation---and are grouped using curly brackets, ``{`` and ``}``.
+Everything between a pair of curly brackets is usually referred to as a *block*.
+Assignments that are outside of a block apply globally, i.e. they do not belong
+to any specific module, but are rather used by *all* modules.
+
+Module parameters are assigned using the syntax shown below::
+
+   @ModuleName blockName (secondary-type) {
+       parameterName1 = value1;
+       ...
+   }
+
+First we specify which type of module we're configuring by stating its name,
+prefixed with an ``@`` sign: ``@ModuleName``. A module is a component of the
+simulation that provides specific functionality. Examples include
+``@ParticleGenerator`` which generates particles for our simulations,
+``@ParticlePusher`` which simulates guiding-center and particle orbits, and
+``@Radiation`` which simulates a radiation detector.
+
+The ``blockName`` is specific to this block of settings. It is possible to
+define several configuration blocks for the same module ``@ModuleName``. Which
+one(s) to use is specified by a parameter in the parent module. For example,
+the ``@Equation`` module (which defines which equations of motion to solve) is
+used by the ``@ParticlePusher`` module, and hence we could define the equation
+to solve using the following code::
+
+   particle_pusher = PPusher;
+
+   @ParticlePusher PPusher {
+       ...
+       equation = gcEquation;
+       ...
+   }
+   @Equation gcEquation (guiding-center) {
+       tolerance = 1e-9;
+   }
+   @Equation pEquation (particle) {
+       tolerance = 1e-9;
+   }
+
+Here we define two separate equations but we only use one. This is due to that
+we assign the configuration block ``gcEquation`` to the ``equation`` parameter
+in the ``PPusher`` configuration block. Note also the parentheses after the
+block names in the configuration blocks of the equations. The parentheses
+surround the "secondary type" of the block, which determines exactly which
+parameters can be set. In the example above, the secondary types determine
+whether SOFT follows particles or guiding-centers. The secondary type can also
+be omitted, but then the name of the configuration block must be that of the
+secondary type, i.e. in the example above we could define ``gcEquation`` as::
+
+   @Equation guiding-center {
+       tolerance = 1e-9;
+   }
+
+of course making sure to change the setting ``equation`` in ``PPusher``.
+
+Note also that the ``@ParticlePusher`` is an example of a module that provides
+core functionality in SOFT. It is therefore selected using the global parameter
+``particle_pusher``, as indicated above.
+
+Comments
+********
+SOFT configuration files support single-line comments. They are started with the
+``#`` symbol and causes SOFT to ignore everything that appears until the next
+newline character.
+
+Include other files
+*******************
+In SOFT2, it is possible to source other configuration scripts. This is done by
+placing the name of the file to include between ``<`` and ``>``. The
+included configuration file will be loaded and all its settings applied before
+proceeding in the parent configuration file. This means that whichever parameter
+assignment comes last applies. As an example, consider the following two
+configuration files:
+
+**file1**::
+
+   parameter1 = value1;
+   parameter2 = value2;
+
+**file2**::
+
+   parameter1 = value3;
+   
+   <file1>
+
+   parameter2 = value4;
+
+After passing ``file2`` to SOFT, i.e. running ``soft file2``, then ``parameter1``
+will be ``value1``, whereas ``parameter2`` (which was assigned after including
+``file1``) will be ``value4``.
+
+Multiple values and strings
+***************************
+SOFT2 allows multiple values to be assigned to a single parameter. An example
+of when this is useful is for vector quantities, such as detector position,
+which needs one value for each component of its position vector. SOFT achieves
+this by splitting the assigned values at each whitespace and comma. For example,
+the following lines assigns three different values to the parameter::
+
+   parameterName = value1 value2 value3;
+   parameterName = value1,value2,value3;
+
+(Note: the two lines are shown to show off the possibilities in SOFT; the two
+lines are equivalent). In some cases it may be desired to assign a value
+containing a space to parameter though, such as when assigning the name of a
+file. To overcome this, SOFT allows values to be surrounded by double quotes::
+
+   parameterName = "value1 value2 value3";
+
+The double quotes causes ``parameterName`` to now instead be assigned *a single*
+value which contains spaces. Double quotes can be used everywhere to emphasize
+what the value being assigned is (even surrounding numbers).
+
+FAQ
+***
+Some frequently asked questions:
+
+**Are newlines mandatory?**
+No, newline characters are not mandatory in SOFT configuration files. The entire
+configuration could be written on a single line. They are however very
+convenient and highly recommended!
 
 Global options
 --------------
@@ -57,7 +189,7 @@ Configurable modules
 +---------------------------------+-----------------------------------------------------+
 | :ref:`module-distribution`      | Distribution functions                              |
 +---------------------------------+-----------------------------------------------------+
-| :ref:`module-equation`          | Equation to solve: "particle" or "guiding-center"   |
+| :ref:`module-equation`          | Equations of motion to solve                        |
 +---------------------------------+-----------------------------------------------------+
 | :ref:`module-magneticfield`     | Magnetic field module                               |
 +---------------------------------+-----------------------------------------------------+

@@ -1,0 +1,16 @@
+#
+# Fig. 5(a)
+#
+# This figure shows a set of guiding-center orbits, neglecting
+# drifts (so i.e. flux surfaces), and reuires us to use the
+# "@Orbits" tool instead.
+########################
+
+<a>
+
+include_drifts = yes;
+
+@Orbits orbs {
+    output = "data/c-orbits.mat";
+}
+

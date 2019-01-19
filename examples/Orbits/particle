@@ -1,0 +1,12 @@
+# Simulate particle orbits
+
+<baseline>
+
+@ParticlePusher PPusher {
+    equation = particle;
+    time     = 1.23e-7;
+    timeunit = seconds;
+    nt       = 10000;
+}
+@Orbits orbits { output = "data/particle.mat"; }
+

@@ -36,14 +36,15 @@ const string ParticlePusher_config =
 "timeunit=poloidal;\n"
 "time=1;\n"
 "nt=1e3;\n"
+"force_numerical_jacobian=yes;\n"
 "nudgevalue=__default__;\n";
 
 const string ParticlePusher::equation_defaults =
-"@Equation guiding-center {\n"
+"@Equation guiding-center (guiding-center) {\n"
 "   method=rkdp45;\n"
 "   tolerance=1e-9;\n"
 "}\n"
-"@Equation particle {\n"
+"@Equation particle (particle) {\n"
 "   method=rkdp45;\n"
 "   tolerance=1e-7;\n"
 "}\n"
@@ -99,6 +100,14 @@ ParticlePusher::ParticlePusher(
         this->nudge_value = s->GetScalar();
     }
 
+    // Force numerical calculation of Jacobian determinant?
+    this->forceNumericalJacobian = true;
+    /*Setting *s = settings.GetSetting("force_numerical_jacobian");
+    if (!s->IsBool())
+        throw ParticlePusherException("Invalid value assigned to parameter 'force_numerical_jacobian'. Expected boolean value.");
+    else
+        this->forceNumericalJacobian = s->GetBool();*/
+
     // Max time
     this->maxtime = init_get_scalar(&settings, "time", "ParticlePusher");
 
@@ -146,28 +155,27 @@ void ParticlePusher::InitDefaults() {
 void ParticlePusher::InitEquation(const string& equation, ConfigBlock& eqnconf) {
 	ConfigBlock *conf;
 
-	if (equation == "guiding-center") {
-		if (!eqnconf.HasSubBlock(CONFBLOCK_EQUATION, "guiding-center"))
-			throw ParticlePusherException("Equation 'guiding-center' has not been configured.");
-		conf = eqnconf.GetConfigBlock(CONFBLOCK_EQUATION, "guiding-center");
+    if (eqnconf.HasSubBlock(CONFBLOCK_EQUATION, equation))
+		conf = eqnconf.GetConfigBlock(CONFBLOCK_EQUATION, equation);
+    else
+		throw ParticlePusherException("No equation named '"+equation+"' specified in configuration.");
 
+    if (conf->GetSecondaryType() == "guiding-center") {
 		GuidingCenterEquation *eq = new GuidingCenterEquation(this->magfield, this->globset);
         this->equation = eq;
 
 		// Choose integrator
 		this->InitGeneralIntegrator(*conf, eq);
-	} else if (equation == "particle") {
-		if (!eqnconf.HasSubBlock(CONFBLOCK_EQUATION, "particle"))
-			throw ParticlePusherException("Equation 'particle' has not been configured.");
-		conf = eqnconf.GetConfigBlock(CONFBLOCK_EQUATION, "particle");
+    } else if (conf->GetSecondaryType() == "particle") {
+		conf = eqnconf.GetConfigBlock(CONFBLOCK_EQUATION, equation);
 		
 		ParticleEquation *eq = new ParticleEquation(this->magfield, this->globset);
         this->equation = eq;
 
 		// Choose integrator
 		this->InitGeneralIntegrator(*conf, eq);
-	} else
-		throw ParticlePusherException("Unrecognized equation '"+equation+"'.");
+    } else
+        throw ParticlePusherException("Unrecognized equation type '%s'.", conf->GetSecondaryType().c_str());
 }
 
 /**
@@ -418,7 +426,7 @@ Orbit *ParticlePusher::Push(Particle *p) {
 
     orbit_class_t cl1 = this->equation->ClassifyOrbit(this->integrator1);
 
-    if (this->calculateJacobianOrbit) {
+    if (this->calculateJacobianOrbit && (!this->magfield->HasMagneticFlux() || this->forceNumericalJacobian)) {
         EvaluateSecondaryOrbit(p, Particle::NUDGE_OUTWARDS);
         orbit_class_t cl2 = this->equation->ClassifyOrbit(this->integrator2);
 
@@ -429,12 +437,12 @@ Orbit *ParticlePusher::Push(Particle *p) {
     // Choose last time step
     switch (this->timeunit) {
         case ORBITTIMEUNIT_SECONDS:
-            if (this->calculateJacobianOrbit)
+            if (this->calculateJacobianOrbit && (!this->magfield->HasMagneticFlux() || this->forceNumericalJacobian))
                 return retorbit->Create(this->maxtime, this->integrator1, this->integrator2, this->equation, p, this->nudge_value, cl1);
             else
                 return retorbit->Create(this->maxtime, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl1);
         default:
-            if (this->calculateJacobianOrbit)
+            if (this->calculateJacobianOrbit && (!this->magfield->HasMagneticFlux() || this->forceNumericalJacobian))
                 return retorbit->Create(poltime, this->integrator1, this->integrator2, this->equation, p, this->nudge_value, cl1);
             else
                 return retorbit->Create(poltime, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl1);

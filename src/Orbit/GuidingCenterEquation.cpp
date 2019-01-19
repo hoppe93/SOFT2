@@ -223,6 +223,7 @@ void GuidingCenterEquation::ToOrbitQuantities(slibreal_t *solution, slibreal_t *
         *pperp = o->GetPperp(),
         *B = o->GetB(),
         *Babs = o->GetBabs(),
+        *Beffpar = o->GetBeffpar(),
         *bhat = o->GetBhat(),
         *p2 = o->GetP2(),
         *ppar2 = o->GetPpar2(),
@@ -231,6 +232,11 @@ void GuidingCenterEquation::ToOrbitQuantities(slibreal_t *solution, slibreal_t *
         *gradB = o->GetGradB(),
         *curlB = o->GetCurlB(),
         **jacobianB = o->GetBJacobian();
+
+    slibreal_t
+        c = LIGHTSPEED,
+        m = this->particle->GetMass(),
+        q = this->particle->GetCharge();
 
     unsigned int i, nt = o->GetNTau();
     for (i = 0; i < nt; i++) {
@@ -246,12 +252,19 @@ void GuidingCenterEquation::ToOrbitQuantities(slibreal_t *solution, slibreal_t *
 
         ppar[i] = solution[i*6+COORD_PPAR];
 
-        slibreal_t *_B;
         if (!o->HasBDerivatives()) {
-            _B = magfield->Eval(X, Y, Z);
+            slibreal_t *_B = magfield->Eval(X, Y, Z);
+
+            B[i*3+0] = _B[0];
+            B[i*3+1] = _B[1];
+            B[i*3+2] = _B[2];
+
+            Babs[i] = sqrt(_B[0]*_B[0] + _B[1]*_B[1] + _B[2]*_B[2]);
+
+            Beffpar[i] = Babs[i];
         } else {
             struct magnetic_field_data md = magfield->EvalDerivatives(X, Y, Z);
-            _B = md.B;
+            slibreal_t *_B = md.B;
 
             gradB[i*3+0] = md.gradB[0];
             gradB[i*3+1] = md.gradB[1];
@@ -264,17 +277,25 @@ void GuidingCenterEquation::ToOrbitQuantities(slibreal_t *solution, slibreal_t *
             for (int j = 0; j < 3; j++)
                 for (int k = 0; k < 3; k++)
                     jacobianB[i*3+j][k] = md.J[j][k];
+
+            B[i*3+0] = _B[0];
+            B[i*3+1] = _B[1];
+            B[i*3+2] = _B[2];
+
+            Babs[i] = sqrt(_B[0]*_B[0] + _B[1]*_B[1] + _B[2]*_B[2]);
+
+            bhat[i*3+0] = _B[0] / Babs[i];
+            bhat[i*3+1] = _B[1] / Babs[i];
+            bhat[i*3+2] = _B[2] / Babs[i];
+
+            Vector<3> _bhat(bhat+3*i), _gradB(gradB+3*i), _curlB(curlB+3*i), __B(_B);
+
+            Vector<3> bhatXgradB = Vector<3>::Cross(_bhat, _gradB);
+            Vector<3> curlBhat = (_curlB + bhatXgradB) / Babs[i];
+            Vector<3> Bstar = __B + (m*c*ppar[i] / q) * curlBhat;
+
+            Beffpar[i] = _bhat.Dot(Bstar);
         }
-
-        B[i*3+0] = _B[0];
-        B[i*3+1] = _B[1];
-        B[i*3+2] = _B[2];
-
-        Babs[i] = sqrt(_B[0]*_B[0] + _B[1]*_B[1] + _B[2]*_B[2]);
-
-        bhat[i*3+0] = _B[0] / Babs[i];
-        bhat[i*3+1] = _B[1] / Babs[i];
-        bhat[i*3+2] = _B[2] / Babs[i];
 
         ppar2[i] = ppar[i]*ppar[i];
         pperp2[i] = solution[i*6+COORD_MU] * 2.0*Babs[i] / (o->GetMass()*LIGHTSPEED*LIGHTSPEED);

@@ -1,0 +1,72 @@
+# Configuration for simulation of bremsstrahlung
+# radiation images.
+#
+# Based on Zhou et al., PoP 21 (2014)
+# https://doi.org/10.1063/1.4881469
+##############################
+
+magnetic_field     = "analytical";
+tools              = rad;
+
+# Configuration of analytical magnetic equilibrium
+@MagneticField analytical {
+    type   = analytical;
+
+    B0     = 5;     # On-axis field strength (T)
+    Rm     = 0.68;  # Major radius (m)
+    rminor = 0.22;  # Minor radius (m)
+
+    # Safety-factor (overriden in other scripts)
+    qtype  = constant;
+    qa1    = 1;
+    sigmaB = ccw;
+}
+
+# Phase space grid
+@ParticleGenerator PGen {
+    a      = 0, 0.95, 400;  # Normalized minor radius
+    gamma  = 60, 60, 1;     # Energy (mc^2) (approx. 30 MeV)
+    thetap = 0.2, 0.2, 1;   # Pitch angle (rad)
+}
+
+# Orbit generator
+@ParticlePusher PPusher {
+    nt       = 5000;        # Number of timesteps per orbit (resolution parameter)
+}
+
+# Radiation tool
+@Radiation rad {
+    detector  = "det";      # Name of detector configuration (quotations optional)
+    ntoroidal = 7000;       # No. of toroidal sections in tokamak (resolution parameter)
+    model     = cone;       # Radiation model to use
+    output    = image topview;  # List of configuration of output
+}
+
+# Detector properties
+# Set up a tangentially viewing HXR camera.
+@Detector det {
+    aperture     = 0.006;
+    position     = 0.68, -0.68, 0;
+    direction    = 0, 1, 0;
+    vision_angle = 0.78 fov;
+    spectrum     = 1, 20, 40;  # Spectral range (normalized to electron rest mass) & resolution
+}
+
+@RadiationModel cone {
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # This is the only setting
+    # specific to bremsstrahlung
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!
+    emission = bremsstrahlung;
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # !!!!!!!!!!!!!!!!!!!!!!!!!!!
+}
+@RadiationOutput image {
+    pixels = 600;
+    output = "data/image.mat";
+}
+@RadiationOutput topview {
+    pixels = 1000;
+    output = "data/topview.mat";
+}
+

@@ -1,0 +1,13 @@
+#
+# Fig. 5(e)
+#
+# This figure is very similar to Fig. 5(a),
+# but also accounts for guiding-center drifts.
+########################
+
+<a>
+
+@Orbits orbs {
+    output = "data/e-orbits.mat";
+}
+

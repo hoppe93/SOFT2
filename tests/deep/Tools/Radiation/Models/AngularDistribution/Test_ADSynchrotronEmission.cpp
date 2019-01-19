@@ -73,6 +73,21 @@ slibreal_t Test_ADSynchrotronEmission::Larmor(
 }
 
 /**
+ * Returns the critical wavelength for the synchrotron spectrum
+ * emitted by the given particle.
+ */
+slibreal_t Test_ADSynchrotronEmission::GetLambdaC(RadiationParticle *rp) {
+    slibreal_t
+        l = 4.0*M_PI*ELECTRON_MASS*LIGHTSPEED / (3.0*ELEMENTARY_CHARGE),
+        gamma = rp->GetGamma(),
+        pperp = rp->GetPperp(),
+        gammapar = gamma / sqrt(1.0 + pperp*pperp),
+        B = rp->GetB();
+
+    return (l*gammapar / (gamma*gamma*B));
+}
+
+/**
  * Test the angular distribution of synchrotron radiation.
  *
  * NOTE: We must divide by the "Ginzburg factor", 1 - betapar*cos(mu),
@@ -103,7 +118,8 @@ bool Test_ADSynchrotronEmission::CheckAngularDistribution(
         cosMu = cos(mu);
 
         nHat = ade.GetParams()->bHat*cosMu + ade.GetParams()->oneHat*sinMu;
-        I += 4.0 * ade.CalculateAngularDistribution(nHat, sinMu, cosMu) * sinMu / (1.0 - betapar*cosMu);
+        ade.CalculateAngularDistribution(nHat, sinMu, cosMu);
+        I += 4.0 * ade.GetTotalEmission() * sinMu / (1.0 - betapar*cosMu);
     }
     for (i = 2; i < n-1; i+=2) {
         mu = i*dMu;
@@ -111,7 +127,8 @@ bool Test_ADSynchrotronEmission::CheckAngularDistribution(
         cosMu = cos(mu);
 
         nHat = ade.GetParams()->bHat*cosMu + ade.GetParams()->oneHat*sinMu;
-        I += 2.0 * ade.CalculateAngularDistribution(nHat, sinMu, cosMu) * sinMu / (1.0 - betapar*cosMu);
+        ade.CalculateAngularDistribution(nHat, sinMu, cosMu);
+        I += 2.0 * ade.GetTotalEmission() * sinMu / (1.0 - betapar*cosMu);
     }
 
     I *= dMu / 3.0;
@@ -124,6 +141,81 @@ bool Test_ADSynchrotronEmission::CheckAngularDistribution(
     if (isnan(Delta) || Delta >= tol) {
         this->PrintError("Angular distribution of synchrotron radiation does not integrate to Larmor's formula. Delta = %e", Delta);
         return false;
+    }
+
+    return true;
+}
+
+/**
+ * Test the angular and spectral distribution of synchrotron radiation.
+ *
+ * NOTE: We must divide by the "Ginzburg factor", 1 - betapar*cos(mu),
+ * since the Larmor formula is the radiation from one particle, while
+ * the Ginzburg factor is for a stationary distribution of particles.
+ */
+bool Test_ADSynchrotronEmission::CheckAngularSpectralDistribution(
+    ADSynchrotronEmission &ade, RadiationParticle *rp,
+    slibreal_t tol
+) {
+    unsigned int i;
+    const unsigned int n = 2000;
+    slibreal_t I = 0, mu;
+    slibreal_t dMu = M_PI / n;
+    slibreal_t betapar = rp->GetPpar() / rp->GetGamma(),
+        sinMu, cosMu;
+    Vector<3> nHat;
+
+    ade.PrepareSpectrum(rp);
+
+    // Integrate using Simpson's rule (endpoints
+    // don't matter, since sin(0) = sin(pi) = 0)
+    
+    // The inner points do matter...
+    for (i = 1; i < n; i+=2) {
+        mu = i*dMu;
+        sinMu = sin(mu);
+        cosMu = cos(mu);
+
+        nHat = ade.GetParams()->bHat*cosMu + ade.GetParams()->oneHat*sinMu;
+        ade.CalculateSpectrum(nHat, sinMu, cosMu);
+        ade.IntegrateSpectrum();
+        I += 4.0 * ade.GetTotalEmission() * sinMu / (1.0 - betapar*cosMu);
+    }
+    for (i = 2; i < n-1; i+=2) {
+        mu = i*dMu;
+        sinMu = sin(mu);
+        cosMu = cos(mu);
+
+        nHat = ade.GetParams()->bHat*cosMu + ade.GetParams()->oneHat*sinMu;
+        ade.CalculateSpectrum(nHat, sinMu, cosMu);
+        ade.IntegrateSpectrum();
+        I += 2.0 * ade.GetTotalEmission() * sinMu / (1.0 - betapar*cosMu);
+    }
+
+    I *= dMu / 3.0;
+
+    slibreal_t
+        B = rp->GetB(),
+        gamma2 = 1.0 + rp->GetP2(),
+        gamma3 = gamma2*sqrt(gamma2),
+        gammapar2 = 1.0 / sqrt(1.0 - rp->GetPpar()*rp->GetPpar()/gamma2),
+        betaperp2 = rp->GetPperp()*rp->GetPperp() / gamma2,
+        m = rp->GetMass(),
+        e = fabs(rp->GetCharge()),
+
+        fI = 8.0*e*B*gamma3*gammapar2*betaperp2 / (3.0*m*LIGHTSPEED);
+
+    // Evaluate Larmor's formula
+    slibreal_t L = Larmor(rp);
+    // Compute relative error
+    slibreal_t Delta = fabs((L-I) / L);
+
+    printf("I = %e, fI = %e,   I/fI = %e\n", I, fI, I/fI);
+
+    if (isnan(Delta) || Delta >= tol) {
+        this->PrintError("Angular and spectral distribution of synchrotron radiation does not integrate to Larmor's formula. Delta = %e", Delta);
+        this->PrintError("L/I = %e", L/I);
+        return true;
     }
 
     return true;
@@ -158,7 +250,7 @@ RadiationParticle *Test_ADSynchrotronEmission::GetRadiationParticle(unsigned int
         throw SOFTException("Trying to access non-existant test-particle.");
 
     slibreal_t
-        Jdtdrho = 1.0, Jp = 1.0,
+        Jdtdrho = 1.0,
         gamma = TESTPARTICLES[i][IGAMMA],
         p2 = gamma*gamma - 1.0,
         p  = sqrt(p2),
@@ -175,7 +267,7 @@ RadiationParticle *Test_ADSynchrotronEmission::GetRadiationParticle(unsigned int
 
     return new RadiationParticle(
         X, P,
-        Jdtdrho, Jp, ppar, pperp,
+        Jdtdrho, ppar, pperp,
         gamma, p2, det->GetPosition(),
         B, Bvec, bHat, m, q, 0, 0, 0
     );
@@ -198,8 +290,18 @@ bool Test_ADSynchrotronEmission::Run(bool) {
 
         // Test angular distribution
         success &= CheckAngularDistribution(ade, rp, ANGDIST_TOL);
+    }
+
+    for (i = 0; i < NTESTPARTICLES && success; i++) {
+        RadiationParticle *rp = GetRadiationParticle(i, det);
+        slibreal_t lambdac = GetLambdaC(rp);
+
+        Detector *det2 = GetDetector(4000, lambdac/10.0, lambdac*1000.0);
+        ADSynchrotronEmission adsp(det2, &globset);
 
         // Test angular & spectral distribution
+        success &= CheckAngularSpectralDistribution(adsp, rp, ANGDIST_TOL);
+
         // Test angular & spectral distribution w/ polarization
     }
 

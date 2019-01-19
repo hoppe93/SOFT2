@@ -24,7 +24,6 @@ class Orbits : public Tool {
 			**ppar,		/* Parallel momentum of particle */
 			**pperp,	/* Perpendicular momentum of particle */
 			**Jdtdrho,	/* Trajectory coordinate Jacobian (times dtau * drho) */
-            **Jp,       /* Momentum-space Jacobian */
             **solution; /* Temporary storage of integrator solution */
 
         /* Related vectors */
