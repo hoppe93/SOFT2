@@ -4,9 +4,11 @@
 class Orbit;
 
 typedef enum {
-	ORBIT_CLASS_UNKNOWN,
-	ORBIT_CLASS_PASSING,
-	ORBIT_CLASS_TRAPPED
+	ORBIT_CLASS_UNKNOWN=0,
+    ORBIT_CLASS_COLLIDED=1,       // Collided with wall
+    ORBIT_CLASS_STAGNATION=2,     // Stagnation orbit
+	ORBIT_CLASS_PASSING=3,        // Passing orbit
+	ORBIT_CLASS_TRAPPED=4         // Trapped orbit
 } orbit_class_t;
 
 #include <softlib/config.h>

@@ -27,6 +27,8 @@ slibreal_t
     **Orbits::pperp2,    /* Perpendicular momentum squared */
     **Orbits::gamma;     /* Lorentz factor (or energy) */
 
+orbit_class_t *Orbits::classification;  /* Orbit classifications */
+
 /**
  * Constructor.
  *
@@ -63,6 +65,8 @@ Orbits::Orbits(MagneticField2D *__UNUSED__(mf), ParticleGenerator *pg, ParticleP
             Orbits::ppar2    = Allocate(norbits, ntau, 1);
             Orbits::pperp2   = Allocate(norbits, ntau, 1);
             Orbits::gamma    = Allocate(norbits, ntau, 1);
+
+            Orbits::classification = Allocate_class(norbits);
         }
     }
 }
@@ -77,7 +81,7 @@ Orbits::Orbits(MagneticField2D *__UNUSED__(mf), ParticleGenerator *pg, ParticleP
  * dims:    Number of dimensions in the quantity (i.e., for position,
  *          represented as a 3-vector, this is 3).
  */
-slibreal_t **Orbits::Allocate(unsigned int norbits, unsigned int ntau, unsigned int dims) {
+slibreal_t **Orbits::Allocate(const unsigned int norbits, const unsigned int ntau, const unsigned int dims) {
     slibreal_t **p = new slibreal_t*[norbits];
     p[0] = new slibreal_t[norbits*ntau*dims];
 
@@ -85,6 +89,19 @@ slibreal_t **Orbits::Allocate(unsigned int norbits, unsigned int ntau, unsigned 
 
     for (unsigned int i = 1; i < norbits; i++)
         p[i] = p[i-1] + ntau*dims;
+
+    return p;
+}
+
+/**
+ * Allocate an array for storing 'norbits'
+ * orbit classification values.
+ *
+ * norbits: Number of orbits to allocate space for.
+ */
+orbit_class_t *Orbits::Allocate_class(const unsigned int norbits) {
+    orbit_class_t *p = new orbit_class_t[norbits];
+    this->allocatedBytes += norbits * sizeof(orbit_class_t);
 
     return p;
 }
@@ -116,6 +133,8 @@ void Orbits::Handle(Orbit *o, Particle *__UNUSED__(part)) {
     memcpy(Orbits::ppar2[index], o->GetPpar2(), ntau*sizeof(slibreal_t));
     memcpy(Orbits::pperp2[index], o->GetPperp2(), ntau*sizeof(slibreal_t));
     memcpy(Orbits::gamma[index], o->GetGamma(), ntau*sizeof(slibreal_t));
+
+    Orbits::classification[index] = o->GetClassification();
 }
 
 /**
