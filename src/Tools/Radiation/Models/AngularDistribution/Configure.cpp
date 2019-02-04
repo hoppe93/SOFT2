@@ -53,7 +53,7 @@ void AngularDistribution::Configure(struct global_settings *globset, ConfigBlock
         else
             throw AngularDistributionException("Invalid quadrature rule specified.");
     } else
-        this->quadrature2d = new ADSimpson2D(this->emission, this->parent->detector, this->nsamples);
+        this->quadrature2d = new ADTrapz2D(this->emission, this->parent->detector, this->nsamples);
 }
 
 /**
