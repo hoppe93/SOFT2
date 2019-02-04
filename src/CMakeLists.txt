@@ -84,6 +84,7 @@ set(tool_radiation
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/AngularDistribution/Quadrature2D/ADQuadrature2D.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/AngularDistribution/Quadrature2D/Eval2D.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/AngularDistribution/Quadrature2D/Simpson2D.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/AngularDistribution/Quadrature2D/Trapz2D.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Configure.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/EdgeCondition.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Handle.cpp"

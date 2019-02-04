@@ -31,11 +31,11 @@ class Test_ADQuadrature2D : public UnitTest {
 
         __Radiation::Detector *GetDetector(unsigned int);
         __Radiation::RadiationParticle *GetRadiationParticle(unsigned int, __Radiation::Detector*);
-        template<class T, typename ... Args> bool IsotropicEmission(slibreal_t, Args&& ...);
-        bool IsotropicEmissionTest(__Radiation::ADQuadrature2D&, __Radiation::RadiationParticle*, slibreal_t);
+        template<class T, typename ... Args> bool IsotropicEmission(const std::string&, slibreal_t, Args&& ...);
+        bool IsotropicEmissionTest(const std::string&, __Radiation::ADQuadrature2D&, __Radiation::RadiationParticle*, slibreal_t);
         bool IsotropicEmissionVerify(
-            __Radiation::ADQuadrature2D&, __Radiation::RadiationParticle*, bool, slibreal_t,
-            slibreal_t*, slibreal_t*, slibreal_t*, slibreal_t*
+            const string&, __Radiation::ADQuadrature2D&, __Radiation::RadiationParticle*,
+            bool, slibreal_t, slibreal_t*, slibreal_t*, slibreal_t*, slibreal_t*
         );
         bool Run(bool);
 };
