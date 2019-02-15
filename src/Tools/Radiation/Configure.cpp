@@ -217,7 +217,7 @@ void Radiation::Configure(
     // Initialize flags used in improved trapz
     if (this->quadrature == Radiation::QUADRATURE_FINDSOV) {
         this->torflags = new char[ntoroidal];
-        memset(this->torflags, 0, ntoroidal);
+        ResetToroidalFlags();
     }
 
     // wall opacity

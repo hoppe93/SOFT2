@@ -69,6 +69,9 @@ unsigned int Radiation::IntegrateToroidalImproved(
 
     // Toroidal integral
     int j = startj;
+    if (j == (int)ntoroidal)
+        j = 0;
+
     do {
         // Has this point already been counted?
         if (this->torflags[j])
@@ -114,5 +117,12 @@ NEXT:
     } while (j != startj);
 
     return niter;
+}
+
+/**
+ * Reset toroidal flags array.
+ */
+void Radiation::ResetToroidalFlags() {
+    memset(this->torflags, 0, ntoroidal*sizeof(char));
 }
 
