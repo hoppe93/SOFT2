@@ -36,11 +36,14 @@ class Orbits : public Tool {
             **pperp2,    /* Perpendicular momentum squared */
             **gamma;     /* Lorentz factor (or energy) */
 
+        static orbit_class_t *classification;   /* Orbit classifications */
+
         ParticlePusher *pusher; // Reference to pusher object
     public:
         Orbits(MagneticField2D*, ParticleGenerator*, ParticlePusher*);
 
-        slibreal_t **Allocate(unsigned int, unsigned int, unsigned int);
+        slibreal_t **Allocate(const unsigned int, const unsigned int, const unsigned int);
+        orbit_class_t *Allocate_class(const unsigned int);
         virtual void Configure(struct global_settings*, ConfigBlock*, ConfigBlock*) override;
         virtual void Finish() override {}
         virtual void Handle(Orbit*, Particle*) override;

@@ -196,6 +196,12 @@ void ParticlePusher::InitGeneralIntegrator(ConfigBlock& conf, IntegratorEquation
 			throw ParticlePusherException("Assigned tolerance value is not a scalar.");
 
         integrator_tol = s->GetScalar();
+        
+        if (integrator_tol >= 1.0)
+            throw ParticlePusherException("Assigned relative tolerance is greater than one.");
+        else if (integrator_tol <= REAL_EPSILON)
+            throw ParticlePusherException("Assigned relative tolerance is smaller than the machine epsilon (%e).", REAL_EPSILON);
+
 		RKDP45<6> *rkdp45_1 = new RKDP45<6>(integrator_tol),
                   *rkdp45_2 = new RKDP45<6>(integrator_tol);
 		rkdp45_1->SetEquation(eq);
@@ -413,18 +419,32 @@ Orbit *ParticlePusher::Push(Particle *p) {
     // If the chosen time unit is 'poloidal time', and
     // the particle appears to not move in the poloidal
     // plane, then this particle cannot be pushed any further
-    if (restflag || outside_domain_flag)
-        return nullptr;
+    if (restflag) {
+        orbit_class_t cl = ORBIT_CLASS_STAGNATION;
+        slibreal_t time = this->integrator1->LastTime();
+
+        return retorbit->Create(time, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl);
+    } else if (outside_domain_flag) {
+        orbit_class_t cl = ORBIT_CLASS_COLLIDED;
+        slibreal_t time = this->integrator1->LastTime();
+
+        return retorbit->Create(time, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl);
+    }
+
     if (this->timeunit == ORBITTIMEUNIT_POLOIDAL)
         poltime = FindPoloidalTime(this->equation, this->integrator1);
 
-    orbit_class_t cl1 = this->equation->ClassifyOrbit(this->integrator1);
+    orbit_class_t cl1;
+    if (outside_domain_flag)
+        cl1 = ORBIT_CLASS_COLLIDED;
+    else
+        cl1 = this->equation->ClassifyOrbit(this->integrator1);
 
     if (this->calculateJacobianOrbit && (!this->magfield->HasMagneticFlux() || this->forceNumericalJacobian)) {
         EvaluateSecondaryOrbit(p, Particle::NUDGE_OUTWARDS);
         orbit_class_t cl2 = this->equation->ClassifyOrbit(this->integrator2);
 
-        if (cl1 != cl2 || outside_domain_flag)
+        if (cl1 != cl2)
             EvaluateSecondaryOrbit(p, Particle::NUDGE_INWARDS);
     }
 

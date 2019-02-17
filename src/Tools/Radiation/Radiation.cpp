@@ -40,10 +40,22 @@ Radiation::~Radiation() {
  * p: Particle object associcated with the orbit.
  */
 void Radiation::Handle(Orbit *o, Particle *p) {
-    if (this->quadrature == QUADRATURE_FINDSOV)
-        HandleTrapzImproved(o, p);
-    else
-        HandleTrapz(o, p);
+    switch (o->GetClassification()) {
+        case ORBIT_CLASS_TRAPPED:
+        case ORBIT_CLASS_PASSING:
+            if (this->quadrature == QUADRATURE_FINDSOV)
+                HandleTrapzImproved(o, p);
+            else
+                HandleTrapz(o, p);
+            break;
+
+        // Ignore these types of orbits
+        case ORBIT_CLASS_UNKNOWN:
+        case ORBIT_CLASS_COLLIDED:
+        case ORBIT_CLASS_STAGNATION:
+        default:
+            return;
+    }
 }
 
 /**

@@ -9,6 +9,7 @@
 #include "Tools/Radiation/Models/AngularDistribution/ADSynchrotronEmission.h"
 #include "Tools/Radiation/Models/AngularDistribution/Quadrature2D/ADEval2D.h"
 #include "Tools/Radiation/Models/AngularDistribution/Quadrature2D/ADSimpson2D.h"
+#include "Tools/Radiation/Models/AngularDistribution/Quadrature2D/ADTrapz2D.h"
 
 using namespace std;
 using namespace __Radiation;
@@ -45,12 +46,14 @@ void AngularDistribution::Configure(struct global_settings *globset, ConfigBlock
             SOFT::PrintInfo("Number of samples on detector surface is 1. Ignoring setting 'qrule2d'.");
         this->quadrature2d = new ADEval2D(this->emission, this->parent->detector);
     } else if (conf->HasSetting("qrule2d")) {
-        if ((*conf)["qrule2d"] == "simpson")
+        if ((*conf)["qrule2d"] == "trapz")
+            this->quadrature2d = new ADTrapz2D(this->emission, this->parent->detector, this->nsamples);
+        else if ((*conf)["qrule2d"] == "simpson")
             this->quadrature2d = new ADSimpson2D(this->emission, this->parent->detector, this->nsamples);
         else
             throw AngularDistributionException("Invalid quadrature rule specified.");
     } else
-        this->quadrature2d = new ADSimpson2D(this->emission, this->parent->detector, this->nsamples);
+        this->quadrature2d = new ADTrapz2D(this->emission, this->parent->detector, this->nsamples);
 }
 
 /**

@@ -1,33 +1,30 @@
 /**
  * Radiation model 'AngularDistribution'
  *
- * Implementation of a 2D Simpson quadrature rule
+ * Implementation of a 2D trapezoidal quadrature rule
  * for the integration over the detector surface.
  */
 
 #include <softlib/config.h>
 #include "Tools/Radiation/Models/AngularDistribution.h"
 #include "Tools/Radiation/Models/AngularDistributionException.h"
-#include "Tools/Radiation/Models/AngularDistribution/Quadrature2D/ADSimpson2D.h"
+#include "Tools/Radiation/Models/AngularDistribution/Quadrature2D/ADTrapz2D.h"
 
 using namespace __Radiation;
 
 /**
  * Constructor.
  */
-ADSimpson2D::ADSimpson2D(ADEmission *em, Detector *det, unsigned int nsamples) : ADQuadrature2D(em, det) {
-    if (nsamples % 2 == 1)
-        throw AngularDistributionException("The number of points of the quadrature must be even when using the 'simpson' quadrature.");
-
+ADTrapz2D::ADTrapz2D(ADEmission *em, Detector *det, unsigned int nsamples) : ADQuadrature2D(em, det) {
     this->nsamples = nsamples;
 }
 
 /**
- * Carry out a 2D Simpson integration over the detector surface.
+ * Carry out a 2D trapezoidal integration over the detector surface.
  *
  * rp: Object representing the particle emission state.
  */
-slibreal_t ADSimpson2D::Integrate(
+slibreal_t ADTrapz2D::Integrate(
     RadiationParticle *rp, bool pol,
     slibreal_t *I, slibreal_t *Q, slibreal_t *U, slibreal_t *V
 ) {
@@ -48,7 +45,7 @@ slibreal_t ADSimpson2D::Integrate(
  * I, Q, U, V: Arrays to store the integrated Stokes parameters in.
  */
 template<bool withSpectrum, bool withPolarization>
-slibreal_t ADSimpson2D::_OuterIntegral(
+slibreal_t ADTrapz2D::_OuterIntegral(
     RadiationParticle *rp,
     slibreal_t *I, slibreal_t *Q, slibreal_t *U, slibreal_t *V
 ) {
@@ -60,48 +57,39 @@ slibreal_t ADSimpson2D::_OuterIntegral(
         nDotNHat = this->detector->GetDirection().Dot(rp->GetRCPHat());
     unsigned int i;
 
-    dX = rdet / nsamples;
+    dX = rdet / (nsamples-1);
 
     if (withSpectrum)
         ResetSpectra<withPolarization>(nwavelengths, this->I, this->Q, this->U, this->V);
 
     // First endpoint
-    S  = _InnerIntegral<withSpectrum, withPolarization>(rdet2, dX, rdet2, rp);
+    S  = 0.5*_InnerIntegral<withSpectrum, withPolarization>(rdet2, dX, rdet2, rp);
     if (withSpectrum)
         SumSpectra<withPolarization>(
-            1.0, nwavelengths, I, Q, U, V,
+            0.5, nwavelengths, I, Q, U, V,
             this->I, this->Q, this->U, this->V
         );
 
     // Second endpoint
-    S += _InnerIntegral<withSpectrum, withPolarization>(-rdet2, dX, rdet2, rp);
+    S += 0.5*_InnerIntegral<withSpectrum, withPolarization>(-rdet2, dX, rdet2, rp);
     if (withSpectrum)
         SumSpectra<withPolarization>(
-            1.0, nwavelengths, I, Q, U, V,
+            0.5, nwavelengths, I, Q, U, V,
             this->I, this->Q, this->U, this->V
         );
 
     // Inner points
-    for (i = 1; i < nsamples; i += 2) {
-        S += 4.0 * _InnerIntegral<withSpectrum, withPolarization>(i*dX - rdet2, dX, rdet2, rp);
+    for (i = 1; i < nsamples-1; i++) {
+        S += _InnerIntegral<withSpectrum, withPolarization>(i*dX - rdet2, dX, rdet2, rp);
         if (withSpectrum)
             SumSpectra<withPolarization>(
-                4.0, nwavelengths, I, Q, U, V,
-                this->I, this->Q, this->U, this->V
-            );
-    }
-    for (i = 2; i < nsamples-1; i += 2) {
-        S += 2.0 * _InnerIntegral<withSpectrum, withPolarization>(i*dX - rdet2, dX, rdet2, rp);
-        if (withSpectrum)
-            SumSpectra<withPolarization>(
-                2.0, nwavelengths, I, Q, U, V,
+                1.0, nwavelengths, I, Q, U, V,
                 this->I, this->Q, this->U, this->V
             );
     }
 
-    // Account for the differential element
-    // and factor 1/3 in the Y integral as well
-    slibreal_t d = nDotNHat * dX*dX / 9.0;
+    // Multiply with the differential element
+    slibreal_t d = nDotNHat * dX*dX;
     if (withSpectrum)
         MultiplySpectra<withPolarization>(
             d, nwavelengths, I, Q, U, V
@@ -123,7 +111,7 @@ slibreal_t ADSimpson2D::_OuterIntegral(
     this->emission->CalculateAngularDistribution(a.n, a.sinMu, a.cosMu))
 
 template<bool withSpectrum, bool withPolarization>
-slibreal_t ADSimpson2D::_InnerIntegral(
+slibreal_t ADTrapz2D::_InnerIntegral(
     slibreal_t X, slibreal_t dX, slibreal_t rdet2,
     RadiationParticle *rp
 ) {
@@ -139,10 +127,10 @@ slibreal_t ADSimpson2D::_InnerIntegral(
     // Endpoint 1
     EvaluateAngles(X, rdet2, rp, a);
     EVAL(withSpectrum, withPolarization);
-    S  = this->emission->GetTotalEmission() / a.rcp2;
+    S  = 0.5*this->emission->GetTotalEmission() / a.rcp2;
     if (withSpectrum)
         SumSpectra<withPolarization>(
-            1.0 / a.rcp2, nwavelengths, I, Q, U, V,
+            0.5 / a.rcp2, nwavelengths, I, Q, U, V,
             this->emission->GetStokesI(),
             this->emission->GetStokesQ(),
             this->emission->GetStokesU(),
@@ -152,10 +140,10 @@ slibreal_t ADSimpson2D::_InnerIntegral(
     // Endpoint 2
     EvaluateAngles(X, -rdet2, rp, a);
     EVAL(withSpectrum, withPolarization);
-    S += this->emission->GetTotalEmission() / a.rcp2;
+    S += 0.5*this->emission->GetTotalEmission() / a.rcp2;
     if (withSpectrum)
         SumSpectra<withPolarization>(
-            1.0 / a.rcp2, nwavelengths, I, Q, U, V,
+            0.5 / a.rcp2, nwavelengths, I, Q, U, V,
             this->emission->GetStokesI(),
             this->emission->GetStokesQ(),
             this->emission->GetStokesU(),
@@ -163,29 +151,14 @@ slibreal_t ADSimpson2D::_InnerIntegral(
         );
 
     // Inner points
-    for (i = 1; i < nsamples; i += 2) {
+    for (i = 1; i < nsamples-1; i++) {
         EvaluateAngles(X, i*dX - rdet2, rp, a);
         EVAL(withSpectrum, withPolarization);
 
-        S += 4.0 * this->emission->GetTotalEmission() / a.rcp2;
+        S += this->emission->GetTotalEmission() / a.rcp2;
         if (withSpectrum)
             SumSpectra<withPolarization>(
-                4.0 / a.rcp2, nwavelengths, I, Q, U, V,
-                this->emission->GetStokesI(),
-                this->emission->GetStokesQ(),
-                this->emission->GetStokesU(),
-                this->emission->GetStokesV()
-            );
-    }
-
-    for (i = 2; i < nsamples-1; i += 2) {
-        EvaluateAngles(X, i*dX - rdet2, rp, a);
-        EVAL(withSpectrum, withPolarization);
-
-        S += 2.0 * this->emission->GetTotalEmission() / a.rcp2;
-        if (withSpectrum)
-            SumSpectra<withPolarization>(
-                2.0 / a.rcp2, nwavelengths, I, Q, U, V,
+                1.0 / a.rcp2, nwavelengths, I, Q, U, V,
                 this->emission->GetStokesI(),
                 this->emission->GetStokesQ(),
                 this->emission->GetStokesU(),

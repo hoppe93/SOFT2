@@ -15,6 +15,7 @@
 #include "Tools/Radiation/Models/Isotropic.h"
 #include "Tools/Radiation/Models/AngularDistribution/Quadrature2D/ADEval2D.h"
 #include "Tools/Radiation/Models/AngularDistribution/Quadrature2D/ADSimpson2D.h"
+#include "Tools/Radiation/Models/AngularDistribution/Quadrature2D/ADTrapz2D.h"
 
 using namespace std;
 using namespace __Radiation;
@@ -75,7 +76,7 @@ RadiationParticle *Test_ADQuadrature2D::GetRadiationParticle(unsigned int i, Det
  * Conduct the 'isotropic emission' test.
  */
 template<class T, typename ... Args>
-bool Test_ADQuadrature2D::IsotropicEmission(slibreal_t tol, Args&& ... args) {
+bool Test_ADQuadrature2D::IsotropicEmission(const string& modelname, slibreal_t tol, Args&& ... args) {
     bool success = true;
 
     // Test with no spectrum
@@ -84,7 +85,7 @@ bool Test_ADQuadrature2D::IsotropicEmission(slibreal_t tol, Args&& ... args) {
     T q1(&em1, det1, forward<Args>(args) ...);
 
     for (unsigned int i = 0; i < NTESTPARTICLES; i++)
-        success &= IsotropicEmissionTest(q1, GetRadiationParticle(i, det1), tol);
+        success &= IsotropicEmissionTest(modelname, q1, GetRadiationParticle(i, det1), tol);
 
     // Test with spectrum
     Detector *det2 = GetDetector(40);
@@ -92,7 +93,7 @@ bool Test_ADQuadrature2D::IsotropicEmission(slibreal_t tol, Args&& ... args) {
     T q2(&em2, det2, forward<Args>(args) ...);
 
     for (unsigned int i = 0; i < NTESTPARTICLES; i++)
-        success &= IsotropicEmissionTest(q2, GetRadiationParticle(i, det2), tol);
+        success &= IsotropicEmissionTest(modelname, q2, GetRadiationParticle(i, det2), tol);
 
     delete det1;
     delete det2;
@@ -107,7 +108,7 @@ bool Test_ADQuadrature2D::IsotropicEmission(slibreal_t tol, Args&& ... args) {
  * q:  2D quadrature rule to test.
  * rp: RadiationParticle object specifying the particle emitting state.
  */
-bool Test_ADQuadrature2D::IsotropicEmissionTest(ADQuadrature2D &q, RadiationParticle *rp, slibreal_t tol) {
+bool Test_ADQuadrature2D::IsotropicEmissionTest(const string& modelname, ADQuadrature2D &q, RadiationParticle *rp, slibreal_t tol) {
     bool success = true;
     Detector *det = q.GetDetector();
     slibreal_t
@@ -122,9 +123,9 @@ bool Test_ADQuadrature2D::IsotropicEmissionTest(ADQuadrature2D &q, RadiationPart
         I[i] = Q[i] = U[i] = V[i] = 0.0;
 
     // Check...
-    success &= IsotropicEmissionVerify(q, rp, false, tol, I, Q, U, V);
+    success &= IsotropicEmissionVerify(modelname, q, rp, false, tol, I, Q, U, V);
     if (det->GetNWavelengths() > 0)
-        success &= IsotropicEmissionVerify(q, rp, true,  tol, I, Q, U, V);
+        success &= IsotropicEmissionVerify(modelname, q, rp, true,  tol, I, Q, U, V);
 
     delete [] I;
     delete [] Q;
@@ -139,6 +140,7 @@ bool Test_ADQuadrature2D::IsotropicEmissionTest(ADQuadrature2D &q, RadiationPart
  * the correct result for the given RadiationParticle.
  */
 bool Test_ADQuadrature2D::IsotropicEmissionVerify(
+    const string& modelname,
     ADQuadrature2D &q, RadiationParticle *rp,
     bool withPolarization, slibreal_t tol,
     slibreal_t *I, slibreal_t *Q, slibreal_t *U, slibreal_t *V
@@ -167,7 +169,8 @@ bool Test_ADQuadrature2D::IsotropicEmissionVerify(
     // First, check returned power...
     slibreal_t Delta = fabs((pwr-correct)/correct);
     if (isnan(Delta) || Delta >= tol) {
-        this->PrintError("Integrated (total) isotropic emission does not match with theory. Delta = %e", Delta);
+        this->PrintError("%s: Integrated (total) isotropic emission does not match with theory. Delta = %e", modelname.c_str(), Delta);
+        exit(-1);
         return false;
     }
 
@@ -187,7 +190,7 @@ bool Test_ADQuadrature2D::IsotropicEmissionVerify(
             }
 
             if (isnan(Delta) || Delta >= tol) {
-                this->PrintError("Integrated (spectral) emission does not match at wavelength #%u. Max Delta = %e", Delta, i+1);
+                this->PrintError("%s: Integrated (spectral) emission does not match at wavelength #%u. Max Delta = %e", modelname.c_str(), Delta, i+1);
                 return false;
             }
         }
@@ -201,12 +204,17 @@ bool Test_ADQuadrature2D::IsotropicEmissionVerify(
  */
 bool Test_ADQuadrature2D::Run(bool) {
     bool success = true;
-    slibreal_t nSimpsonPoints = 10;
-    slibreal_t SIMPSON2D_TOL = 1e-5;
+    slibreal_t
+        nSimpsonPoints = 10,
+        nTrapzPoints = 10;
+    slibreal_t
+        QUAD_TOL = 1e-5;
 
-    if (!IsotropicEmission<ADEval2D>(SIMPSON2D_TOL))
+    if (!IsotropicEmission<ADEval2D>("Eval2D", QUAD_TOL))
         success = false;
-    if (!IsotropicEmission<ADSimpson2D>(SIMPSON2D_TOL, nSimpsonPoints))
+    if (!IsotropicEmission<ADSimpson2D>("Simpson2D", QUAD_TOL, nSimpsonPoints))
+        success = false;
+    if (!IsotropicEmission<ADTrapz2D>("Trapz2D", QUAD_TOL, nTrapzPoints))
         success = false;
 
     return success;

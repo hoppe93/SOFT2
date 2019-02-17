@@ -46,7 +46,7 @@ RadialProfile *InitRadialProfile(MagneticField2D *magfield, Setting *rpset, Conf
     else if (type == "uniform")
         return new UniformRadialProfile();
     else
-        throw SOFTException("Radial profile '%s': type: Unrecognized value assigned to parameter.", conf->GetName().c_str());
+        throw SOFTException("Radial profile '%s': type: Unrecognized value assigned to parameter.", name.c_str());
 }
 
 /**

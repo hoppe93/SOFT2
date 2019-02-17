@@ -101,14 +101,6 @@ void SOFTLocal::Run(unsigned int *invalid) {
         
         o = pp->Push(p);
 
-        /* Invalid orbit (for example, poloidal
-           time is used and particle is on the
-           magnetic axis) */
-        if (o == nullptr) {
-            inv++;
-            continue;
-        }
-
         // Pass orbit to tools (whether it was completed or not)
         this->thandler->Handle(o, p);
     }
