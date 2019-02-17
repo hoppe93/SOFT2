@@ -38,9 +38,6 @@ RadialProfile *InitRadialProfile(MagneticField2D *magfield, Setting *rpset, Conf
 
     ConfigBlock *conf = root->GetConfigBlock(CONFBLOCK_RADIALPROFILE, name);
 
-    if (!conf->HasSetting("type"))
-        throw SOFTException("Radial profile '%s': Type of radial profile not specified.");
-
     type = conf->GetSecondaryType();
     if (type == "linear")
         return InitLinearRadialProfile(magfield, conf);
