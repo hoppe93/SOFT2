@@ -43,7 +43,7 @@ DistributionFunction *InitDistributionFunction(MagneticField2D *magfield, Config
     else if (type == "numerical")
         df = InitNumericalDistribution(conf);
     else if (type == "unit")
-        df = new UnitDistributionFunction();
+        df = InitUnitDistributionFunction(magfield, conf, root);
     else
         throw SOFTException("Distribution function '%s': type: Unrecognized distribution function type: '%s'.", conf->GetName().c_str(), type.c_str());
 
@@ -234,5 +234,21 @@ SOFTDistributionFunction *InitNumericalDistribution(ConfigBlock *conf) {
     }
 
     return new SOFTDistributionFunction(name, logarithmize, interptype);
+}
+
+RadialDistributionFunction *InitUnitDistributionFunction(MagneticField2D *magfield, ConfigBlock *conf, ConfigBlock *root) {
+    RadialProfile *radprof;
+
+    // Load radial profile (if specified)
+    if (conf->HasSetting("radprof")) {
+        Setting *set = conf->GetSetting("radprof");
+        radprof = InitRadialProfile(magfield, set, root, conf->GetName());
+    } else
+        radprof = new UniformRadialProfile();
+
+    // Combine...
+    return new RadialDistributionFunction(
+        radprof, new UnitDistributionFunction()
+    );
 }
 

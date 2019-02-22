@@ -19,6 +19,7 @@ RadialDistributionFunction *InitCODEDistribution(MagneticField2D*, ConfigBlock*,
 DistributionFunction *InitLUKEDistribution(ConfigBlock*);
 DistributionFunction *InitNORSEDistribution(MagneticField2D*, ConfigBlock*, ConfigBlock*);
 SOFTDistributionFunction *InitNumericalDistribution(ConfigBlock*);
+RadialDistributionFunction *InitUnitDistributionFunction(MagneticField2D*, ConfigBlock*, ConfigBlock*);
 
 // Radial profiles
 RadialProfile *InitRadialProfile(MagneticField2D*, Setting*, ConfigBlock*, const std::string&);
