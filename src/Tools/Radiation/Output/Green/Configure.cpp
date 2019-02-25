@@ -183,7 +183,11 @@ void Green::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
  * Initialize this output module (after configuration).
  */
 void Green::Initialize() {
-    this->function = new slibreal_t[this->fsize];
+    try {
+        this->function = new slibreal_t[this->fsize];
+    } catch (bad_alloc& ba) {
+        throw GreenException("Failed to allocate memory for Green's function: %s.", ba.what());
+    }
 
     // Initialize function
     for (size_t i = 0; i < this->fsize; i++)
