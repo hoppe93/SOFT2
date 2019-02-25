@@ -77,8 +77,8 @@ void Green::Welcome(const string &prefix) {
     SOFT::PrintInfo(prefix+"Function size:       %.1f %s (%zu bytes)",
         gfsize, gfsize_prefix[unit], this->fsize
     );
-    SOFT::PrintInfo(prefix+"Required memory:     %.1f %s (%zu bytes)",
-        gfmem, gfsize_prefix[unitmem], gf_totsize
+    SOFT::PrintInfo(prefix+"Required memory:     %.1f %s (%zu bytes, %d threads)",
+        gfmem, gfsize_prefix[unitmem], gf_totsize, omp_get_num_threads()
     );
 }
 
