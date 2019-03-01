@@ -53,8 +53,8 @@ string Green::TranslateFormat(const string& fmt) {
  * Print info/welcome message.
  */
 void Green::Welcome(const string &prefix) {
-    size_t gf_totsize = this->fsize * omp_get_num_threads();
-    slibreal_t gfsize = this->fsize;
+    size_t gf_totsize = this->fsize * sizeof(slibreal_t) * omp_get_num_threads();
+    slibreal_t gfsize = this->fsize * sizeof(slibreal_t);
     slibreal_t gfmem  = gf_totsize;
 
     int unit = 0, unitmem = 0;
@@ -75,7 +75,7 @@ void Green::Welcome(const string &prefix) {
     string fmt = TranslateFormat(format);
     SOFT::PrintInfo(prefix+"Function format:     %s", fmt.c_str());
     SOFT::PrintInfo(prefix+"Function size:       %.1f %s (%zu bytes)",
-        gfsize, gfsize_prefix[unit], this->fsize
+        gfsize, gfsize_prefix[unit], this->fsize*sizeof(slibreal_t)
     );
     SOFT::PrintInfo(prefix+"Required memory:     %.1f %s (%zu bytes, %d threads)",
         gfmem, gfsize_prefix[unitmem], gf_totsize, omp_get_num_threads()
