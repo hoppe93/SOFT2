@@ -6,7 +6,7 @@
 namespace __Radiation {
     class Korger {
         public:
-            Korger(ConfigBlock*);
+            Korger(Detector*, ConfigBlock*);
 
             virtual void ApplyOptics(
                 const struct Optics::Efield&,

@@ -20,9 +20,12 @@ namespace __Radiation {
                 std::complex<slibreal_t> *Ex, *Ey;
                 Vector<3> xhat, yhat, zhat;
             };
+
+            // Pointer to simulation detector
+            Detector *detector;
         private:
         public:
-            Optics();
+            Optics(Detector *det) { this->detector = det; }
 
             virtual void ApplyOptics(
                 const struct Efield&,
