@@ -10,8 +10,7 @@ tools = rad;
 num_threads = 4;
 include_drifts = no;
 
-@MagneticField MF_UnitQ {
-    type = analytical;
+@MagneticField MF_UnitQ (analytical) {
     B0 = 2.0;
     Rm = 1.7;
     rminor = 0.5;
@@ -36,7 +35,7 @@ include_drifts = no;
     nt = 1000;
 }
 
-@EquationGuidingCenter guiding-center {
+@Equation guiding-center (guiding-center) {
     method = rkdp45;
     tolerance = 1e-9;
 }
@@ -46,8 +45,8 @@ include_drifts = no;
     detector = det;
     ntoroidal = 2500;
     model = cone;
-    #output = green;
-    output = image;
+    output = green;
+    #output = image;
     wall_opacity = transparent;
 }
 @Detector det {
@@ -62,12 +61,12 @@ include_drifts = no;
     projection = reverse;
 }
 @RadiationOutput green {
-    output = green.mat;
+    output = green.h5;
     pixels = 300;
     format = "12ij";
 }
 @RadiationOutput image {
-    output = image.mat;
+    output = image.h5;
     pixels = 300;
 }
 

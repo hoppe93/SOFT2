@@ -9,9 +9,11 @@ import sys
 
 # Tests
 import distribution.runtest as distribution
+import orbits.classification.runtest as orbitclassification
 
 TESTS = [
-    {'name': 'distribution', 'desc': 'Verify that distribution functions are properly applied', 'run': distribution.run}
+    {'name': 'distribution', 'desc': 'Verify that distribution functions are properly applied', 'run': distribution.run},
+    {'name': 'orbit-classification', 'desc': 'Verify that orbits are properly classified', 'run': orbitclassification.run}
 ]
 
 SOFTPATH = '../../build/src/soft'

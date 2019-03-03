@@ -1,6 +1,5 @@
 
 <../pi>
-num_threads = 1;
 
 @RadiationModel cone {
     projection = reverse;
