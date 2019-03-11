@@ -3,11 +3,37 @@
  * the cone model.
  */
 
+#include <complex>
 #include "Tools/Radiation/synchrotron_func.h"
 #include "Tools/Radiation/Models/Cone/ConeSynchrotronEmission.h"
 #include "Tools/Radiation/RadiationParticle.h"
+#include "Tools/Radiation/Optics/Optics.h"
 
 using namespace __Radiation;
+using namespace std;
+
+/**
+ * Constructor.
+ */
+ConeSynchrotronEmission::ConeSynchrotronEmission(Detector *det, MagneticField2D *mf, bool polarization) : ConeEmission(det, mf) {
+    if (polarization) {
+        this->Efield.nE = det->GetNWavelengths();
+
+        this->Efield.Ex = new complex<slibreal_t>[this->Efield.nE];
+        this->Efield.Ey = new complex<slibreal_t>[this->Efield.nE];
+    } else
+        this->Efield.nE = 0;
+}
+
+/**
+ * Destructor.
+ */
+ConeSynchrotronEmission::~ConeSynchrotronEmission() {
+    if (this->Efield.nE > 0) {
+        delete [] this->Efield.Ey;
+        delete [] this->Efield.Ex;
+    }
+}
 
 /**
  * Calculates the total emission and/or spectrum and/or
@@ -61,7 +87,28 @@ void ConeSynchrotronEmission::CalculateTotalEmission(RadiationParticle *rp) {
  * rp: Object representing the particle emitting state.
  */
 void ConeSynchrotronEmission::CalculateSpectrum(RadiationParticle *rp) {
-    __CalculateSpectrum<false>(rp);
+    slibreal_t gamma2 = rp->GetGamma() * rp->GetGamma(),
+        ppar2 = rp->GetPpar() * rp->GetPpar(),
+        pperp2 = rp->GetPperp() * rp->GetPperp(),
+        betapar2 = ppar2 / gamma2,
+        betaperp2 = pperp2 / gamma2,
+        beta = sqrt(betapar2+betaperp2),
+        gammapar2 = gamma2 / (1.0 + pperp2),
+        gammapar = sqrt(gammapar2);
+
+    slibreal_t c = LIGHTSPEED, e = fabs(rp->GetCharge()), l, lcl,
+        m = rp->GetMass(), B = rp->GetB(),
+        pf = c*e*e / (sqrt(3.0)*EPS0*gamma2) * gammapar2 * (1.0 - betapar2/beta),
+        lc = 4.0*M_PI*m*c*gammapar / (3*gamma2*e*B), ikf;
+
+    // Evaluate spectrum at each wavelength
+    for (unsigned int i = 0; i < nwavelengths; i++) {
+        l = wavelengths[i];
+        lcl = lc/l;
+
+        ikf = synchrotron_func1(lcl);
+        I[i] = (pf/(l*l*lc)) * ikf;
+    }
 }
 
 /**
@@ -70,7 +117,45 @@ void ConeSynchrotronEmission::CalculateSpectrum(RadiationParticle *rp) {
  * rp: Object representing the particle emitting state.
  */
 void ConeSynchrotronEmission::CalculatePolarization(RadiationParticle *rp) {
-    __CalculateSpectrum<true>(rp);
+    slibreal_t gamma2 = rp->GetGamma() * rp->GetGamma(),
+        ppar2 = rp->GetPpar() * rp->GetPpar(),
+        pperp2 = rp->GetPperp() * rp->GetPperp(),
+        betapar2 = ppar2 / gamma2,
+        betaperp2 = pperp2 / gamma2,
+        beta = sqrt(betapar2+betaperp2),
+        gammapar2 = gamma2 / (1.0 + pperp2),
+        gammapar = sqrt(gammapar2);
+
+    slibreal_t c = LIGHTSPEED, e = fabs(rp->GetCharge()),
+        m = rp->GetMass(), B = rp->GetB(),
+        pf = c*e*e / (sqrt(3.0)*EPS0*gamma2) * gammapar2 * (1.0 - betapar2/beta),
+        lc = 4.0*M_PI*m*c*gammapar / (3*gamma2*e*B);
+    
+    Vector<3> bhat = this->magfield->Eval(rp->GetPosition());
+    bhat.Normalize();
+
+    // Compute basis vectors
+    slibreal_t nDotB = rp->GetRCPHat().Dot(bhat);
+    Efield.zhat = rp->GetRCPHat();
+    Efield.yhat =-Vector<3,complex<slibreal_t>>::Cross(rp->GetRCPHat(), bhat) / (complex<slibreal_t>)sqrt(1.0 - nDotB*nDotB);
+    Efield.xhat = Vector<3,complex<slibreal_t>>::Cross(Efield.yhat, Efield.zhat);
+
+    // Compute "electric field" components
+    for (unsigned int i = 0; i < nwavelengths; i++) {
+        slibreal_t
+            l = wavelengths[i],
+            lcl = lc/l;
+
+        slibreal_t ikf1 = synchrotron_func1(lcl);
+        slibreal_t ikf2 = synchrotron_func2(lcl);
+
+        // Perp direction
+        Efield.Ex[i] = sqrt((pf/(l*l*lc)) * (ikf1 - ikf2));
+        // Parallel direction
+        Efield.Ey[i] = -1i * sqrt((pf/(l*l*lc)) * (ikf1 + ikf2));
+    }
+
+    this->detector->GetOptics()->ApplyOptics(Efield, I, Q, U, V);
 }
 
 /**
@@ -82,6 +167,7 @@ void ConeSynchrotronEmission::CalculatePolarization(RadiationParticle *rp) {
  * rp:                    Object representing the particle
  *                        emitting state.
  */
+/*
 template<bool calculatePolarization>
 void ConeSynchrotronEmission::__CalculateSpectrum(RadiationParticle *rp) {
     unsigned int i;
@@ -147,6 +233,7 @@ void ConeSynchrotronEmission::__CalculateSpectrum(RadiationParticle *rp) {
         }
     }
 }
+*/
 
 /**
  * Integrates the synchrotron spectrum to produce a

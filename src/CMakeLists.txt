@@ -98,6 +98,7 @@ set(tool_radiation
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Projection/Reverse.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Isotropic/Configure.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Isotropic/Isotropic.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Optics/Korger.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Output.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Output/Green/Configure.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Output/Green/Green.cpp"

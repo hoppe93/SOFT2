@@ -2,6 +2,7 @@
 #define _CONE_EMISSION_H
 
 #include <softlib/config.h>
+#include <softlib/MagneticField/MagneticField2D.h>
 #include "Tools/Radiation/Radiation.h"
 #include "Tools/Radiation/RadiationParticle.h"
 
@@ -13,8 +14,9 @@ namespace __Radiation {
             unsigned int nwavelengths = 0;
 
             Detector *detector;
+            MagneticField2D *magfield;
         public:
-            ConeEmission(Detector*);
+            ConeEmission(Detector*, MagneticField2D*);
             virtual ~ConeEmission();
             virtual void HandleParticle(RadiationParticle*, bool) = 0;
 

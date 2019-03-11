@@ -25,8 +25,8 @@ namespace __Radiation {
 
             slibreal_t Z2;      // Square of effective plasma charge
         public:
-            ConeBremsstrahlungEmission(Detector *det, const slibreal_t Zeff)
-                : ConeEmission(det) {
+            ConeBremsstrahlungEmission(Detector *det, MagneticField2D *mf, const slibreal_t Zeff)
+                : ConeEmission(det, mf) {
                 this->Z2 = Zeff*Zeff;
             };
             ~ConeBremsstrahlungEmission() {}

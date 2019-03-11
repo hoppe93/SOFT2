@@ -9,7 +9,7 @@
 namespace __Radiation {
     class ConeUnitEmission : public ConeEmission {
         public:
-            ConeUnitEmission(Detector *det) : ConeEmission(det) {};
+            ConeUnitEmission(Detector *det, MagneticField2D *mf) : ConeEmission(det, mf) {};
             ~ConeUnitEmission() {}
 
             void HandleParticle(RadiationParticle*, bool);

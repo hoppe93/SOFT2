@@ -28,6 +28,7 @@ using namespace std;
 using namespace __Radiation;
 
 int Radiation::CONFBLOCK_T_DETECTOR;
+int Radiation::CONFBLOCK_T_DETECTOR_OPTICS;
 int Radiation::CONFBLOCK_T_MODEL;
 int Radiation::CONFBLOCK_T_OUTPUT;
 
@@ -126,7 +127,7 @@ void Radiation::Configure(
             throw RadiationException("No detector with name '%s' defined.", detname.c_str());
         
         ConfigBlock *cb = root->GetConfigBlock(CONFBLOCK_T_DETECTOR, detname);
-        SetDetector(new __Radiation::Detector(cb));
+        SetDetector(new __Radiation::Detector(cb, root));
     }
 
     // ntoroidal
@@ -151,17 +152,6 @@ void Radiation::Configure(
     for (unsigned int i = 0; i < ntoroidal; i++) {
         cosphi[i] = cos(i*dphi);
         sinphi[i] = sin(i*dphi);
-    }
-
-    // model
-    if (!conf->HasSetting("model"))
-        throw RadiationException("No radiation model specified.");
-    else {
-        string modname = (*conf)["model"];
-        if (!root->HasSubBlock(CONFBLOCK_T_MODEL, modname))
-            throw RadiationException("No radiation model with name '%s' defined.", modname.c_str());
-
-        SetModel(SetupRadiationModel(globset, root->GetConfigBlock(CONFBLOCK_T_MODEL, modname), root));
     }
 
     // output
@@ -189,6 +179,17 @@ void Radiation::Configure(
             this->output[i] = SetupRadiationOutput(cb, root);
             this->measuresPolarization |= this->output[i]->MeasuresPolarization();
         }
+    }
+
+    // model
+    if (!conf->HasSetting("model"))
+        throw RadiationException("No radiation model specified.");
+    else {
+        string modname = (*conf)["model"];
+        if (!root->HasSubBlock(CONFBLOCK_T_MODEL, modname))
+            throw RadiationException("No radiation model with name '%s' defined.", modname.c_str());
+
+        SetModel(SetupRadiationModel(globset, root->GetConfigBlock(CONFBLOCK_T_MODEL, modname), root));
     }
 
     // torthreshold
@@ -245,9 +246,10 @@ void Radiation::Configure(
  * conf: Configuration object to prepare.
  */
 void Radiation::PrepareConfiguration(Configuration *conf) {
-    CONFBLOCK_T_DETECTOR = conf->RegisterBlockType("@Detector");
-    CONFBLOCK_T_MODEL    = conf->RegisterBlockType("@RadiationModel");
-    CONFBLOCK_T_OUTPUT   = conf->RegisterBlockType("@RadiationOutput");
+    CONFBLOCK_T_DETECTOR        = conf->RegisterBlockType("@Detector");
+    CONFBLOCK_T_DETECTOR_OPTICS = conf->RegisterBlockType("@DetectorOptics");
+    CONFBLOCK_T_MODEL           = conf->RegisterBlockType("@RadiationModel");
+    CONFBLOCK_T_OUTPUT          = conf->RegisterBlockType("@RadiationOutput");
 }
 
 /**

@@ -1,10 +1,13 @@
 #ifndef _RADIATION_KORGER_H
 #define _RADIATION_KORGER_H
 
-#include "Tools/Radiation/Optics/Korger.h"
+#include <softlib/config.h>
+#include <softlib/Configuration.h>
+#include "Tools/Radiation/Detector.h"
+#include "Tools/Radiation/Optics/Optics.h"
 
 namespace __Radiation {
-    class Korger {
+    class Korger : public Optics {
         public:
             Korger(Detector*, ConfigBlock*);
 
