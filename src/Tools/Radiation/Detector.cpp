@@ -251,6 +251,7 @@ void Detector::SetupBasisVectors() {
     } else {
         ehat1[0] = direction[1];
         ehat1[1] =-direction[0];
+        ehat1[2] = 0.0;
 
         ehat1.Normalize();
     }

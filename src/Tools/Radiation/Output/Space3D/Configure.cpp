@@ -38,6 +38,9 @@ void Space3D::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
 
         this->pixelsX = s->GetUnsignedInteger64();
         this->pixelsY = this->pixelsZ = this->pixelsX;
+
+        if (this->pixelsX == 0)
+            throw Space3DException("Invalid value assigned to parameter 'pixels'.");
     }
 
     // point0
