@@ -5,14 +5,15 @@
 The ``@RadiationOutput`` modules allow one to consider various radiation
 quantities, such as images, spectra, Green's functions and more. At the moment,
 there are five different radiation output sub-modules available:
-:ref:`module-ro-green`, :ref:`module-ro-image`, :ref:`module-ro-space3d`,
-:ref:`module-ro-spectrum` and :ref:`module-ro-topview`.
+:ref:`module-ro-green`, :ref:`module-ro-image`, :ref:`module-ro-sovvolume`,
+:ref:`module-ro-space3d`, :ref:`module-ro-spectrum` and :ref:`module-ro-topview`.
 
 .. toctree::
    :hidden:
 
    RadiationOutput/Green
    RadiationOutput/Image
+   RadiationOutput/SoVVolume
    RadiationOutput/Space3D
    RadiationOutput/Spectrum
    RadiationOutput/Topview
@@ -20,19 +21,21 @@ there are five different radiation output sub-modules available:
 Available sub-modules
 ---------------------
 
-+---------------------------------+-------------------------------+
-| **Module name**                 | **Output description**        |
-+---------------------------------+-------------------------------+
-| :ref:`module-ro-green`          | Green's/weight functions      |
-+---------------------------------+-------------------------------+
-| :ref:`module-ro-image`          | Camera images                 |
-+---------------------------------+-------------------------------+
-| :ref:`module-ro-space3d`        | 3D maps of radiation          |
-+---------------------------------+-------------------------------+
-| :ref:`module-ro-spectrum`       | Radiation spectra             |
-+---------------------------------+-------------------------------+
-| :ref:`module-ro-topview`        | Tokamak topviews of radiation |
-+---------------------------------+-------------------------------+
++---------------------------------+---------------------------------------------+
+| **Module name**                 | **Output description**                      |
++---------------------------------+---------------------------------------------+
+| :ref:`module-ro-green`          | Green's/weight functions                    |
++---------------------------------+---------------------------------------------+
+| :ref:`module-ro-image`          | Camera images                               |
++---------------------------------+---------------------------------------------+
+| :ref:`module-ro-sovvolume`      | Calculate the surface-of-visibility volume. |
++---------------------------------+---------------------------------------------+
+| :ref:`module-ro-space3d`        | 3D maps of radiation                        |
++---------------------------------+---------------------------------------------+
+| :ref:`module-ro-spectrum`       | Radiation spectra                           |
++---------------------------------+---------------------------------------------+
+| :ref:`module-ro-topview`        | Tokamak topviews of radiation               |
++---------------------------------+---------------------------------------------+
 
 Example configuration
 ---------------------
@@ -52,3 +55,4 @@ block::
        # ...or even...
        output = outModule1, outModule2, outModule3;
    }
+

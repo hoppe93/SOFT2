@@ -6,11 +6,10 @@
 magnetic_field = MF_UnitQ;
 particle_generator = PGen;
 particle_pusher = PPusher;
+distribution_function = dist;
 tools = rad;
-num_threads = 20;
 
-@MagneticField MF_UnitQ {
-    type = analytical;
+@MagneticField MF_UnitQ (analytical) {
     B0 = 5.0;
     Rm = 1.7;
     rminor = 0.5;
@@ -21,7 +20,8 @@ num_threads = 20;
 @ParticleGenerator PGen {
     #a = 0.05,0.95,100;
     #a = 0.55,0.95,100;
-    a = 0,0.45,100;
+    #a = 0,0.45,100;
+    a = 0,1.0,400;
     p=10,10,1;
     thetap=0.2,0.2,1;
 }
@@ -30,19 +30,28 @@ num_threads = 20;
     equation = guiding-center;
     timeunit = poloidal;
     time = 1;
-    nt = 1000;
+    nt = 2000;
 }
 
-@EquationGuidingCenter guiding-center {
+@Equation guiding-center {
     method = rkdp45;
     tolerance = 1e-5;
+}
+
+@DistributionFunction dist (avalanche) {
+    EHat = 1;
+    Zeff = 1;
+    lnLambda = 1;
+    radprof = rprof;
+}
+@RadialProfile rprof (linear) {
+    #amax = 0.45;
 }
 
 # Tool stuff
 @Radiation rad {
     detector = det;
-    ntoroidal = 1500;
-    #ntoroidal = 100;
+    ntoroidal = 7500;
     model = isotropic;
     output = image topview;
 }
@@ -50,17 +59,18 @@ num_threads = 20;
     aperture = 0.006;
     direction = 0,1,0;
     position = 0,-2.5,-0.2;
+    #position = 0,-2.5,0;
     vision_angle = 1.1 fov;
     #vision_angle = 0.8 fov;
 }
-@RadiationModel isotropic {
+@RadiationModel isotropic (isotropic) {
     value = 1.0;
 }
-@RadiationOutput image {
+@RadiationOutput image (image) {
     output = isotropic.mat;
     pixels = 1000;
 }
-@RadiationOutput topview {
+@RadiationOutput topview (topview) {
     output = topview.mat;
     pixels = 1000;
 }

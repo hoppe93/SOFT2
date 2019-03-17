@@ -50,24 +50,24 @@ void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
 
         // Functions for copying either Stokes parameters
         // or spectrum
-        auto copyStokes = [this,&I,&Q,&U,&V,&diffel,&inc,&index]() {
+        auto copyStokes = [this,&I,&Q,&U,&V,&diffel,&inc,&index,&wavindex]() {
             size_t i, fsw = this->fsizeWithoutStokes;
             for (i = 0; i < (unsigned)this->nw; i++, index+=inc) {
                 #pragma omp atomic update
-                this->function[fsw*0 + index + i] += I[i] * diffel;
+                this->function[fsw*0 + index + i*wavindex] += I[i] * diffel;
                 #pragma omp atomic update
-                this->function[fsw*1 + index + i] += Q[i] * diffel;
+                this->function[fsw*1 + index + i*wavindex] += Q[i] * diffel;
                 #pragma omp atomic update
-                this->function[fsw*2 + index + i] += U[i] * diffel;
+                this->function[fsw*2 + index + i*wavindex] += U[i] * diffel;
                 #pragma omp atomic update
-                this->function[fsw*3 + index + i] += V[i] * diffel;
+                this->function[fsw*3 + index + i*wavindex] += V[i] * diffel;
             }
         };
-        auto copySpec = [this,&I,&diffel,&inc,&index]() {
+        auto copySpec = [this,&I,&diffel,&inc,&index,&wavindex]() {
             int i;
             for (i = 0; i < nw; i++, index+=inc) {
                 #pragma omp atomic update
-                this->function[index+i] += I[i] * diffel;
+                this->function[index+i*wavindex] += I[i] * diffel;
             }
         };
 

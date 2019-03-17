@@ -79,7 +79,7 @@ def saveFigure(ax, fig, outname):
 
     fcolor = fig.patch.get_facecolor()
 
-    fig.canvas.print_figure(outname, bbox_inches='tight', pad_inches=0, facecolor=fcolor)
+    fig.canvas.print_figure(outname, bbox_inches='tight', pad_inches=0, facecolor=fcolor, dpi=600)
 
 
 def plothelp():

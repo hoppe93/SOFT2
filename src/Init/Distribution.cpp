@@ -7,6 +7,7 @@
 #include <softlib/DistributionFunction/DistributionFunction.h>
 #include <softlib/DistributionFunction/AnalyticalAvalanche.h>
 #include <softlib/DistributionFunction/CODEDistributionFunction.h>
+#include <softlib/DistributionFunction/LUKEDistributionFunction.h>
 #include <softlib/DistributionFunction/LinearRadialProfile.h>
 #include <softlib/DistributionFunction/PowerRadialProfile.h>
 #include <softlib/DistributionFunction/RadialProfile.h>
@@ -37,11 +38,11 @@ DistributionFunction *InitDistributionFunction(MagneticField2D *magfield, Config
     else if (type == "code")
         df = InitCODEDistribution(magfield, conf, root);
     else if (type == "luke")
-        df = InitLUKEDistribution(conf);
+        df = InitLUKEDistribution(magfield, conf);
     else if (type == "norse")
         df = InitNORSEDistribution(magfield, conf, root);
     else if (type == "numerical")
-        df = InitNumericalDistribution(conf);
+        df = InitNumericalDistribution(magfield, conf);
     else if (type == "unit")
         df = InitUnitDistributionFunction(magfield, conf, root);
     else
@@ -175,22 +176,7 @@ RadialDistributionFunction *InitCODEDistribution(MagneticField2D *magfield, Conf
 /**
  * Initialize distribution function from LUKE output.
  */
-DistributionFunction *InitLUKEDistribution(ConfigBlock *conf) {
-    throw SOFTException("Distribution function '%s': type: Support for LUKE distribution functions has not been implemented yet.", conf->GetName().c_str());
-}
-
-/**
- * Initialize distribution function from NORSE output.
- */
-DistributionFunction *InitNORSEDistribution(MagneticField2D*, ConfigBlock *conf, ConfigBlock*) {
-    throw SOFTException("Distribution function '%s': type: Support for NORSE distribution functions has not been implemented yet.", conf->GetName().c_str());
-}
-
-/**
- * Initialize distribution function from a 3D numerical distribution
- * (aka SOFT distribution).
- */
-SOFTDistributionFunction *InitNumericalDistribution(ConfigBlock *conf) {
+DistributionFunction *InitLUKEDistribution(MagneticField2D *magfield, ConfigBlock *conf) {
     Setting *set;
     string name;
     bool logarithmize = false;
@@ -233,7 +219,64 @@ SOFTDistributionFunction *InitNumericalDistribution(ConfigBlock *conf) {
             );
     }
 
-    return new SOFTDistributionFunction(name, logarithmize, interptype);
+    return new LUKEDistributionFunction(name, magfield, logarithmize, interptype);
+}
+
+/**
+ * Initialize distribution function from NORSE output.
+ */
+DistributionFunction *InitNORSEDistribution(MagneticField2D*, ConfigBlock *conf, ConfigBlock*) {
+    throw SOFTException("Distribution function '%s': type: Support for NORSE distribution functions has not been implemented yet.", conf->GetName().c_str());
+}
+
+/**
+ * Initialize distribution function from a 3D numerical distribution
+ * (aka SOFT distribution).
+ */
+SOFTDistributionFunction *InitNumericalDistribution(MagneticField2D *magfield, ConfigBlock *conf) {
+    Setting *set;
+    string name;
+    bool logarithmize = false;
+    int interptype = NumericMomentumSpaceDistributionFunction::INTERPOLATION_CUBIC;
+    
+    // Name
+    if (!conf->HasSetting("name"))
+        throw SOFTException("Distribution function '%s': Name of numerical distribution function file not specified.", conf->GetName().c_str());
+    else {
+        set = conf->GetSetting("name");
+        if (set->GetNumberOfValues() != 1)
+            throw SOFTException("Distribution function '%s': name: Invalid value assigned to parameter. Expected string.", conf->GetName().c_str());
+
+        name = set->GetString();
+    }
+
+    // Interpolate logarithmically
+    if (conf->HasSetting("logarithmize")) {
+        set = conf->GetSetting("logarithmize");
+        if (!set->IsBool())
+            throw SOFTException("Distribution function '%s': logarithmize: Invalid value assigned to parameter. Expected boolean.", conf->GetName().c_str());
+
+        logarithmize = set->GetBool();
+    }
+
+    // Type of interpolation
+    if (conf->HasSetting("interptype")) {
+        set = conf->GetSetting("interptype");
+        if (set->GetNumberOfValues() != 1)
+            throw SOFTException("Distribution function '%s': interptype: Invalid value assigned to parameter. Expected string.", conf->GetName().c_str());
+
+        if (set->GetString() == "cubic")
+            interptype = NumericMomentumSpaceDistributionFunction::INTERPOLATION_CUBIC;
+        else if (set->GetString() == "linear")
+            interptype = NumericMomentumSpaceDistributionFunction::INTERPOLATION_LINEAR;
+        else
+            throw SOFTException(
+                "Distribution function '%s': interptype: Unrecognized interpolation type requested: %s.",
+                conf->GetName().c_str(), set->GetString().c_str()
+            );
+    }
+
+    return new SOFTDistributionFunction(name, magfield, logarithmize, interptype);
 }
 
 RadialDistributionFunction *InitUnitDistributionFunction(MagneticField2D *magfield, ConfigBlock *conf, ConfigBlock *root) {
