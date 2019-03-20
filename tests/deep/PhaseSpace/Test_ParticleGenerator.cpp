@@ -7,6 +7,7 @@
  */
 
 #include <string>
+#include <sstream>
 
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
@@ -122,12 +123,14 @@ slibreal_t Test_ParticleGenerator::GetDriftShift(
  */
 bool Test_ParticleGenerator::CheckEffectiveMagneticAxis() {
     unsigned int i, j;
+	ostringstream oss;
+	oss << 10.0*REAL_EPSILON;
     // Actual values are unimportant, except for the tolerance
     const string config =
         "a=0,1,2;\n"
         "ppar=10,12,2;\n"
         "pperp=1,2,2;\n"
-        "driftshifttol="+to_string(10.0*REAL_EPSILON)+";\n";
+        "driftshifttol="+oss.str()+";\n";
     struct global_settings globset;
     globset.include_drifts = true;
 
@@ -196,9 +199,9 @@ bool Test_ParticleGenerator::CheckPhaseSpaceGrid() {
         safety = 1.0;
     unsigned int i, j;
     MagneticFieldAnalytical2D *mf
-        = new MagneticFieldAnalytical2D(B0, rmajor, rminor, MFATFS_CW, MFASF_CONSTANT, safety, 0.0);
+        = new MagneticFieldAnalytical2D(B0, rmajor, rminor, MFAFS_CW, MFAFS_CCW, MFASF_CONSTANT, safety, 0.0);
     struct global_settings *globset = new struct global_settings;
-    globset->include_drifts = true;
+    globset->include_drifts = false;
 
     const unsigned int NRCOORDS=3, NCOORDPAIRS=7;
     const char RCOORDS[NRCOORDS][4] =
@@ -354,13 +357,13 @@ bool Test_ParticleGenerator::Generate(
                 Deltap2 = fabs((sp2-p2arr[i])/p2arr[i]);
 
                 if (Deltap1 > 200.0*REAL_EPSILON) {
-                    this->PrintError("ParticleGenerator: Generated momentum (%s) does not match expected value. Delta = %e.", p1.c_str(), Deltap1);
+                    this->PrintError("ParticleGenerator: Generated momentum (%s) does not match expected value. Delta = %e (p1 = %e, sp1 = %e).", p1.c_str(), Deltap1, p1arr[j], sp1);
                     retval = false;
                 } else if (Deltap2 > 200.0*REAL_EPSILON) {
-                    this->PrintError("ParticleGenerator: Generated pitch angle (%s) does not match expected value. Delta = %e.", p2.c_str(), Deltap2);
+                    this->PrintError("ParticleGenerator: Generated pitch (%s) does not match expected value. Delta = %e. (p2 = %e, sp2 = %e)", p2.c_str(), Deltap2, p2arr[i], sp2);
                     retval = false;
                 } else if (Deltar > 200.0*REAL_EPSILON) {
-                    this->PrintError("ParticleGenerator: Generated radius (%s) does not match expected value. Delta = %e.", r.c_str(), Deltar);
+                    this->PrintError("ParticleGenerator: Generated radius (%s) does not match expected value. Delta = %e. (r = %e, sr = %e)", r.c_str(), Deltar, rarr[k], sr);
                     retval = false;
                 }
 
@@ -420,7 +423,7 @@ bool Test_ParticleGenerator::TestInvalidInput() {
         rminor = 0.22,
         safety = 1.0;
     MagneticFieldAnalytical2D *mf
-        = new MagneticFieldAnalytical2D(B0, rmajor, rminor, MFATFS_CW, MFASF_CONSTANT, safety, 0.0);
+        = new MagneticFieldAnalytical2D(B0, rmajor, rminor, MFAFS_CW, MFAFS_CCW, MFASF_CONSTANT, safety, 0.0);
     struct global_settings *globset = new struct global_settings;
     globset->include_drifts = true;
 

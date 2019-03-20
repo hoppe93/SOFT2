@@ -61,7 +61,7 @@ class Orbit {
         Orbit(unsigned int, bool calcBDerivatives=false);
         ~Orbit();
         void CopyTo(Orbit*);
-		Orbit *Create(slibreal_t, Integrator<6>*, Integrator<6>*, SOFTEquation*, Particle*, slibreal_t, orbit_class_t);
+		Orbit *Create(slibreal_t, Integrator<6>*, Integrator<6>*, SOFTEquation*, Particle*, slibreal_t, orbit_class_t, bool);
 
         unsigned int GetNTau() const { return this->ntau; }
         bool HasBDerivatives() const { return this->hasBDerivatives; }

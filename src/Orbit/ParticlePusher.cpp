@@ -101,12 +101,11 @@ ParticlePusher::ParticlePusher(
     }
 
     // Force numerical calculation of Jacobian determinant?
-    this->forceNumericalJacobian = true;
-    /*Setting *s = settings.GetSetting("force_numerical_jacobian");
+    Setting *s = settings.GetSetting("force_numerical_jacobian");
     if (!s->IsBool())
         throw ParticlePusherException("Invalid value assigned to parameter 'force_numerical_jacobian'. Expected boolean value.");
     else
-        this->forceNumericalJacobian = s->GetBool();*/
+        this->forceNumericalJacobian = s->GetBool();
 
     // Max time
     this->maxtime = init_get_scalar(&settings, "time", "ParticlePusher");
@@ -423,12 +422,12 @@ Orbit *ParticlePusher::Push(Particle *p) {
         orbit_class_t cl = ORBIT_CLASS_STAGNATION;
         slibreal_t time = this->integrator1->LastTime();
 
-        return retorbit->Create(time, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl);
+        return retorbit->Create(time, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl, this->forceNumericalJacobian);
     } else if (outside_domain_flag) {
         orbit_class_t cl = ORBIT_CLASS_COLLIDED;
         slibreal_t time = this->integrator1->LastTime();
 
-        return retorbit->Create(time, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl);
+        return retorbit->Create(time, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl, this->forceNumericalJacobian);
     }
 
     if (this->timeunit == ORBITTIMEUNIT_POLOIDAL)
@@ -452,14 +451,14 @@ Orbit *ParticlePusher::Push(Particle *p) {
     switch (this->timeunit) {
         case ORBITTIMEUNIT_SECONDS:
             if (this->calculateJacobianOrbit && (!this->magfield->HasMagneticFlux() || this->forceNumericalJacobian))
-                return retorbit->Create(this->maxtime, this->integrator1, this->integrator2, this->equation, p, this->nudge_value, cl1);
+                return retorbit->Create(this->maxtime, this->integrator1, this->integrator2, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
             else
-                return retorbit->Create(this->maxtime, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl1);
+                return retorbit->Create(this->maxtime, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
         default:
             if (this->calculateJacobianOrbit && (!this->magfield->HasMagneticFlux() || this->forceNumericalJacobian))
-                return retorbit->Create(poltime, this->integrator1, this->integrator2, this->equation, p, this->nudge_value, cl1);
+                return retorbit->Create(poltime, this->integrator1, this->integrator2, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
             else
-                return retorbit->Create(poltime, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl1);
+                return retorbit->Create(poltime, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
     }
 }
 

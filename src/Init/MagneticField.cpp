@@ -47,7 +47,7 @@ MagneticFieldAnalytical2D *InitMagneticFieldAnalytical(ConfigBlock *conf) {
     MagneticFieldAnalytical2D *mf;
     Setting *s;
     slibreal_t B0, Rm, rminor, qa1=1.0, qa2=1.0;
-    enum MFAToroidalFieldSign tfs;
+    enum MFAFieldSign tfs, pcs;
     enum MFASafetyFactorType qtype;
     string parent = "Magnetic field '"+conf->GetName()+"'";
 
@@ -67,15 +67,27 @@ MagneticFieldAnalytical2D *InitMagneticFieldAnalytical(ConfigBlock *conf) {
 
     // toroidal field sign
     if (!conf->HasSetting("sigmaB"))
-        tfs = MFATFS_CW;
+        tfs = MFAFS_CW;
     else {
-        if ((*conf)["sigmaB"] == "cw" || (*conf)["sigmaB"] == "+")
-            tfs = MFATFS_CW;
-        else if ((*conf)["sigmaB"] == "ccw" || (*conf)["sigmaB"] == "-")
-            tfs = MFATFS_CCW;
+        if ((*conf)["sigmaB"] == "cw" || (*conf)["sigmaB"] == "-")
+            tfs = MFAFS_CW;
+        else if ((*conf)["sigmaB"] == "ccw" || (*conf)["sigmaB"] == "+")
+            tfs = MFAFS_CCW;
         else
             throw SOFTException("%s: sigmaB: Invalid value assigned to parameter.", parent.c_str());
     }
+
+	// plasma current sign
+	if (!conf->HasSetting("sigmaI"))
+		pcs = MFAFS_CCW;
+	else {
+		if ((*conf)["sigmaI"] == "cw" || (*conf)["sigmaI"] == "-")
+			pcs = MFAFS_CW;
+		else if ((*conf)["sigmaI"] == "ccw" || (*conf)["sigmaI"] == "+")
+			pcs = MFAFS_CCW;
+		else
+			throw SOFTException("%s: sigmaI: Invalid value assigned to parameter.", parent.c_str());
+	}
 
     // qtype
     if (!conf->HasSetting("qtype"))
@@ -101,7 +113,7 @@ MagneticFieldAnalytical2D *InitMagneticFieldAnalytical(ConfigBlock *conf) {
     if (conf->HasSetting("qa2"))
         qa2 = init_get_scalar(conf, "qa2", parent);
 
-    mf = new MagneticFieldAnalytical2D(B0, Rm, rminor, tfs, qtype, qa1, qa2, conf->GetName(), conf->GetName());
+    mf = new MagneticFieldAnalytical2D(B0, Rm, rminor, tfs, pcs, qtype, qa1, qa2, conf->GetName(), conf->GetName());
     return mf;
 }
 

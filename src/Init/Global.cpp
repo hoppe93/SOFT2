@@ -93,7 +93,7 @@ struct global_settings *InitGlobalSettings(ConfigBlock& global) {
 
     // TOOLS
     if (!global.HasSetting("tools"))
-        throw new SOFTException("No tools have been selected for the run.");
+        throw SOFTException("No tools have been selected for the run.");
     globset->tools = global.GetSetting("tools")->GetTextVector();
 
     // Handle untouched settings

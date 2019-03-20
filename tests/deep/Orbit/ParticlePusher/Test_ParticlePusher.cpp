@@ -53,7 +53,7 @@ ParticlePusher *Test_ParticlePusher::GenerateOrbit_push(const slibreal_t r, cons
     // in SOFTv1.
     MagneticFieldAnalytical2D *mfa =
         new MagneticFieldAnalytical2D(
-            B0, Rm, rminor, MFATFS_CCW, MFASF_CONSTANT, 1.0, 0.0
+            B0, Rm, rminor, MFAFS_CCW, MFAFS_CCW, MFASF_CONSTANT, 1.0, 0.0
         );
 
     struct global_settings globset;

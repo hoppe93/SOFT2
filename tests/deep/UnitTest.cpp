@@ -46,7 +46,7 @@ bool UnitTest::HasName(const string& cmp) { return (this->name==cmp); }
  */
 MagneticFieldAnalytical2D *UnitTest::GetMagneticField() {
     return new MagneticFieldAnalytical2D(
-        MF_B0, MF_Rm, MF_rminor, MFATFS_CW, MFASF_CONSTANT, 1.0, 0.0
+        MF_B0, MF_Rm, MF_rminor, MFAFS_CW, MFAFS_CCW, MFASF_CONSTANT, 1.0, 0.0
     );
 }
 
