@@ -1,4 +1,19 @@
 build
+examples/__pychache__
+examples/AngularDistribution/data
+examples/Bremsstrahlung/data
+examples/Green/data
+examples/Image/data
+examples/Orbits/data
+examples/Zhou2014/Fig5/data
+examples/Zhou2014/Fig5/figures
+examples/Zhou2014/Fig5/topviews
+examples/Zhou2014/Fig6/data
+examples/Zhou2014/Fig6/figures
+examples/Zhou2014/Fig6/topviews
+examples/Zhou2014/Fig7/data
+examples/Zhou2014/Fig7/figures
+examples/Zhou2014/Fig7/topviews
 include/config.h
 gmon.out
 tests/broad/cone/*.mat
@@ -7,3 +22,4 @@ tests/broad/fogc/*.mat
 tests/broad/isotropic/*.mat
 __pychache__
 .gdb_history
+.vscode

@@ -72,14 +72,14 @@ void Cone::ConfigureEmission(const string& emname, const slibreal_t zeff) {
         if (this->parent->MeasuresPolarization())
             throw ConeBremsstrahlungException("The bremsstrahlung radiation model does not support polarization measurements.");
 
-        this->emission = new ConeBremsstrahlungEmission(this->parent->detector, zeff);
+        this->emission = new ConeBremsstrahlungEmission(this->parent->detector, this->parent->magfield, zeff);
     } else if (emname == "synchrotron") {
-        this->emission = new ConeSynchrotronEmission(this->parent->detector);
+        this->emission = new ConeSynchrotronEmission(this->parent->detector, this->parent->magfield, this->parent->MeasuresPolarization());
     } else if (emname == "unit") {
         if (this->parent->MeasuresPolarization())
             throw ConeUnitException("The 'Unit' emission model does not support polarization measurements.");
 
-        this->emission = new ConeUnitEmission(this->parent->detector);
+        this->emission = new ConeUnitEmission(this->parent->detector, this->parent->magfield);
     } else
         throw ConeException("Unrecognized emission model requested: '%s'.", emname.c_str());
 

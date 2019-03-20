@@ -35,7 +35,7 @@ namespace __Radiation {
             
             double qagsEpsAbs=0.0,      // Absolute tolerance currently disabled
                    qagsEpsRel=1e-3;
-            size_t qagsLimit = 100;
+            std::size_t qagsLimit = 100;
             gsl_integration_workspace *qagsWorkspace=nullptr;
 
             // Internal cache variables
@@ -48,7 +48,7 @@ namespace __Radiation {
         public:
             ADSynchrotronEmission(
                 Detector*, struct global_settings*,
-                size_t qagsLimit=100, slibreal_t qagsEpsRel=1e-3
+                std::size_t qagsLimit=100, slibreal_t qagsEpsRel=1e-3
             );
             ~ADSynchrotronEmission();
 

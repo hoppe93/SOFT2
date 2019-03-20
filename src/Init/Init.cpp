@@ -29,6 +29,8 @@ const string soft_init_defaults=
 "particle_generator=__default__;\n"
 "particle_pusher=__default__;\n"
 "@DistributionFunction __unit_distribution_function__ (unit) {}"
+"@DetectorOptics __default__ (korger) {}"
+"@DetectorOptics korger (korger) {}"
 ;
 
 /**
