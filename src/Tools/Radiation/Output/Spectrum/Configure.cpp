@@ -4,11 +4,19 @@
  * Configuration of the 'Spectrum' radiation output module.
  */
 
+#include <string>
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
 #include "Tools/Radiation/Output/Spectrum.h"
 
 using namespace __Radiation;
+using namespace std;
+
+const string Spectrum::DEFAULT_QUANTITIES[] = { "none" };
+/*template<typename T, unsigned int sz>
+unsigned int __def_size(T(&)[sz]) { return sz; }
+const unsigned int Spectrum::NDEFAULT_QUANTITIES = __def_size(Spectrum::DEFAULT_QUANTITIES);*/
+const unsigned int Spectrum::NDEFAULT_QUANTITIES = 0;
 
 /**
  * Configure the 'Spectrum' radiation output module.
@@ -19,6 +27,12 @@ using namespace __Radiation;
  */
 void Spectrum::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
     this->SetName(conf->GetName());
+
+	// common
+	if (conf->HasSetting("common"))
+		this->ConfigureCommonQuantities(DEFAULT_QUANTITIES, NDEFAULT_QUANTITIES, conf->GetSetting("common")->GetTextVector());
+	else
+		this->ConfigureCommonQuantities(DEFAULT_QUANTITIES, NDEFAULT_QUANTITIES);
 
     // output
     if (!conf->HasSetting("output"))

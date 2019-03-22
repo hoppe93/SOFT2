@@ -4,11 +4,23 @@
  * Configuration of the 'Topview' radiation output module.
  */
 
+#include <string>
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
 #include "Tools/Radiation/Output/Topview.h"
 
 using namespace __Radiation;
+using namespace std;
+
+const string Topview::DEFAULT_QUANTITIES[] = {
+	DETECTOR_DIRECTION,
+	DETECTOR_POSITION,
+	DETECTOR_VISANG,
+	WALL
+};
+template<typename T, unsigned int sz>
+unsigned int __def_size(T(&)[sz]) { return sz; }
+const unsigned int Topview::NDEFAULT_QUANTITIES = __def_size(Topview::DEFAULT_QUANTITIES);
 
 /**
  * Allocate memory for the topview.
@@ -33,6 +45,12 @@ void Topview::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
     Setting *s;
 
     this->SetName(conf->GetName());
+
+	// common
+	if (conf->HasSetting("common"))
+		this->ConfigureCommonQuantities(DEFAULT_QUANTITIES, NDEFAULT_QUANTITIES, conf->GetSetting("common")->GetTextVector());
+	else
+		this->ConfigureCommonQuantities(DEFAULT_QUANTITIES, NDEFAULT_QUANTITIES);
 
     // output
     if (!conf->HasSetting("output"))

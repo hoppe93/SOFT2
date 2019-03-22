@@ -13,6 +13,13 @@
 using namespace std;
 using namespace __Radiation;
 
+const string Green::DEFAULT_QUANTITIES[] = {
+	"domain"
+};
+template<typename T, unsigned int sz>
+unsigned int __def_size(T(&)[sz]) { return sz; }
+const unsigned int Green::NDEFAULT_QUANTITIES = __def_size(Green::DEFAULT_QUANTITIES);
+
 /**
  * Allocate memory for the image.
  */
@@ -77,6 +84,12 @@ void Green::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
 
     this->pixelsset = false;
     this->SetName(conf->GetName());
+
+	// common
+	if (conf->HasSetting("common"))
+		this->ConfigureCommonQuantities(DEFAULT_QUANTITIES, NDEFAULT_QUANTITIES, conf->GetSetting("common")->GetTextVector());
+	else
+		this->ConfigureCommonQuantities(DEFAULT_QUANTITIES, NDEFAULT_QUANTITIES);
 
     // format
     if (!conf->HasSetting("format"))

@@ -19,6 +19,10 @@ namespace __Radiation {
 
             slibreal_t *topview;
             static slibreal_t *global_topview;
+
+			static const std::string DEFAULT_QUANTITIES[];
+			static const unsigned int NDEFAULT_QUANTITIES;
+
         public:
             Topview(Detector*, MagneticField2D*, ParticleGenerator*);
             ~Topview();

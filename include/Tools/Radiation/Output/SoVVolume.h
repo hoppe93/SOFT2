@@ -24,6 +24,9 @@ namespace __Radiation {
 
             static slibreal_t *global_volumearray;
 
+			static const std::string DEFAULT_QUANTITIES[];
+			static const unsigned int NDEFAULT_QUANTITIES;
+
         public:
             SoVVolume(Detector*, MagneticField2D*, ParticleGenerator*);
             virtual ~SoVVolume();

@@ -18,6 +18,10 @@ namespace __Radiation {
 
             slibreal_t *I, *Q, *U, *V, *wavelengths;
             static slibreal_t *global_I, *global_Q, *global_U, *global_V;
+
+			static const std::string DEFAULT_QUANTITIES[];
+			static const unsigned int NDEFAULT_QUANTITIES;
+
         public:
             Spectrum(Detector*, MagneticField2D*, ParticleGenerator*);
             ~Spectrum();
