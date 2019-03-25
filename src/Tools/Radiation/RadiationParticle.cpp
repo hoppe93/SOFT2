@@ -106,7 +106,7 @@ void RadiationParticle::SetDifferentialElements(
     this->dp1 = dp1;
     this->dp2 = dp2;
 
-    this->diffel = Jdtdrho*Rdphi * dp1*dp2;
+    this->diffel = Jdtdrho*dphi * dp1*dp2;
 }
 
 /**

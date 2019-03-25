@@ -100,11 +100,11 @@ void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution
                 T3 = 0.5*bphi*R0/B0*dB0_dR*u0*(1.0 - xi0*xi0);
 
             // Jacobian according to [Petrov & Harvey, PPCF 58 (2016)]
-            J = u0 / (fabs(q_m)*B0*g0) * fabs((
+            J = u0 / (fabs(q_m)*B0) * fabs((
                 T1 - T2 + T3
             ) * dtau * this->particle->GetDRho());
         } else {
-            J = u0 / (B0*g0) * fabs((dpsi_dR*xi0) * dtau * this->particle->GetDRho());
+            J = u0 / B0 * fabs((dpsi_dR*xi0) * dtau * this->particle->GetDRho());
         }
     }
 
@@ -131,7 +131,7 @@ void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution
             dR_drho = hypot(X2, Y2) - R1;
             dZ_drho = Z2 - Z1;
 
-            Jdtdrho[i] = fabs(dR_dt*dZ_drho - dZ_dt*dR_drho) / nudge;
+            Jdtdrho[i] = R1 * fabs(dR_dt*dZ_drho - dZ_dt*dR_drho) / nudge;
             if (this->particle != 0)
                 Jdtdrho[i] *= this->particle->GetDRho();
 

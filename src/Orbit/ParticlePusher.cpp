@@ -36,7 +36,7 @@ const string ParticlePusher_config =
 "timeunit=poloidal;\n"
 "time=1;\n"
 "nt=1e3;\n"
-"force_numerical_jacobian=yes;\n"
+"force_numerical_jacobian=no;\n"
 "nudgevalue=__default__;\n";
 
 const string ParticlePusher::equation_defaults =
