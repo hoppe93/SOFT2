@@ -50,8 +50,8 @@ void RadiationOutput::InitializeCommonQuantities() {
 	);
 
 	// domain & wall
-	all_quantities.insert(PAIR(DOMAIN, [this](SFile *sf) { this->write_domain(sf, this->DOMAIN); }));
-	all_quantities.insert(PAIR(WALL,   [this](SFile *sf) { this->write_domain(sf, this->WALL); }));
+	all_quantities.insert(PAIR(RO_DOMAIN, [this](SFile *sf) { this->write_domain(sf, this->RO_DOMAIN); }));
+	all_quantities.insert(PAIR(RO_WALL,   [this](SFile *sf) { this->write_domain(sf, this->RO_WALL); }));
 }
 
 /**

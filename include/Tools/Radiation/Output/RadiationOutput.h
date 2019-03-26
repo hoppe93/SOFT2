@@ -35,8 +35,8 @@ namespace __Radiation {
 				DETECTOR_DIRECTION[]="detectorDirection",
 				DETECTOR_POSITION[] ="detectorPosition",
 				DETECTOR_VISANG[]   ="detectorVisang",
-				DOMAIN[]            ="domain",
-				WALL[]              ="wall",
+				RO_DOMAIN[]         ="domain",
+				RO_WALL[]           ="wall",
 				TP_BOUNDARY[]       ="tpBoundary";
         public:
             RadiationOutput(Detector *d, MagneticField2D *m) {
