@@ -29,6 +29,8 @@ MagneticField2D *InitMagneticField(ConfigBlock *conf) {
     string type = conf->GetSecondaryType();
     if (type == "analytical")
         mf = InitMagneticFieldAnalytical(conf);
+	else if (type == "luke")
+		mf = InitMagneticFieldLUKE(conf);
     else if (type == "numeric")
         mf = InitMagneticFieldNumeric(conf);
     else
@@ -118,8 +120,43 @@ MagneticFieldAnalytical2D *InitMagneticFieldAnalytical(ConfigBlock *conf) {
 }
 
 /**
- * Initialize an analytical magnetic field based
- * on the given configuration.
+ * Initialize a numeric magnetic field from the given
+ * LUKE magnetic euqilibrium file.
+ *
+ * conf: Configuration of magnetic field.
+ */
+MagneticFieldLUKE *InitMagneticFieldLUKE(ConfigBlock *conf) {
+	string filename, filetype, wallfile;
+	string parent = "Magnetic field '"+conf->GetName()+"'";
+	enum sfile_type
+		ftype = SFILE_TYPE_UNKNOWN,
+		wallfiletype = SFILE_TYPE_UNKNOWN;
+
+	filename = init_get_string(conf, "filename", parent);
+
+	// File type
+	if (conf->HasSetting("filetype")) {
+		filetype = init_get_string(conf, "filetype", parent);
+		ftype = SFile::GetFileType(filetype);
+	} else
+		ftype = SFile::TypeOfFile(filename);
+
+	// Wall
+	if (conf->HasSetting("wallfile"))
+		wallfile = init_get_string(conf, "wallfile", parent);
+	
+	if (conf->HasSetting("wallfiletype")) {
+		filetype = init_get_string(conf, "wallfiletype", parent);
+		wallfiletype = SFile::GetFileType(filetype);
+	} else if (!wallfile.empty())
+		wallfiletype = SFile::TypeOfFile(wallfile);
+	
+	return new MagneticFieldLUKE(filename, ftype, wallfile, wallfiletype);
+}
+
+/**
+ * Initialize a numeric magnetic field from the given
+ * input file.
  *
  * conf: Configuration of magnetic field.
  */
