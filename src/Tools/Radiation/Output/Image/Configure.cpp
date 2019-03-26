@@ -13,10 +13,10 @@ using namespace __Radiation;
 using namespace std;
 
 const string Image::DEFAULT_QUANTITIES[] = {
-	DETECTOR_DIRECTION,
-	DETECTOR_POSITION,
-	DETECTOR_VISANG,
-	WALL
+	RadiationOutput::DETECTOR_DIRECTION,
+	RadiationOutput::DETECTOR_POSITION,
+	RadiationOutput::DETECTOR_VISANG,
+	RadiationOutput::RO_WALL
 };
 template<typename T, unsigned int sz>
 unsigned int __def_size(T(&)[sz]) { return sz; }

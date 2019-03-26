@@ -14,7 +14,7 @@ using namespace std;
 using namespace __Radiation;
 
 const string Green::DEFAULT_QUANTITIES[] = {
-	"domain"
+	RadiationOutput::RO_DOMAIN
 };
 template<typename T, unsigned int sz>
 unsigned int __def_size(T(&)[sz]) { return sz; }

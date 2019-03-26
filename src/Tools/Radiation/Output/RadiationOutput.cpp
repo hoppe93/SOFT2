@@ -9,6 +9,15 @@
 using namespace __Radiation;
 using namespace std;
 
+const char
+	RadiationOutput::DETECTOR_APERTURE[]  = "detectorAperture",
+	RadiationOutput::DETECTOR_DIRECTION[] = "detectorDirection",
+	RadiationOutput::DETECTOR_POSITION[]  = "detectorPosition",
+	RadiationOutput::DETECTOR_VISANG[]    = "detectorVisang",
+	RadiationOutput::RO_DOMAIN[]		  = "domain",
+	RadiationOutput::RO_WALL[]            = "wall",
+	RadiationOutput::TP_BOUNDARY[]		  = "tpBoundary";
+
 /**
  * Initialize the map containing all possible common
  * quantities that can be exported.
@@ -117,18 +126,29 @@ void RadiationOutput::ConfigureCommonQuantities(
 		} else {
 			// Remove quantities
 			if (it->front() == '-') {
-				vector<string>::iterator el = std::find(cqb, cqe, it->substr(1));
+				vector<string>::iterator el = cqb;
+				string item = it->substr(1);
+
+				// Locate element
+				while (el != cqe && *el != item) el++;
+
+				// Remove
 				if (el != cqe)
 					common_quantities.erase(el);
 			// Append quantities
-			} else if (it->front() == '+') {
-				string s = it->substr(1);
-				if (std::find(cqb, cqe, s) != cqe)
-					common_quantities.push_back(s);
-			// Append quantities
 			} else {
-				if (std::find(cqb, cqe, *it) != cqe)
-					common_quantities.push_back(*it);
+				string s;
+				if (it->front() == '+')
+					s = it->substr(1);
+				else
+					s = *it;
+
+				// Make sure element doesn't already exist
+				vector<string>::iterator el = cqb;
+				while (el != cqe && *el != s) el++;
+
+				if (el != cqe)
+					common_quantities.push_back(s);
 			}
 		}
 	}

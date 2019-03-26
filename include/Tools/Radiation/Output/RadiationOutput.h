@@ -30,14 +30,14 @@ namespace __Radiation {
             Detector *detector;
             MagneticField2D *magfield;
 
-			static constexpr char
-				DETECTOR_APERTURE[] ="detectorAperture",
-				DETECTOR_DIRECTION[]="detectorDirection",
-				DETECTOR_POSITION[] ="detectorPosition",
-				DETECTOR_VISANG[]   ="detectorVisang",
-				RO_DOMAIN[]         ="domain",
-				RO_WALL[]           ="wall",
-				TP_BOUNDARY[]       ="tpBoundary";
+			static const char
+				DETECTOR_APERTURE[],
+				DETECTOR_DIRECTION[],
+				DETECTOR_POSITION[],
+				DETECTOR_VISANG[],
+				RO_DOMAIN[],
+				RO_WALL[],
+				TP_BOUNDARY[];
         public:
             RadiationOutput(Detector *d, MagneticField2D *m) {
                 this->detector = d;
