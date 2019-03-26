@@ -89,14 +89,14 @@ __Radiation::Detector::Detector(ConfigBlock *conf, ConfigBlock *root) {
     }
 
     // optics
-    if (conf->HasSetting("optics")) {
+    /*if (conf->HasSetting("optics")) {
         string oname = (*conf)["optics"];
         if (!root->HasSubBlock(Radiation::CONFBLOCK_T_DETECTOR_OPTICS, oname))
             throw DetectorException("Detector '%s': Unrecognized optics '%s' specified.", this->name.c_str(), s->GetString().c_str());
 
         SetOptics(root->GetConfigBlock(Radiation::CONFBLOCK_T_DETECTOR_OPTICS, oname));
     } else
-        SetOptics(root->GetConfigBlock(Radiation::CONFBLOCK_T_DETECTOR_OPTICS, "__default__"));
+        SetOptics(root->GetConfigBlock(Radiation::CONFBLOCK_T_DETECTOR_OPTICS, "__default__"));*/
 
     // position
     if (!conf->HasSetting("position"))
@@ -144,7 +144,7 @@ __Radiation::Detector::Detector(ConfigBlock *conf, ConfigBlock *root) {
         } else if (s->IsBool() && s->GetBool() == false) {
             SetSpectralRange(0.0, 0.0, 0);      // Disable spectral range by setting nwavelengths = 0
         } else
-            throw DetectorException("Detector '%s': Invalid format of detector spectral range. Expected 'real,real,int' or 'no'.");
+            throw DetectorException("Detector '%s': Invalid format of detector spectral range. Expected 'real,real,int' or 'no'.", this->name.c_str());
     }
 
     SetupBasisVectors();
@@ -154,9 +154,9 @@ __Radiation::Detector::Detector(ConfigBlock *conf, ConfigBlock *root) {
  * Configure the optics model to use.
  */
 void __Radiation::Detector::SetOptics(ConfigBlock *conf) {
-    if (conf->GetSecondaryType() == "korger")
+    /*if (conf->GetSecondaryType() == "korger")
         this->optics = new Korger(this, conf);
-    else
+    else*/
         throw DetectorException("Detector '%s': Unrecognized type '%s' of optics model '%s'.", this->name.c_str(), conf->GetSecondaryType().c_str(), conf->GetName().c_str());
 }
 
