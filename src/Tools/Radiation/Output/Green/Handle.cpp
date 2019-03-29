@@ -27,7 +27,7 @@ void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
     slibreal_t diffel;
 
     if (this->withJacobian)
-        diffel = rp->GetRDphi() * rp->GetJdtdrho();
+        diffel = rp->GetDphi() * rp->GetJdtdrho();
     else
         diffel = 1.0;
 
