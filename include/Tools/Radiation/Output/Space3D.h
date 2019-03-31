@@ -20,6 +20,9 @@ namespace __Radiation {
             slibreal_t *s3dimage=nullptr;
             size_t imagesize;
 
+			static const std::string DEFAULT_QUANTITIES[];
+			static const unsigned int NDEFAULT_QUANTITIES;
+
         public:
             Space3D(Detector*, MagneticField2D*, ParticleGenerator*);
             virtual ~Space3D();

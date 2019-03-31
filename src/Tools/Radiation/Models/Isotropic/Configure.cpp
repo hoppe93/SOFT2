@@ -23,7 +23,7 @@ void Isotropic::Configure(struct global_settings *__UNUSED__(globset), ConfigBlo
     if (conf->HasSetting("value")) {
         Setting *s = conf->GetSetting("value");
         if (!s->IsScalar())
-            throw new IsotropicException("Invalid value assigned to parameter 'value'. Expected real number.");
+            throw IsotropicException("Invalid value assigned to parameter 'value'. Expected real number.");
 
         this->value = s->GetScalar();
     } else this->value = 1.0;

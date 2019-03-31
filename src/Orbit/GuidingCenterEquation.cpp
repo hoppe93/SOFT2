@@ -205,15 +205,19 @@ Vector<6>& GuidingCenterEquation::InitializeParticle(Particle *part, Vector<6>& 
  * Convert a given 6D solution to this equation
  * to an Orbit object.
  *
- * solution:  6D solution to this equation (1-by-(6*ntimesteps) dimensional).
- * solution2: Secondary 6D solution to use to calculate Jacobian determinant
- *            (set to nullptr if spatial Jacobian determinant shouldn't be calculated).
- * o:         Orbit object to store converted result in.
- * nudge:     Nudge value used to calculate 'solution2'.
- * cl:        Orbit classification (trapped, passing or unknown). If 'unknown', this
- *            method will try to classify the orbit.
+ * solution:       6D solution to this equation (1-by-(6*ntimesteps) dimensional).
+ * solution2:      Secondary 6D solution to use to calculate Jacobian determinant
+ *                 (set to nullptr if spatial Jacobian determinant shouldn't be calculated).
+ * o:              Orbit object to store converted result in.
+ * nudge:          Nudge value used to calculate 'solution2'.
+ * cl:             Orbit classification (trapped, passing or unknown). If 'unknown', this
+ *                 method will try to classify the orbit.
+ * forceNumerical: Force the guiding-center Jacobian to be computed numerically.
  */
-void GuidingCenterEquation::ToOrbitQuantities(slibreal_t *solution, slibreal_t *solution2, Orbit *o, slibreal_t nudge, orbit_class_t cl) {
+void GuidingCenterEquation::ToOrbitQuantities(
+	slibreal_t *solution, slibreal_t *solution2, Orbit *o,
+	slibreal_t nudge, orbit_class_t cl, bool forceNumerical
+) {
     Vector<6> dzdt;
     slibreal_t X,Y,Z;
     slibreal_t
@@ -303,7 +307,7 @@ void GuidingCenterEquation::ToOrbitQuantities(slibreal_t *solution, slibreal_t *
         pperp[i] = sqrt(pperp2[i]);
     }
 
-    this->CalculateJacobians(solution, solution2, o, nudge);
+    this->CalculateJacobians(solution, solution2, o, nudge, forceNumerical);
 
     if (cl == ORBIT_CLASS_UNKNOWN)
         o->SetClassification(ClassifyOrbitPpar(ppar, nt));

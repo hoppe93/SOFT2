@@ -29,6 +29,8 @@ MagneticField2D *InitMagneticField(ConfigBlock *conf) {
     string type = conf->GetSecondaryType();
     if (type == "analytical")
         mf = InitMagneticFieldAnalytical(conf);
+	else if (type == "luke")
+		mf = InitMagneticFieldLUKE(conf);
     else if (type == "numeric")
         mf = InitMagneticFieldNumeric(conf);
     else
@@ -47,7 +49,7 @@ MagneticFieldAnalytical2D *InitMagneticFieldAnalytical(ConfigBlock *conf) {
     MagneticFieldAnalytical2D *mf;
     Setting *s;
     slibreal_t B0, Rm, rminor, qa1=1.0, qa2=1.0;
-    enum MFAToroidalFieldSign tfs;
+    enum MFAFieldSign tfs, pcs;
     enum MFASafetyFactorType qtype;
     string parent = "Magnetic field '"+conf->GetName()+"'";
 
@@ -67,15 +69,27 @@ MagneticFieldAnalytical2D *InitMagneticFieldAnalytical(ConfigBlock *conf) {
 
     // toroidal field sign
     if (!conf->HasSetting("sigmaB"))
-        tfs = MFATFS_CW;
+        tfs = MFAFS_CW;
     else {
-        if ((*conf)["sigmaB"] == "cw" || (*conf)["sigmaB"] == "+")
-            tfs = MFATFS_CW;
-        else if ((*conf)["sigmaB"] == "ccw" || (*conf)["sigmaB"] == "-")
-            tfs = MFATFS_CCW;
+        if ((*conf)["sigmaB"] == "cw" || (*conf)["sigmaB"] == "-")
+            tfs = MFAFS_CW;
+        else if ((*conf)["sigmaB"] == "ccw" || (*conf)["sigmaB"] == "+")
+            tfs = MFAFS_CCW;
         else
             throw SOFTException("%s: sigmaB: Invalid value assigned to parameter.", parent.c_str());
     }
+
+	// plasma current sign
+	if (!conf->HasSetting("sigmaI"))
+		pcs = MFAFS_CCW;
+	else {
+		if ((*conf)["sigmaI"] == "cw" || (*conf)["sigmaI"] == "-")
+			pcs = MFAFS_CW;
+		else if ((*conf)["sigmaI"] == "ccw" || (*conf)["sigmaI"] == "+")
+			pcs = MFAFS_CCW;
+		else
+			throw SOFTException("%s: sigmaI: Invalid value assigned to parameter.", parent.c_str());
+	}
 
     // qtype
     if (!conf->HasSetting("qtype"))
@@ -101,13 +115,48 @@ MagneticFieldAnalytical2D *InitMagneticFieldAnalytical(ConfigBlock *conf) {
     if (conf->HasSetting("qa2"))
         qa2 = init_get_scalar(conf, "qa2", parent);
 
-    mf = new MagneticFieldAnalytical2D(B0, Rm, rminor, tfs, qtype, qa1, qa2, conf->GetName(), conf->GetName());
+    mf = new MagneticFieldAnalytical2D(B0, Rm, rminor, tfs, pcs, qtype, qa1, qa2, conf->GetName(), conf->GetName());
     return mf;
 }
 
 /**
- * Initialize an analytical magnetic field based
- * on the given configuration.
+ * Initialize a numeric magnetic field from the given
+ * LUKE magnetic euqilibrium file.
+ *
+ * conf: Configuration of magnetic field.
+ */
+MagneticFieldLUKE *InitMagneticFieldLUKE(ConfigBlock *conf) {
+	string filename, filetype, wallfile;
+	string parent = "Magnetic field '"+conf->GetName()+"'";
+	enum sfile_type
+		ftype = SFILE_TYPE_UNKNOWN,
+		wallfiletype = SFILE_TYPE_UNKNOWN;
+
+	filename = init_get_string(conf, "filename", parent);
+
+	// File type
+	if (conf->HasSetting("filetype")) {
+		filetype = init_get_string(conf, "filetype", parent);
+		ftype = SFile::GetFileType(filetype);
+	} else
+		ftype = SFile::TypeOfFile(filename);
+
+	// Wall
+	if (conf->HasSetting("wallfile"))
+		wallfile = init_get_string(conf, "wallfile", parent);
+	
+	if (conf->HasSetting("wallfiletype")) {
+		filetype = init_get_string(conf, "wallfiletype", parent);
+		wallfiletype = SFile::GetFileType(filetype);
+	} else if (!wallfile.empty())
+		wallfiletype = SFile::TypeOfFile(wallfile);
+	
+	return new MagneticFieldLUKE(filename, ftype, wallfile, wallfiletype);
+}
+
+/**
+ * Initialize a numeric magnetic field from the given
+ * input file.
  *
  * conf: Configuration of magnetic field.
  */

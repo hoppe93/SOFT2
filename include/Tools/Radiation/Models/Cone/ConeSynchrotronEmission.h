@@ -1,20 +1,20 @@
 #ifndef _CONE_SYNCHROTRON_EMISSION_H
 #define _CONE_SYNCHROTRON_EMISSION_H
 
+#include <softlib/MagneticField/MagneticField2D.h>
 #include "Tools/Radiation/Models/Cone.h"
 #include "Tools/Radiation/Models/Cone/ConeEmission.h"
+#include "Tools/Radiation/Optics/Optics.h"
 #include "Tools/Radiation/Radiation.h"
 #include "Tools/Radiation/RadiationParticle.h"
 
 namespace __Radiation {
     class ConeSynchrotronEmission : public ConeEmission {
-        protected:
-            template<bool calculatePolarization>
-            void __CalculateSpectrum(RadiationParticle*);
-
+        private:
+            struct Optics::Efield Efield;
         public:
-            ConeSynchrotronEmission(Detector *det) : ConeEmission(det) {};
-            ~ConeSynchrotronEmission() {}
+            ConeSynchrotronEmission(Detector*, MagneticField2D*, bool polarization=false);
+            ~ConeSynchrotronEmission();
 
             void HandleParticle(RadiationParticle*, bool);
 

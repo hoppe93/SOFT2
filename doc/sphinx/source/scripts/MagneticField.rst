@@ -25,7 +25,9 @@ Summary of options
 +-------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
 | :option:`analytical rminor`   | :ref:`module-magneticfield-analytical` | Minor radius of analytical magnetic field                                      |
 +-------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
-| :option:`analytical sigmaB`   | :ref:`module-magneticfield-analytical` | Current direction of analytical magnetic field                                 |
+| :option:`analytical sigmaB`   | :ref:`module-magneticfield-analytical` | Toroidal field direction of analytical magnetic field                          |
++-------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
+| :option:`analytical sigmaI`   | :ref:`module-magneticfield-analytical` | Current direction of analytical magnetic field                                 |
 +-------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
 | :option:`analytical qtype`    | :ref:`module-magneticfield-analytical` | Safety factor type: ``constant``, ``linear``, ``qudratic`` or ``exponential``  |
 +-------------------------------+----------------------------------------+--------------------------------------------------------------------------------+
@@ -113,16 +115,19 @@ analytical
 
 .. option:: sigmaB
 
-   :Default value: ``cw``
-   :Allowed values: ``cw`` / ``+``, or ``ccw`` / ``-``
+.. option:: sigmaI
 
-   Sign of the toroidal field component. The value ``cw`` corresponds to the
-   toroidal component being oriented in the clock-wise direction, when seen
-   from above the tokamak, while ``ccw`` corresponds to the toroidal component
-   being oriented in the counter clock-wise direction, when seen from above.
+   :Default value: ``cw``
+   :Allowed values: ``cw`` / ``-``, or ``ccw`` / ``+``
+
+   Sign of the toroidal field component (``sigmaB``) and plasma current
+   (``sigmaI``). The value ``cw`` corresponds to the toroidal component being
+   oriented in the clock-wise direction, when seen from above the tokamak, while
+   ``ccw`` corresponds to the toroidal component being oriented in the counter
+   clock-wise direction, when seen from above.
 
    Instead of specifying the direction, the sign may be given directly as either
-   ``+`` (clock-wise) or ``-`` (counter clock-wise).
+   ``-`` (clock-wise) or ``+`` (counter clock-wise).
 
 .. option:: qa1
 

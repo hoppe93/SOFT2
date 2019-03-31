@@ -21,6 +21,9 @@ namespace __Radiation {
                 *global_imageQ, *global_imageU, *global_imageV;
 
             bool storeStokesParameters = false;
+
+			static const std::string DEFAULT_QUANTITIES[];
+			static const unsigned int NDEFAULT_QUANTITIES;
         public:
             Image(Detector*, MagneticField2D*, ParticleGenerator*);
             ~Image();

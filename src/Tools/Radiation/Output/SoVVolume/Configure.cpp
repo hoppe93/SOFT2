@@ -12,6 +12,12 @@
 using namespace __Radiation;
 using namespace std;
 
+const string SoVVolume::DEFAULT_QUANTITIES[] = {"none"};
+/*template<typename T, unsigned int sz>
+unsigned int __def_size(T(&)[sz]) { return sz; }
+const unsigned int SoVVolume::NDEFAULT_QUANTITIES = __def_size(SoVVolume::DEFAULT_QUANTITIES);*/
+const unsigned int SoVVolume::NDEFAULT_QUANTITIES = 0;
+
 /**
  * Allocate the array holding the SoV volume.
  */
@@ -30,6 +36,12 @@ void SoVVolume::AllocateVolume() {
  */
 void SoVVolume::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
     this->SetName(conf->GetName());
+
+	// common
+	if (conf->HasSetting("common"))
+		this->ConfigureCommonQuantities(DEFAULT_QUANTITIES, NDEFAULT_QUANTITIES, conf->GetSetting("common")->GetTextVector());
+	else
+		this->ConfigureCommonQuantities(DEFAULT_QUANTITIES, NDEFAULT_QUANTITIES);
 
     // output
     if (!conf->HasSetting("output"))

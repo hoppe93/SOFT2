@@ -411,14 +411,17 @@ void ParticleGenerator::InitializeParticle(
 	part->InitializeMomentum(mom1type, mom2type, p1, p2, _dp1, _dp2);
 
 	if (include_drifts)
-        d = this->rhoeff[i1][i2];
+        d = this->rhoeff[i1][i2] - this->rhomin;
 
     z0 = this->CalculateVerticalOrbitDriftShift(
         mf, this->mass, this->charge, part->GetPpar(), part->GetPperp(), rho
     );
 
     // Evaluate distribution function
-    part->SetF(f->Eval(rho, part->GetMomentum(), part->GetXi(), d));
+	if (f != nullptr)
+		part->SetF(f->Eval(rho, part->GetMomentum(), part->GetXi(), d));
+	else
+		part->SetF(1.0);
 
     if (dr == 0)
         part->InitializePosition(this->specified_position, rho, z0, 1.0, d);

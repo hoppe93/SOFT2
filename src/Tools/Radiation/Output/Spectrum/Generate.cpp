@@ -67,6 +67,8 @@ void Spectrum::Generate() {
         sf->WriteList("V", global_V, this->nwavelengths);
     }
 
+	this->WriteCommonQuantities(sf);
+
     sf->Close();
 
     SOFT::PrintInfo("Wrote spectrum to '%s'.", this->output.c_str());

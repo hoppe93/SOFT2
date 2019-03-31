@@ -52,11 +52,11 @@ namespace __Radiation {
                 QUADRATURE_TRAPEZOIDAL
             };
 
-        private:
             static int CONFBLOCK_T_DETECTOR,
+                       CONFBLOCK_T_DETECTOR_OPTICS,
                        CONFBLOCK_T_MODEL,
                        CONFBLOCK_T_OUTPUT;
-
+        private:
             // Toroidal resolution
             unsigned int ntoroidal;
             // Toroidal step increments

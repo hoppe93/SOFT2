@@ -1,10 +1,15 @@
 #ifndef _DETECTOR_H
 #define _DETECTOR_H
 
+namespace __Radiation {
+    class Detector;
+}
+
 #include <string>
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
 #include <softlib/Vector.h>
+#include "Tools/Radiation/Optics/Optics.h"
 
 namespace __Radiation {
     class Detector {
@@ -26,11 +31,14 @@ namespace __Radiation {
             // Basis vectors
             Vector<3> ehat1, ehat2;
 
+            Optics *optics;
+
         public:
-            Detector(slibreal_t, slibreal_t, Vector<3>&, Vector<3>&, unsigned int, slibreal_t l0=0, slibreal_t l1=0);
-            Detector(ConfigBlock*);
+            Detector(slibreal_t, slibreal_t, Vector<3>&, Vector<3>&, unsigned int, slibreal_t l0=0, slibreal_t l1=0, Optics *optics=nullptr);
+            Detector(ConfigBlock*, ConfigBlock*);
 
             Vector<3> CalculateRCP(Vector<3>&);
+            void SetOptics(ConfigBlock*);
 
             slibreal_t GetAperture() { return aperture; }
             Vector<3>& GetDirection() { return direction; }
@@ -46,6 +54,7 @@ namespace __Radiation {
             slibreal_t GetWavelengthUpper() { return wavelength1; }
             slibreal_t *GetWavelengths() { return wavelengths; }
             unsigned int GetNWavelengths() { return nwavelengths; }
+            Optics *GetOptics() { return this->optics; }
 
             const std::string GetName() const { return this->name; }
             void PrintInfo(const std::string &prfx="") const;

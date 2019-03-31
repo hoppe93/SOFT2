@@ -20,8 +20,9 @@ using namespace __Radiation;
  *
  * det: Detector used to measure the emitted radiation.
  */
-ConeEmission::ConeEmission(Detector *det) {
+ConeEmission::ConeEmission(Detector *det, MagneticField2D *mf) {
     this->detector = det;
+    this->magfield = mf;
     this->nwavelengths = det->GetNWavelengths();
 
     if (nwavelengths > 0) {

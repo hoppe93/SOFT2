@@ -36,6 +36,8 @@ void Space3D::Generate() {
     sf->WriteList("zmin", &(this->point0[2]), 1);
     sf->WriteList("zmax", &(this->point1[2]), 1);
 
+	this->WriteCommonQuantities(sf);
+
     sf->Close();
 
     SOFT::PrintInfo("Wrote S3D to '%s'.", this->output.c_str());

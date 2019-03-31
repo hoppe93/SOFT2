@@ -84,7 +84,7 @@ slibreal_t Test_SynchrotronEmission::Larmor(
 bool Test_SynchrotronEmission::CheckTotalEmission(const slibreal_t tol) {
     unsigned int i;
     Detector *det = GetDetector(0);
-    ConeSynchrotronEmission cse(det);
+    ConeSynchrotronEmission cse(det, nullptr);
     slibreal_t pwr, corr, Delta;
 
     for (i = 0; i < NTESTPARTICLES; i++) {
@@ -123,7 +123,7 @@ bool Test_SynchrotronEmission::CheckSpectrumEmission(const slibreal_t tol) {
         lambdac = GetLambdaC(rp);
 
         Detector *det = GetDetector(40001, lambdac/10.0, lambdac*1000.0);
-        ConeSynchrotronEmission cse(det);
+        ConeSynchrotronEmission cse(det, nullptr);
 
         cse.CalculateSpectrum(rp);
         cse.IntegrateSpectrum();

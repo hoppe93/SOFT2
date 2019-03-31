@@ -33,7 +33,7 @@ There are some additional things to keep in mind when simulating the full
 angular distribution of radiation though. These are
 
 - **Toroidal quadrature threshold:** If you set :option:`@Radiation torquad` to ``maximize`` (which is also the default) in the :ref:`module-radiation` module, make sure that :option:`@Radiation torthreshold` is set to a value greater than zero. Otherwise very little is gained from using ``torquad = maximize``.
-- **Detector resolution:** the full angular distribution of radiation requires explicit numerical integration over the detector surface. As such, a quadrature rule to use, as well as the number of points to discretize the detector surface with, can be selected. The quadrature to use is selected using the :option:`@RadiationModel(angdist) qrule2D` option, while the number of points on the detector surface is selected with :option:`@RadiationModel(angdist) nsamples`.
+- **Detector resolution:** the full angular distribution of radiation requires explicit numerical integration over the detector surface. As such, a quadrature rule to use, as well as the number of points to discretize the detector surface with, can be selected. The quadrature to use is selected using the :option:`@RadiationModel(angdist) qrule2d` option, while the number of points on the detector surface is selected with :option:`@RadiationModel(angdist) nsamples`.
 
 Example
 ^^^^^^^

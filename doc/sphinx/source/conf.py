@@ -22,7 +22,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'SOFTv2'
-copyright = '2018, Mathias Hoppe'
+copyright = '2019, Mathias Hoppe'
 author = 'Mathias Hoppe'
 
 # The short X.Y version

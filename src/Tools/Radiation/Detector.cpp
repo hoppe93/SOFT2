@@ -10,6 +10,10 @@
 #include <softlib/Vector.h>
 #include "Tools/Radiation/Detector.h"
 #include "Tools/Radiation/DetectorException.h"
+#include "Tools/Radiation/Radiation.h"
+
+#include "Tools/Radiation/Optics/Korger.h"
+#include "Tools/Radiation/Optics/Optics.h"
 
 using namespace std;
 using namespace __Radiation;
@@ -26,10 +30,10 @@ using namespace __Radiation;
  * lambda0:      Lower wavelength limit in spectral range.
  * lambda1:      Upper wavelength limit in spectral range.
  */
-Detector::Detector(
+__Radiation::Detector::Detector(
     slibreal_t aperture, slibreal_t visang, Vector<3>& direction,
     Vector<3>& position, unsigned int nwavelengths,
-    slibreal_t lambda0, slibreal_t lambda1
+    slibreal_t lambda0, slibreal_t lambda1, Optics *optics
 ) {
     this->aperture = aperture;
     this->direction = direction;
@@ -37,6 +41,7 @@ Detector::Detector(
     this->name = "<unknown>";
     this->SetVisionAngle(visang, VISANG_TYPE_FOV);
     this->SetSpectralRange(lambda0, lambda1, nwavelengths);
+    this->optics = optics;
 
     this->direction.Normalize();
 
@@ -49,7 +54,7 @@ Detector::Detector(
  * conf: Configuration block specifying the settings
  *       for this detector object.
  */
-Detector::Detector(ConfigBlock *conf) {
+__Radiation::Detector::Detector(ConfigBlock *conf, ConfigBlock *root) {
     Setting *s;
     this->name = conf->GetName();
 
@@ -82,6 +87,16 @@ Detector::Detector(ConfigBlock *conf) {
 
         this->direction.Normalize();
     }
+
+    // optics
+    /*if (conf->HasSetting("optics")) {
+        string oname = (*conf)["optics"];
+        if (!root->HasSubBlock(Radiation::CONFBLOCK_T_DETECTOR_OPTICS, oname))
+            throw DetectorException("Detector '%s': Unrecognized optics '%s' specified.", this->name.c_str(), s->GetString().c_str());
+
+        SetOptics(root->GetConfigBlock(Radiation::CONFBLOCK_T_DETECTOR_OPTICS, oname));
+    } else
+        SetOptics(root->GetConfigBlock(Radiation::CONFBLOCK_T_DETECTOR_OPTICS, "__default__"));*/
 
     // position
     if (!conf->HasSetting("position"))
@@ -129,10 +144,20 @@ Detector::Detector(ConfigBlock *conf) {
         } else if (s->IsBool() && s->GetBool() == false) {
             SetSpectralRange(0.0, 0.0, 0);      // Disable spectral range by setting nwavelengths = 0
         } else
-            throw DetectorException("Detector '%s': Invalid format of detector spectral range. Expected 'real,real,int' or 'no'.");
+            throw DetectorException("Detector '%s': Invalid format of detector spectral range. Expected 'real,real,int' or 'no'.", this->name.c_str());
     }
 
     SetupBasisVectors();
+}
+
+/**
+ * Configure the optics model to use.
+ */
+void __Radiation::Detector::SetOptics(ConfigBlock *conf) {
+    /*if (conf->GetSecondaryType() == "korger")
+        this->optics = new Korger(this, conf);
+    else*/
+        throw DetectorException("Detector '%s': Unrecognized type '%s' of optics model '%s'.", this->name.c_str(), conf->GetSecondaryType().c_str(), conf->GetName().c_str());
 }
 
 /**
@@ -143,7 +168,7 @@ Detector::Detector(ConfigBlock *conf) {
  * 
  * RETURNS r_cp = x-R, where R is the detector position.
  */
-Vector<3> Detector::CalculateRCP(Vector<3>& x) {
+Vector<3> __Radiation::Detector::CalculateRCP(Vector<3>& x) {
     return (x - position);
 }
 
@@ -152,7 +177,7 @@ Vector<3> Detector::CalculateRCP(Vector<3>& x) {
  * 
  * prefix: Prefix string to print.
  */
-void Detector::PrintInfo(const std::string &prefix) const {
+void __Radiation::Detector::PrintInfo(const std::string &prefix) const {
     SOFT::PrintInfo(
         prefix+"ehat1 = (%.3f, %.3f, %.3f)\n"+prefix+"ehat2 = (%.3f, %.3f, %.3f)",
         this->ehat1[0], this->ehat1[1], this->ehat1[2],
@@ -168,7 +193,7 @@ void Detector::PrintInfo(const std::string &prefix) const {
  * w1: Upper limit of spectral range.
  * nw: Number of points in the discretized spectral range.
  */
-void Detector::SetSpectralRange(slibreal_t w0, slibreal_t w1, unsigned int nw) {
+void __Radiation::Detector::SetSpectralRange(slibreal_t w0, slibreal_t w1, unsigned int nw) {
     this->wavelength0 = w0;
     this->wavelength1 = w1;
     this->nwavelengths = nw;
@@ -201,7 +226,7 @@ void Detector::SetSpectralRange(slibreal_t w0, slibreal_t w1, unsigned int nw) {
  *         either 'Detector::VISANG_TYPE_FOV' or
  *         'Detector::VISANG_TYPE_IMAGE'.
  */
-void Detector::SetVisionAngle(slibreal_t visang, int type) {
+void __Radiation::Detector::SetVisionAngle(slibreal_t visang, int type) {
     switch (type) {
         case VISANG_TYPE_FOV:
             vision_angle_fov       = visang;
@@ -233,7 +258,7 @@ void Detector::SetVisionAngle(slibreal_t visang, int type) {
  * an orthonormal coordinate system that spans
  * the detector plane.
  */
-void Detector::SetupBasisVectors() {
+void __Radiation::Detector::SetupBasisVectors() {
     /*if (direction[1] == 0) {
         ehat2[0] = ehat2[2] = 0;
         ehat2[1] = 1.0;
@@ -251,6 +276,7 @@ void Detector::SetupBasisVectors() {
     } else {
         ehat1[0] = direction[1];
         ehat1[1] =-direction[0];
+        ehat1[2] = 0.0;
 
         ehat1.Normalize();
     }

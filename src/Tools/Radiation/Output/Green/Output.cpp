@@ -54,8 +54,10 @@ void Green::Generate() {
 
     if (this->storeStokesParameters)
         sf->WriteScalar("stokesparams", 1.0);
-    else
-        sf->WriteScalar("stokesparams", 0.0);
+	else
+		sf->WriteScalar("stokesparams", 0.0);
+
+	this->WriteCommonQuantities(sf);
 
     sf->Close();
 

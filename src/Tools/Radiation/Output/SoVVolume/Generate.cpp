@@ -44,6 +44,8 @@ void SoVVolume::Generate() {
     sf->WriteString("param1name", Particle::GetCoordinateName(this->p1type));
     sf->WriteString("param2name", Particle::GetCoordinateName(this->p2type));
 
+	this->WriteCommonQuantities(sf);
+
     sf->Close();
 
     // Check if image is empty

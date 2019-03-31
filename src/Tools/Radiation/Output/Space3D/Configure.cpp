@@ -12,6 +12,12 @@
 using namespace __Radiation;
 using namespace std;
 
+const string Space3D::DEFAULT_QUANTITIES[] = { "none" };
+/*template<typename T, unsigned int sz>
+unsigned int __def_size(T(&)[sz]) { return sz; }
+const unsigned int Space3D::NDEFAULT_QUANTITIES = __def_size(Space3D::DEFAULT_QUANTITIES);*/
+const unsigned int Space3D::NDEFAULT_QUANTITIES = 0;
+
 /**
  * Configure the 'Space3D' radiation output module.
  * 
@@ -21,6 +27,12 @@ using namespace std;
  */
 void Space3D::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
     this->SetName(conf->GetName());
+
+	// common
+	if (conf->HasSetting("common"))
+		this->ConfigureCommonQuantities(DEFAULT_QUANTITIES, NDEFAULT_QUANTITIES, conf->GetSetting("common")->GetTextVector());
+	else
+		this->ConfigureCommonQuantities(DEFAULT_QUANTITIES, NDEFAULT_QUANTITIES);
 
     // output
     if (!conf->HasSetting("output"))
@@ -38,6 +50,9 @@ void Space3D::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
 
         this->pixelsX = s->GetUnsignedInteger64();
         this->pixelsY = this->pixelsZ = this->pixelsX;
+
+        if (this->pixelsX == 0)
+            throw Space3DException("Invalid value assigned to parameter 'pixels'.");
     }
 
     // point0

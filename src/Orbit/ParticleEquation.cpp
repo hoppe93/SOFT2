@@ -166,15 +166,19 @@ Vector<6>& ParticleEquation::InitializeParticle(Particle *part, Vector<6>& zval)
  * to position (X), momentum (P), parallel momentum (ppar)
  * and perpendicular momentum (pperp).
  *
- * solution:  6D solution to this equation (1-by-(6*ntimesteps) dimensional).
- * solution2: Secondary 6D solution to use to calculate Jacobian determinant
- *            (set to nullptr if spatial Jacobian determinant shouldn't be calculated).
- * o:         Orbit object to store the converted result in.
- * nudge:     Nudge value used when calculating 'solution2'.
- * cl:        Orbit class (trapped, passing or unkown). If 'unknown', then this
- *            method will try to classify the orbit.
+ * solution:       6D solution to this equation (1-by-(6*ntimesteps) dimensional).
+ * solution2:      Secondary 6D solution to use to calculate Jacobian determinant
+ *                 (set to nullptr if spatial Jacobian determinant shouldn't be calculated).
+ * o:              Orbit object to store the converted result in.
+ * nudge:          Nudge value used when calculating 'solution2'.
+ * cl:             Orbit class (trapped, passing or unkown). If 'unknown', then this
+ *                 method will try to classify the orbit.
+ * forceNumerical: Force the guiding-center Jacobian to be computed numerically.
  */
-void ParticleEquation::ToOrbitQuantities(slibreal_t *solution, slibreal_t *solution2, Orbit *o, slibreal_t nudge, orbit_class_t cl) {
+void ParticleEquation::ToOrbitQuantities(
+	slibreal_t *solution, slibreal_t *solution2, Orbit *o,
+	slibreal_t nudge, orbit_class_t cl, bool forceNumerical
+) {
     slibreal_t X,Y,Z;
     slibreal_t
         *x = o->GetX(),
@@ -243,7 +247,7 @@ void ParticleEquation::ToOrbitQuantities(slibreal_t *solution, slibreal_t *solut
         gamma[i] = sqrt(p2[i] + 1.0);
     }
 
-    this->CalculateJacobians(solution, solution2, o, nudge);
+    this->CalculateJacobians(solution, solution2, o, nudge, forceNumerical);
 
     if (cl == ORBIT_CLASS_UNKNOWN)
         o->SetClassification(ClassifyOrbitPpar(ppar, nt));

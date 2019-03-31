@@ -53,11 +53,6 @@ void Image::Finish() {
  */
 void Image::Generate() {
     SFile *sf = SFile::Create(this->output, SFILE_MODE_WRITE);
-    slibreal_t detpos[3], detdir[3], detvisang;
-
-    detector->GetPosition().ToArray(detpos);
-    detector->GetDirection().ToArray(detdir);
-    detvisang = 2.0 * detector->GetVisionAngleFOV();
 
     slibreal_t **img = new slibreal_t*[this->nrowpixels];
     for (int i = 0; i < this->nrowpixels; i++)
@@ -82,29 +77,9 @@ void Image::Generate() {
         sf->WriteArray("StokesV", imgV, this->nrowpixels, this->ncolpixels);
     }
 
-    sf->WriteList("detectorPosition", detpos, 3);
-    sf->WriteList("detectorDirection", detdir, 3);
-    sf->WriteList("detectorVisang", &detvisang, 1);
-
-    // Include wall/separatrix data?
-    unsigned int nwall = magfield->GetNDomain();
-    slibreal_t **domain = new slibreal_t*[2], *rwall, *zwall;
-    domain[0] = new slibreal_t[2*nwall];
-    domain[1] = domain[0]+nwall;
-
-    rwall = magfield->GetRDomain();
-    zwall = magfield->GetZDomain();
-    for (unsigned int i = 0; i < nwall; i++) {
-        domain[0][i] = rwall[i];
-        domain[1][i] = zwall[i];
-    }
-
-    sf->WriteArray("wall", domain, 2, nwall);
+	this->WriteCommonQuantities(sf);
 
     sf->Close();
-
-    delete [] domain[0];
-    delete [] domain;
 
 #ifdef COLOR_TERMINAL
     // Check if image is empty

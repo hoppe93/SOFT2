@@ -47,28 +47,29 @@ slibreal_t SOFTEquation::GetPositionZ(const Vector<6>& x) {
  * 'J' in the SOFT documentation from the other
  * quantities of this SOFTEquation.
  *
- * solution:  Solution from first integrator.
- * solution2: Solution from second integrator, launched
- *            a distance 'nudge' from the first.
- * o:         Orbit object to store result in.
- * nudge:     Nudge value used when calculating 'solution2'.
+ * solution:       Solution from first integrator.
+ * solution2:      Solution from second integrator, launched
+ *                 a distance 'nudge' from the first.
+ * o:              Orbit object to store result in.
+ * nudge:          Nudge value used when calculating 'solution2'.
+ * forceNumerical: Force numerical computation of the Jacobian.
  */
-void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution2, Orbit *o, slibreal_t nudge) {
+void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution2, Orbit *o, slibreal_t nudge, bool forceNumerical) {
     unsigned int i, ti, nt = o->GetNTau();
-    //bool hasFlux = false;
+    bool hasFlux = false;
 
     slibreal_t
         *p = o->GetP(),
-        //*p2 = o->GetP2(),
+        *p2 = o->GetP2(),
         *Babs = o->GetBabs(),
         *Beffpar = o->GetBeffpar(),
         *ppar = o->GetPpar(),
         *gamma = o->GetGamma(),
         *Jdtdrho = o->GetJdtdrho(),
-        dtau = o->GetTau()[1]-o->GetTau()[0];
-        //J;
+        dtau = o->GetTau()[1]-o->GetTau()[0],
+        J;
 
-    /*if (magfield->HasMagneticFlux()) {
+    if (!forceNumerical && magfield->HasMagneticFlux()) {
         hasFlux = true;
 
         slibreal_t
@@ -76,14 +77,14 @@ void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution
             B0  = Babs[0],
             xi0 = ppar[0] / p0,
             g0  = sqrt(1 + p0*p0),
-            q_m = particle->GetCharge() / particle->GetMass(),
+            q_m = particle->GetCharge() / (g0*particle->GetMass()),
             u0  = p0*LIGHTSPEED / g0,
             *X0 = o->GetX(),
             R0  = hypot(X0[0], X0[1]),
             Z0  = X0[2];
 
         struct flux_diff *fd = magfield->EvalFluxDerivatives(X0);
-        slibreal_t dpsi_dR    = fd->dpsi_dR*xi0/(2*M_PI);
+        slibreal_t dpsi_dR    = fd->dpsi_dR/(2*M_PI);
 
         if (this->globset->include_drifts) {
             struct magnetic_field_data mfd = magfield->EvalDerivatives(R0, 0.0, Z0);
@@ -94,26 +95,24 @@ void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution
                 dbphiR0_dR = bphi + R0/B0*mfd.J[1][0] - bphi*R0/B0*dB0_dR;
 
             slibreal_t
-                T1 = q_m*dpsi_dR,
+                T1 = q_m*dpsi_dR*xi0,
                 T2 = dbphiR0_dR*u0*xi0*xi0,
                 T3 = 0.5*bphi*R0/B0*dB0_dR*u0*(1.0 - xi0*xi0);
 
             // Jacobian according to [Petrov & Harvey, PPCF 58 (2016)]
-            J = u0 / (fabs(q_m)*B0*g0) * fabs((
-                T1 + T2 - T3
+            J = u0 / (fabs(q_m)*B0) * fabs((
+                T1 - T2 + T3
             ) * dtau * this->particle->GetDRho());
-
-            //printf("T2/T1 = %e, T3/T1 = %e\n", T2/T1, T3/T1);
         } else {
-            J = u0 / (B0*g0) * fabs((dpsi_dR*xi0) * dtau * this->particle->GetDRho());
+            J = u0 / B0 * fabs((dpsi_dR*xi0) * dtau * this->particle->GetDRho());
         }
-    }*/
+    }
 
     for (i = 0; i < nt; i++) {
         // Calculate spatial Jacobian?
-        /*if (hasFlux) {
+        if (hasFlux) {
             Jdtdrho[i] = J;
-        } else */if (solution2 != nullptr) {
+        } else if (solution2 != nullptr) {
             slibreal_t dR_dt, dZ_dt, dR_drho, dZ_drho,
                 X1, Y1, Z1, X2, Y2, Z2, R1;
 
@@ -132,7 +131,7 @@ void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution
             dR_drho = hypot(X2, Y2) - R1;
             dZ_drho = Z2 - Z1;
 
-            Jdtdrho[i] = fabs(dR_dt*dZ_drho - dZ_dt*dR_drho) / nudge;
+            Jdtdrho[i] = R1 * fabs(dR_dt*dZ_drho - dZ_dt*dR_drho) / nudge;
             if (this->particle != 0)
                 Jdtdrho[i] *= this->particle->GetDRho();
 

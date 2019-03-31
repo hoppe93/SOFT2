@@ -129,15 +129,21 @@ void Orbit::CopyTo(Orbit *o) {
  * the corresponding orbit (obtained through calls to the
  * 'SOFTEquation' object).
  *
- * tend:  Last time point at which to evaluate the orbit.
- * intg1: Integrator object containing solution (6-dimensional).
- * intg2: Second integrator object containing the solution of a
- *        (very) slightly different orbit, that can be used to
- *        calculate the spatial Jacobian determinant.
- * eqn:   Pointer to SOFTEquation solved by the integrator.
- * nudge: Nudge value used to generate 'intg2'.
+ * tend:           Last time point at which to evaluate the orbit.
+ * intg1:          Integrator object containing solution (6-dimensional).
+ * intg2:          Second integrator object containing the solution of a
+ *                 (very) slightly different orbit, that can be used to
+ *                 calculate the spatial Jacobian determinant.
+ * eqn:            Pointer to SOFTEquation solved by the integrator.
+ * nudge:          Nudge value used to generate 'intg2'.
+ * forceNumerical: Force the guiding-center Jacobian to be computed
+ *                 numerically.
  */
-Orbit *Orbit::Create(slibreal_t tend, Integrator<6> *intg1, Integrator<6> *intg2, SOFTEquation *eqn, Particle *p, slibreal_t nudge, orbit_class_t cl) {
+Orbit *Orbit::Create(
+	slibreal_t tend, Integrator<6> *intg1, Integrator<6> *intg2,
+	SOFTEquation *eqn, Particle *p, slibreal_t nudge,
+	orbit_class_t cl, bool forceNumerical
+) {
     this->ir = p->GetIndexR();
     this->ip1 = p->GetIndexP1();
     this->ip2 = p->GetIndexP2();
@@ -158,9 +164,9 @@ Orbit *Orbit::Create(slibreal_t tend, Integrator<6> *intg1, Integrator<6> *intg2
             this->_solution2, this->tau
         );
 
-        eqn->ToOrbitQuantities(this->_solution, this->_solution2, this, nudge, cl);
+        eqn->ToOrbitQuantities(this->_solution, this->_solution2, this, nudge, cl, forceNumerical);
     } else
-        eqn->ToOrbitQuantities(this->_solution, nullptr, this, nudge, cl);
+        eqn->ToOrbitQuantities(this->_solution, nullptr, this, nudge, cl, forceNumerical);
 
     return this;
 }

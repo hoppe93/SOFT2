@@ -4,6 +4,7 @@
  * Welcome message and info for the 'Green' output module.
  */
 
+#include <omp.h>
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
 #include <softlib/MagneticField/MagneticField2D.h>
@@ -52,8 +53,11 @@ string Green::TranslateFormat(const string& fmt) {
  * Print info/welcome message.
  */
 void Green::Welcome(const string &prefix) {
-    slibreal_t gfsize = this->fsize;
-    int unit = 0;
+    size_t gf_totsize = this->fsize * sizeof(slibreal_t) * omp_get_num_threads();
+    slibreal_t gfsize = this->fsize * sizeof(slibreal_t);
+    slibreal_t gfmem  = gf_totsize;
+
+    int unit = 0, unitmem = 0;
     char gfsize_prefix[8][4] = {
         "B", "kiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB"
     };
@@ -63,10 +67,18 @@ void Green::Welcome(const string &prefix) {
         unit++;
     }
 
+    while (gfmem > 1024.0) {
+        gfmem /= 1024.0;
+        unitmem++;
+    }
+
     string fmt = TranslateFormat(format);
     SOFT::PrintInfo(prefix+"Function format:     %s", fmt.c_str());
     SOFT::PrintInfo(prefix+"Function size:       %.1f %s (%zu bytes)",
-        gfsize, gfsize_prefix[unit], this->fsize
+        gfsize, gfsize_prefix[unit], this->fsize*sizeof(slibreal_t)
+    );
+    SOFT::PrintInfo(prefix+"Required memory:     %.1f %s (%zu bytes, %d threads)",
+        gfmem, gfsize_prefix[unitmem], gf_totsize, omp_get_num_threads()
     );
 }
 
