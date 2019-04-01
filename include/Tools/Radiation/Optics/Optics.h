@@ -1,7 +1,6 @@
 #ifndef _RADIATION_OPTICS_H
 #define _RADIATION_OPTICS_H
 
-#include <complex>
 #include <softlib/config.h>
 #include <softlib/Vector.h>
 #include "Tools/Radiation/Detector.h"
@@ -19,8 +18,8 @@ namespace __Radiation {
              */
             struct Efield {
                 unsigned int nE;
-                std::complex<slibreal_t> *Ex, *Ey;
-                Vector<3,std::complex<slibreal_t>> xhat, yhat, zhat;
+                slibreal_t *Ex2, *Ey2, *ExEy;
+                Vector<3> xhat, yhat, zhat;
             };
         protected:
             // Pointer to simulation detector

@@ -16,7 +16,7 @@ include_drifts = no;
     rminor = 0.5;
     qtype  = constant;
     qa1 = 1.0;
-    sigmaB = ccw;
+    sigmaB = cw;
 }
 
 @ParticleGenerator PGen {
@@ -68,7 +68,7 @@ include_drifts = no;
     stokesparams = yes;
 }
 @RadiationOutput green {
-    output = green.mat;
+    output = "green.mat";
     format = "1ij";
     pixels = 300;
     stokesparams = yes;

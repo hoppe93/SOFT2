@@ -3,7 +3,6 @@
  * the cone model.
  */
 
-#include <complex>
 #include "Tools/Radiation/synchrotron_func.h"
 #include "Tools/Radiation/Models/Cone/ConeSynchrotronEmission.h"
 #include "Tools/Radiation/RadiationParticle.h"
@@ -19,8 +18,9 @@ ConeSynchrotronEmission::ConeSynchrotronEmission(Detector *det, MagneticField2D 
     if (polarization) {
         this->Efield.nE = det->GetNWavelengths();
 
-        this->Efield.Ex = new complex<slibreal_t>[this->Efield.nE];
-        this->Efield.Ey = new complex<slibreal_t>[this->Efield.nE];
+        this->Efield.Ex2  = new slibreal_t[this->Efield.nE];
+        this->Efield.Ey2  = new slibreal_t[this->Efield.nE];
+        this->Efield.ExEy = new slibreal_t[this->Efield.nE];
     } else
         this->Efield.nE = 0;
 }
@@ -30,8 +30,9 @@ ConeSynchrotronEmission::ConeSynchrotronEmission(Detector *det, MagneticField2D 
  */
 ConeSynchrotronEmission::~ConeSynchrotronEmission() {
     if (this->Efield.nE > 0) {
-        delete [] this->Efield.Ey;
-        delete [] this->Efield.Ex;
+        delete [] this->Efield.ExEy;
+        delete [] this->Efield.Ey2;
+        delete [] this->Efield.Ex2;
     }
 }
 
@@ -137,8 +138,8 @@ void ConeSynchrotronEmission::CalculatePolarization(RadiationParticle *rp) {
     // Compute basis vectors
     slibreal_t nDotB = rp->GetRCPHat().Dot(bhat);
     Efield.zhat = rp->GetRCPHat();
-    Efield.yhat =-Vector<3,complex<slibreal_t>>::Cross(rp->GetRCPHat(), bhat) / (complex<slibreal_t>)sqrt(1.0 - nDotB*nDotB);
-    Efield.xhat = Vector<3,complex<slibreal_t>>::Cross(Efield.yhat, Efield.zhat);
+    Efield.yhat =-Vector<3>::Cross(rp->GetRCPHat(), bhat) / (slibreal_t)sqrt(1.0 - nDotB*nDotB);
+    Efield.xhat = Vector<3>::Cross(Efield.yhat, Efield.zhat);
 
     // Compute "electric field" components
     for (unsigned int i = 0; i < nwavelengths; i++) {
@@ -150,9 +151,11 @@ void ConeSynchrotronEmission::CalculatePolarization(RadiationParticle *rp) {
         slibreal_t ikf2 = synchrotron_func2(lcl);
 
         // Perp direction
-        Efield.Ex[i] = sqrt((pf/(l*l*lc)) * (ikf1 - ikf2));
+        Efield.Ex2[i] = pf/(2.0*l*l*lc) * (ikf1 - ikf2);
         // Parallel direction
-        Efield.Ey[i] = -1i * sqrt((pf/(l*l*lc)) * (ikf1 + ikf2));
+        Efield.Ey2[i] = pf/(2.0*l*l*lc) * (ikf1 + ikf2);
+        // Combined (integrates to zero (over viewing direction))
+        Efield.ExEy[i] = 0.0;
     }
 
     this->detector->GetOptics()->ApplyOptics(Efield, I, Q, U, V);

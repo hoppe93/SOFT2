@@ -7,17 +7,12 @@
  *   https://doi.org/10.1364/OE.21.027032
  */
 
-#include <complex>
 #include <iostream>
 #include <softlib/config.h>
-#include <softlib/Matrix.h>
 #include "Tools/Radiation/Optics/Korger.h"
 
 using namespace std;
 using namespace __Radiation;
-
-typedef Matrix<3,3,complex<slibreal_t>> cMatrix;
-typedef Vector<3,complex<slibreal_t>> cVector;
 
 /**
  * Constructor. 
@@ -40,6 +35,7 @@ void Korger::Configure(ConfigBlock*) {
  * of electric field components coming
  * from the same source direction.
  */
+/*
 void Korger::ApplyOptics(
     const struct Optics::Efield &E,
     slibreal_t *I, slibreal_t *Q,
@@ -71,14 +67,6 @@ void Korger::ApplyOptics(
     cMatrix Tp45 = ONE - cMatrix(a45, a45);
     cMatrix Tp90 = ONE - cMatrix(a90, a90);
 
-    /*cVector nhat = E.yhat;
-    cVector tv1 = Tp00 * nhat;
-    cVector tv2 = Tp90 * nhat;
-
-    slibreal_t x = sqrt(real(tv1.Norm()*tv1.Norm() + tv2.Norm()*tv2.Norm()));
-    if (abs(x - 1.0) > 1e-2)
-        printf("Wait now... %e !!!\n", abs(x-1.0));*/
-
     // Construct Stokes parameters from PI(psi)
     for (unsigned int i = 0; i < E.nE; i++) {
         cVector e = E.Ex[i] * E.xhat + E.Ey[i] * E.yhat;
@@ -98,6 +86,42 @@ void Korger::ApplyOptics(
         if (Q != nullptr) Q[i] = PI00 - PI90;
         if (U != nullptr) U[i] = 2.0 * PI45 - PI00 - PI90;
         if (V != nullptr) V[i] = 2.0 * PIi45 - PI00 - PI90;
+    }
+}
+*/
+
+/**
+ * Apply the Korger model to a spectrum
+ * of electric field components coming
+ * from the same source direction.
+ */
+void Korger::ApplyOptics(
+    const struct Optics::Efield &E,
+    slibreal_t *I, slibreal_t *Q,
+    slibreal_t *U, slibreal_t *V
+) {
+    Vector<3>
+        e1 = detector->GetEHat1(),
+        e2 = detector->GetEHat2(),
+        nh = detector->GetDirection();
+
+    slibreal_t
+        a1 = e1.Dot(E.yhat), a2 = e2.Dot(E.yhat),
+        b1 = e1.Dot(E.xhat), b2 = e2.Dot(E.xhat)/*,
+        c1 = e1.Dot(E.zhat), c2 = e2.Dot(E.zhat)*/;
+
+    for (unsigned int i = 0; i < E.nE; i++) {
+        slibreal_t
+            PI0  = (E.Ex2[i]*a2*a2 + E.Ey2[i]*b2*b2) / (a2*a2 + b2*b2),
+            PI4  = (E.Ex2[i]*(a2-a1)*(a2-a1) + E.Ey2[i]*(b2-b1)*(b2-b1)) / ((a1-a2)*(a1-a2) + (b1-b2)*(b1-b2)),
+            PI2  = (E.Ex2[i]*a1*a1 + E.Ey2[i]*b1*b1) / (a1*a1 + b1*b1),
+            PIi4 = PI0+PI2;  // TODO
+
+        I[i] = PI0 + PI2;
+
+        if (Q != nullptr) Q[i] = PI0 - PI2;
+        if (U != nullptr) U[i] = 2.0*PI4  - PI0 - PI2;
+        if (V != nullptr) V[i] = 2.0*PIi4 - PI0 - PI2;
     }
 }
 
