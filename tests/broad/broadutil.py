@@ -48,3 +48,22 @@ class Image:
             self.detectorVisang = f['detectorVisang'][:,:]
             self.wall = f['wall'][:,:]
 
+class Green:
+    def __init__(self, filename):
+        with h5py.File(filename, 'r') as f:
+            self.func = f['func'][:,:]
+            self.param1 = f['param1'][:,:]
+            self.param2 = f['param2'][:,:]
+            self.r      = f['r'][:,:]
+            self.wavelengths = f['wavelengths'][:,:]
+
+            self.param1name = self.tostring(f['param1name'])
+            self.param2name = self.tostring(f['param2name'])
+            self.format     = self.tostring(f['type'])
+
+    def tostring(self, arr):
+        """
+        Convert the given MATLAB string to a Python string.
+        """
+        return "".join(map(chr, arr[:,:][:,0].tolist()))
+
