@@ -3,6 +3,11 @@
  */
 
 #include <cstdlib>
+#include "config.h"
+
+#ifdef WITH_MPI
+#   include <mpi.h>
+#endif
 
 /**
  * Stops execution and exits safely.
@@ -12,6 +17,9 @@
  * exitcode: Return code to exit with.
  */
 void softexit(int exitcode) {
-	/* TODO Handle MPI-safe exit */
+#ifdef WITH_MPI
+    MPI_Finalize();
+#endif
+
 	exit(exitcode);
 }

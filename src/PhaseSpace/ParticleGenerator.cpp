@@ -39,11 +39,16 @@
 #include <softlib/Configuration.h>
 #include <softlib/MagneticField/MagneticField2D.h>
 
+#include "config.h"
 #include "constants.h"
 #include "PhaseSpace/Particle.h"
 #include "PhaseSpace/ParticleGenerator.h"
 #include "SOFT.h"
 #include "units.h"
+
+#ifdef WITH_MPI
+#   include <mpi.h>
+#endif
 
 using namespace std;
 
@@ -140,7 +145,34 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
 	// Get radial coordinate
     SetRadialCoordinate(mf, conf);
 
-    GenerateCoordinateGrids();
+#ifdef WITH_MPI
+    if (conf->HasSetting("mpi_distribute_mode")) {
+        s = conf->GetSetting("mpi_distribute_mode");
+
+        if (s->GetNumberOfValues() != 1)
+            throw ParticleGeneratorException(
+                "Too many parameters specified for 'mpi_distribute_mode'. Expected exactly one parameter."
+            );
+
+        if (s->GetString() == "all")
+            this->mpi_distribute_mode = MPI_DISTMODE_ALL;
+        else if (s->GetString() == "radius")
+            this->mpi_distribute_mode = MPI_DISTMODE_RADIUS;
+        else if (s->GetString() == "1")
+            this->mpi_distribute_mode = MPI_DISTMODE_MOMENTUM1;
+        else if (s->GetString() == "2")
+            this->mpi_distribute_mode = MPI_DISTMODE_MOMENTUM2;
+        else {
+            for (int i = 0; i < pg_ncoordinates; i++) {
+                if (s->GetText() == pg_coordinate_names[i]) {
+                    // TODO
+                }
+            }
+        }
+    }
+#endif
+
+    GenerateCoordinateGrids(this->mpi_distribute_mode);
 
     // Get mass and charge (if set)
     if (conf->HasSetting("charge")) {

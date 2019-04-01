@@ -7,9 +7,14 @@
 
 #include <softlib/Configuration.h>
 
+#include "config.h"
 #include "Init/Init.h"
 #include "SOFT.h"
 #include "softexit.h"
+
+#ifdef WITH_MPI
+#   include <mpi.h>
+#endif
 
 using namespace std;
 
@@ -27,6 +32,9 @@ int main(int argc, char *argv[]) {
 	Configuration *conf;
     SOFT *soft;
 
+#ifdef WITH_MPI
+    MPI_Init(&argc, &argv);
+#endif
 	
 	/* Handle command-line arguments */
     try {
@@ -61,6 +69,10 @@ int main(int argc, char *argv[]) {
         softexit(1);
     }
 
-	return 0;
+#ifdef WITH_MPI
+    MPI_Finalize();
+#endif
+
+    return 0;
 }
 

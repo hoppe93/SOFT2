@@ -32,6 +32,15 @@ class ParticleGenerator {
         bool print_progress=false;          // Print phase space progress continuously
 
         ProgressTracker *progress;
+
+        enum MPI_Distribute_Mode {
+            MPI_DISTMODE_ALL,
+            MPI_DISTMODE_RADIUS,
+            MPI_DISTMODE_MOMENTUM1,
+            MPI_DISTMODE_MOMENTUM2
+        };
+
+        enum MPI_Distribute_Mode mpi_distribute_mode=MPI_DISTMODE_ALL;
 	public:
 		ParticleGenerator(MagneticField2D*, ConfigBlock*, struct global_settings*);
         ~ParticleGenerator();
@@ -42,7 +51,7 @@ class ParticleGenerator {
 		void _Calculate_Xpol(MagneticField2D*, bool, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t, slibreal_t&, slibreal_t&);
 
 		bool Generate(Particle*, MagneticField2D*, DistributionFunction *f=nullptr);
-        void GenerateCoordinateGrids();
+        void GenerateCoordinateGrids(int mpi_distribute_parameter=Particle::COORDINATE_);
         void GenerateRhoeffTable(MagneticField2D*);
         void GetRadialCoordinate(ConfigBlock*, const std::string&, slibreal_t, slibreal_t);
 		void InitializeParticle(
@@ -67,6 +76,8 @@ class ParticleGenerator {
         slibreal_t *GetP2Grid() { return this->p2grid; }
 
         slibreal_t GetDriftShiftTolerance() { return this->drift_shift_tolerance; }
+
+        enum MPI_Distribute_Mode GetMPIDistributionMode() { return this->mpi_distribute_mode; }
 };
 
 class ParticleGeneratorException : public SOFTException {

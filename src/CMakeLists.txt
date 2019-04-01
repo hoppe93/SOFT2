@@ -9,6 +9,7 @@ option(COLOR_TERMINAL "Allow colorful SOFT output" ON)
 option(DEBUG "Compile with debug symbols and no optimizations" OFF)
 option(OPTIMIZE_NATIVE "Enable native optimizations (non-debug mode only)" ON)
 option(PROFILING "Enable gprof profiling hooks" OFF)
+option(WITH_MPI "Enable MPI support" OFF)
 
 set(init
     "${PROJECT_SOURCE_DIR}/src/Init/Init.cpp"
@@ -231,6 +232,20 @@ else (OFFICIAL_MATLAB)
 		message(FATAL_ERROR "HDF5 support was requested, but no HDF5 library was found on this system")
 	endif (HDF5_FOUND)
 endif (OFFICIAL_MATLAB)
+
+# Compile with MPI support?
+if (WITH_MPI)
+    find_package(MPI CXX)
+    if (MPI_CXX_FOUND)
+        include_directories(${MPI_CXX_INCLUDE_DIRS})
+
+        set_target_properties(soft PROPERTIES COMPILE_FLAGS "${MPI_CXX_COMPILE_OPTIONS}" "${MPI_CXX_COMPILE_DEFINITIONS}")
+        set_target_properties(soft PROPERTIES LINK_FLAGS "${MPI_CXX_LINK_FLAGS}")
+        target_link_libraries(soft "${MPI_CXX_LIBRARIES}")
+    else (MPI_CXX_FOUND)
+        message(FATAL_ERROR "MPI support was requested, but no MPI library was found.")
+    endif (MPI_CXX_FOUND)
+endif (WITH_MPI)
 
 configure_file(
 	"${PROJECT_SOURCE_DIR}/include/config.h.in"

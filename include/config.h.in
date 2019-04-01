@@ -5,6 +5,7 @@
 
 #cmakedefine COLOR_TERMINAL
 #cmakedefine DEBUG
+#cmakedefine WITH_MPI
 
 #define SOFT_GIT_REFSPEC "@GIT_REFSPEC@"
 #define SOFT_GIT_SHA1 "@GIT_SHA1@"
