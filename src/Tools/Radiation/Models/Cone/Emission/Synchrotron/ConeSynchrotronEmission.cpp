@@ -136,9 +136,11 @@ void ConeSynchrotronEmission::CalculatePolarization(RadiationParticle *rp) {
     bhat.Normalize();
 
     // Compute basis vectors
-    slibreal_t nDotB = rp->GetRCPHat().Dot(bhat);
-    Efield.zhat = rp->GetRCPHat();
-    Efield.yhat =-Vector<3>::Cross(rp->GetRCPHat(), bhat) / (slibreal_t)sqrt(1.0 - nDotB*nDotB);
+    slibreal_t r = rp->GetRCP().Norm();
+    Vector<3> rcphat = rp->GetRCP() / r;
+    slibreal_t nDotB = rcphat.Dot(bhat);
+    Efield.zhat = rcphat;
+    Efield.yhat =-Vector<3>::Cross(rcphat, bhat) / (slibreal_t)sqrt(1.0 - nDotB*nDotB);
     Efield.xhat = Vector<3>::Cross(Efield.yhat, Efield.zhat);
 
     // Compute "electric field" components
