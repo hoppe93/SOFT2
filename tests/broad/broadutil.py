@@ -51,11 +51,11 @@ class Image:
 class Green:
     def __init__(self, filename):
         with h5py.File(filename, 'r') as f:
-            self.func = f['func'][:,:]
-            self.param1 = f['param1'][:,:]
-            self.param2 = f['param2'][:,:]
-            self.r      = f['r'][:,:]
-            self.wavelengths = f['wavelengths'][:,:]
+            self.func = f['func'][:]
+            self.param1 = f['param1'][:]
+            self.param2 = f['param2'][:]
+            self.r      = f['r'][:]
+            self.wavelengths = f['wavelengths'][:]
 
             self.param1name = self.tostring(f['param1name'])
             self.param2name = self.tostring(f['param2name'])
@@ -67,3 +67,18 @@ class Green:
         """
         return "".join(map(chr, arr[:,:][:,0].tolist()))
 
+class Spectrum:
+    def __init__(self, filename):
+        with h5py.File(filename, 'r') as f:
+            self.I = f['I'][:,:]
+            self.wavelengths = f['wavelengths'][:,:]
+
+            if 'Q' in f: self.Q = f['Q'][:,:]
+            else: self.Q = None
+
+            if 'U' in f: self.U = f['U'][:,:]
+            else: self.U = None
+
+            if 'V' in f: self.V = f['V'][:,:]
+            else: self.V = None
+            

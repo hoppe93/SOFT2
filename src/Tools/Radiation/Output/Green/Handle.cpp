@@ -51,8 +51,8 @@ void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
         // Functions for copying either Stokes parameters
         // or spectrum
         auto copyStokes = [this,&I,&Q,&U,&V,&diffel,&inc,&index,&wavindex]() {
-            size_t i, fsw = this->fsizeWithoutStokes;
-            for (i = 0; i < (unsigned)this->nw; i++, index+=inc) {
+            const size_t fsw = this->fsizeWithoutStokes;
+            for (size_t i = 0; i < (unsigned)this->nw; i++, index+=inc) {
                 #pragma omp atomic update
                 this->function[fsw*0 + index + i*wavindex] += I[i] * diffel;
                 #pragma omp atomic update
@@ -64,8 +64,7 @@ void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
             }
         };
         auto copySpec = [this,&I,&diffel,&inc,&index,&wavindex]() {
-            int i;
-            for (i = 0; i < nw; i++, index+=inc) {
+            for (int i = 0; i < nw; i++, index+=inc) {
                 #pragma omp atomic update
                 this->function[index+i*wavindex] += I[i] * diffel;
             }
@@ -165,7 +164,7 @@ void Green::GetIndex(
             case 'i': *index += I * factors[i]; break;
             case 'j': *index += J * factors[i]; break;
             case 'r': *index += rp->GetIndexR() * factors[i]; break;
-            case 'w': *wavindex = i; break;
+            case 'w': *wavindex = this->factors[i]; break;
             default:
                 throw GreenException("Unrecognized character in Green's function format: %c.", format[i]);
         }

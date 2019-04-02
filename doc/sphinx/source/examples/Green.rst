@@ -4,6 +4,10 @@ Green's function output
 -----------------------
 SOFT is capable of generating so-called *Green's functions*.
 
+.. image:: ../_static/figs/examples/Green.png
+   :width: 100%
+   :align: center
+
 Important points
 ****************
 For Green's function output, the :ref:`module-ro-green` module must be used. It

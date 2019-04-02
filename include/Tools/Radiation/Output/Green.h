@@ -23,6 +23,7 @@ namespace __Radiation {
             static slibreal_t *global_function;
             slibreal_t *function;
             size_t fsize, fsizeWithoutStokes, *factors;
+            sfilesize_t *dimensions, ndimensions;
 
             slibreal_t *rgrid, *p1grid, *p2grid;
             int p1type, p2type;
@@ -32,6 +33,7 @@ namespace __Radiation {
                 subnrowpixels, subncolpixels,
                 nformat;
             bool storeStokesParameters;
+            bool storeFAsLinearArray=false;
             bool
                 hasP1=false, hasP2=false, hasR=false,
                 hasI=false, hasJ=false, hasW=false,

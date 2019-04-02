@@ -41,6 +41,9 @@ void Green::PrepareAllocateGreen() {
     for (i = 0; i < this->nformat; i++)
         this->factors[i] = 1;
 
+    this->ndimensions = this->nformat;
+    this->dimensions = new sfilesize_t[this->nformat];
+
     size_t s;
     for (i = 0; i < this->nformat; i++) {
         switch (this->format[i]) {
@@ -55,6 +58,7 @@ void Green::PrepareAllocateGreen() {
         }
 
         this->fsize *= s;
+        this->dimensions[i] = s;
 
         if (i > 0)
             this->factors[i-1] = s;
@@ -90,6 +94,16 @@ void Green::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
 		this->ConfigureCommonQuantities(DEFAULT_QUANTITIES, NDEFAULT_QUANTITIES, conf->GetSetting("common")->GetTextVector());
 	else
 		this->ConfigureCommonQuantities(DEFAULT_QUANTITIES, NDEFAULT_QUANTITIES);
+
+    // f_as_linear_array
+    if (conf->HasSetting("f_as_linear_array")) {
+        s = conf->GetSetting("f_as_linear_array");
+        if (!s->IsBool())
+            throw GreenException("Unrecognized value assigned to 'f_as_linear_array'. Expected boolean value.");
+
+        this->storeFAsLinearArray = s->GetBool();
+    } else
+        this->storeFAsLinearArray = false;
 
     // format
     if (!conf->HasSetting("format"))

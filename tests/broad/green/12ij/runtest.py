@@ -31,7 +31,8 @@ def loadGreensFunction(filename):
         if frmt != "12ij":
             raise Exception("Invalid format of Greens's function: "+frmt);
 
-        GF = np.reshape(func, [2,2,300,300])
+        #GF = np.reshape(func, [2,2,300,300])
+        GF = func.shape
 
         param1name = "".join(map(chr, f['param1name'][:,:][:,0].tolist()))
         param2name = "".join(map(chr, f['param2name'][:,:][:,0].tolist()))

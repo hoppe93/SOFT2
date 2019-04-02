@@ -27,7 +27,10 @@ void Space3D::Generate() {
     //slibreal_t pixls[3] = {(slibreal_t)pixelsX, (slibreal_t)pixelsY, (slibreal_t)pixelsZ};
     //sf->WriteList("pixels", pixls, 3);
     sf->WriteScalar("pixels", pixelsX);
-    sf->WriteList("image", this->s3dimage, this->imagesize);
+
+    //sf->WriteList("image", this->s3dimage, this->imagesize);
+    sfilesize_t ndims = 3, dims[3] = {(sfilesize_t)pixelsX, (sfilesize_t)pixelsY, (sfilesize_t)pixelsZ};
+    sf->WriteMultiArray("image", this->s3dimage, ndims, dims);
 
     sf->WriteList("xmin", &(this->point0[0]), 1);
     sf->WriteList("xmax", &(this->point1[0]), 1);

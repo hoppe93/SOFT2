@@ -7,8 +7,6 @@ magnetic_field = MF_UnitQ;
 particle_generator = PGen;
 particle_pusher = PPusher;
 tools = rad;
-num_threads = 4;
-include_drifts = no;
 
 @MagneticField MF_UnitQ (analytical) {
     B0 = 2.0;
@@ -17,15 +15,13 @@ include_drifts = no;
     qtype  = constant;
     qa1 = 1.0;
     sigmaB = ccw;
+    sigmaB = cw;
 }
 
 @ParticleGenerator PGen {
-    #a=0,0.95,200;
-    a=0,0.95,20;
-    p=30,40,2;
-    thetap=0.15,0.20,2;
-    #p=30,30,1;
-    #thetap=0.15,0.15,1;
+    a = 0,0.95,200;
+    p=50,50,1;
+    thetap = 0.2, 0.2, 1;
 }
 
 @ParticlePusher PPusher {
@@ -35,7 +31,7 @@ include_drifts = no;
     nt = 1000;
 }
 
-@Equation guiding-center (guiding-center) {
+@Equation guiding-center {
     method = rkdp45;
     tolerance = 1e-9;
 }
@@ -45,28 +41,26 @@ include_drifts = no;
     detector = det;
     ntoroidal = 2500;
     model = cone;
-    output = green;
-    #output = image;
+    output = image green;
     wall_opacity = transparent;
 }
 @Detector det {
     aperture = 0.006;
     direction = 0,1.0,0;
     position = 1.7,-1.7,0;
-    vision_angle = 0.70 fov;
+    vision_angle = 0.90 fov;
     spectrum = no;
 }
 @RadiationModel cone {
     emission = synchrotron;
     projection = reverse;
 }
-@RadiationOutput green {
-    output = green.h5;
-    pixels = 300;
-    format = "12ij";
-}
 @RadiationOutput image {
-    output = image.h5;
-    pixels = 300;
+    output = "image.mat";
+    pixels = 1;
+}
+@RadiationOutput green (green) {
+    output = "green.mat";
+    format = "r";
 }
 
