@@ -51,11 +51,11 @@ class Image:
 class Green:
     def __init__(self, filename):
         with h5py.File(filename, 'r') as f:
-            self.func = f['func'][:,:]
-            self.param1 = f['param1'][:,:]
-            self.param2 = f['param2'][:,:]
-            self.r      = f['r'][:,:]
-            self.wavelengths = f['wavelengths'][:,:]
+            self.func = f['func'][:]
+            self.param1 = f['param1'][:]
+            self.param2 = f['param2'][:]
+            self.r      = f['r'][:]
+            self.wavelengths = f['wavelengths'][:]
 
             self.param1name = self.tostring(f['param1name'])
             self.param2name = self.tostring(f['param2name'])

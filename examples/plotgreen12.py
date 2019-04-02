@@ -42,7 +42,7 @@ def loadGreen(filename):
     tos = lambda v : "".join(map(chr, v[:,:][:,0].tolist()))
 
     with h5py.File(filename, 'r') as f:
-        func = f['func'][:,:]
+        func = f['func'][:]
         par1 = f['param1'][:,:]
         par2 = f['param2'][:,:]
 
@@ -55,7 +55,8 @@ def loadGreen(filename):
         raise Exception("Invalid format of Green's function: '{0}'.".format(frm))
 
     # Reshape Green's function
-    GF = np.reshape(func, [par1.size, par2.size]).T
+    #GF = np.reshape(func, [par1.size, par2.size]).T
+    GF = func.T
     PPAR, PPERP = None, None
 
     if par1n == 'ppar' and par2n == 'pperp':
@@ -86,7 +87,7 @@ def plotGreen(ppar, pperp, gf):
     ax = fig.add_subplot(111)
     F = gf * PPERP
     F = F / np.amax(F)
-    ax.contourf(-PPAR, PPERP, F, cmap=COLORMAP)
+    ax.contourf(PPAR, PPERP, F, cmap=COLORMAP)
     
     ax.set_xlabel('$p_\parallel / mc$')
     ax.set_ylabel('$p_\perp / mc$')

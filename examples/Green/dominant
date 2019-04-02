@@ -10,7 +10,7 @@ distribution_function = dist;
 }
 
 @RadiationOutput green (green) {
-    with_f = yes;
+    #with_f = yes;
     output = "data/dominant.mat";
 }
 

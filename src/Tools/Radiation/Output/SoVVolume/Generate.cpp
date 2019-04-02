@@ -38,7 +38,10 @@ void SoVVolume::Finish() {
 void SoVVolume::Generate() {
     SFile *sf = SFile::Create(this->output, SFILE_MODE_WRITE);
 
-    sf->WriteList("volumearray", global_volumearray, this->narrayelements);
+    //sf->WriteList("volumearray", global_volumearray, this->narrayelements);
+    sfilesize_t ndims = 2, dims[2] = {this->np1, this->np2};
+    sf->WriteMultiArray("volumearray", global_volumearray, ndims, dims);
+
     sf->WriteList("param1", this->p1grid, this->np1);
     sf->WriteList("param2", this->p2grid, this->np2);
     sf->WriteString("param1name", Particle::GetCoordinateName(this->p1type));

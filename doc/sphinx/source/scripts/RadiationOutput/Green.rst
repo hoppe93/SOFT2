@@ -41,27 +41,29 @@ an inverse problem.
 Summary of options
 ------------------
 
-+-------------------------------------------------+---------------------------------------------+
-| **Option**                                      | **Description**                             |
-+-------------------------------------------------+---------------------------------------------+
-| :option:`@RadiationOutput(green) format`        | Green's function format (i.e. dependences). |
-+-------------------------------------------------+---------------------------------------------+
-| :option:`@RadiationOutput(green) output`        | Name of output file.                        |
-+-------------------------------------------------+---------------------------------------------+
-| :option:`@RadiationOutput(green) pixels`        | Number of pixels.                           |
-+-------------------------------------------------+---------------------------------------------+
-| :option:`@RadiationOutput(green) stokesparams`  | Whether or not to store Stokes parameters.  |
-+-------------------------------------------------+---------------------------------------------+
-| :option:`@RadiationOutput(green) suboffseti`    | Sub-image offset in vertical direction.     |
-+-------------------------------------------------+---------------------------------------------+
-| :option:`@RadiationOutput(green) suboffsetj`    | Sub-image offset in horizontal direction.   |
-+-------------------------------------------------+---------------------------------------------+
-| :option:`@RadiationOutput(green) subpixels`     | Number of pixels in sub-image.              |
-+-------------------------------------------------+---------------------------------------------+
-| :option:`@RadiationOutput(green) with_f`        | Multiply with the distribution function.    |
-+-------------------------------------------------+---------------------------------------------+
-| :option:`@RadiationOutput(green) with_jacobian` | Multiply with the guiding-center Jacobian.  |
-+-------------------------------------------------+---------------------------------------------+
++-----------------------------------------------------+----------------------------------------------+
+| **Option**                                          | **Description**                              |
++-----------------------------------------------------+----------------------------------------------+
+| :option:`@RadiationOutput(green) f_as_linear_array` | Store the output function as a linear array. |
++-----------------------------------------------------+----------------------------------------------+
+| :option:`@RadiationOutput(green) format`            | Green's function format (i.e. dependences).  |
++-----------------------------------------------------+----------------------------------------------+
+| :option:`@RadiationOutput(green) output`            | Name of output file.                         |
++-----------------------------------------------------+----------------------------------------------+
+| :option:`@RadiationOutput(green) pixels`            | Number of pixels.                            |
++-----------------------------------------------------+----------------------------------------------+
+| :option:`@RadiationOutput(green) stokesparams`      | Whether or not to store Stokes parameters.   |
++-----------------------------------------------------+----------------------------------------------+
+| :option:`@RadiationOutput(green) suboffseti`        | Sub-image offset in vertical direction.      |
++-----------------------------------------------------+----------------------------------------------+
+| :option:`@RadiationOutput(green) suboffsetj`        | Sub-image offset in horizontal direction.    |
++-----------------------------------------------------+----------------------------------------------+
+| :option:`@RadiationOutput(green) subpixels`         | Number of pixels in sub-image.               |
++-----------------------------------------------------+----------------------------------------------+
+| :option:`@RadiationOutput(green) with_f`            | Multiply with the distribution function.     |
++-----------------------------------------------------+----------------------------------------------+
+| :option:`@RadiationOutput(green) with_jacobian`     | Multiply with the guiding-center Jacobian.   |
++-----------------------------------------------------+----------------------------------------------+
 
 Example configuration
 ---------------------
@@ -128,6 +130,36 @@ All options
 
 .. program:: @RadiationOutput(green)
 
+.. option:: f_as_linear_array
+
+   :Default value: ``no``
+   :Allowed values: ``yes`` and ``no``
+
+   If ``yes``, then ``func`` is stored as a linear array (i.e. 1-by-many matrix)
+   instead of the default multi-dimensional format. In this mode, the array
+   must therefore be reshaped to have the correct number of dimensions. In Matlab,
+   this is done by calling ``reshape(func, [nN, nN_1, ..., n1])``, where
+   ``func`` is the Green's function, ``nN`` is the number of elements in the
+   last dimension of the function, ``nN_1`` the number of elements in the next-to-last
+   dimension etc. Thus, if the :option:`@RadiationOutput(green) format` option is
+   set to ``rij``, then the appropriate **Matlab** command would be::
+
+      reshape(func, [ni, nj, nr])
+
+   In **Python**, on the other hand, the order of the dimensions is reversed, so that
+   the equivalent code reads::
+
+      import numpy as np
+      np.reshape(func, (nr, nj, ni))
+
+.. note::
+
+   By default, :option:`@RadiationOutput(green) f_as_linear_array` is set to ``no``,
+   meaning that the Green's function is reshaped internally by SOFT before being
+   written to file. Thus, by default, no reshape is required.
+
+   This default is new since 2019-04-02.
+   
 .. option:: format
 
    :Default value: Nothing

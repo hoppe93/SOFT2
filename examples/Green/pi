@@ -20,7 +20,7 @@ tools              = rad;
 # Phase space grid
 @ParticleGenerator PGen {
     a      = 0.0, 0.95, 20; # Normalized minor radius
-    ppar   = -2, -165, 40;     # Parallel momentum (mc)
+    ppar   = 2, 165, 40;     # Parallel momentum (mc)
     pperp  = 1, 15, 40;    # Perpendicular momentum (mc)
 
     progress = 10;

@@ -97,18 +97,6 @@ The output file contains the following variables:
 | ``zmax``     | The z-component of ``point1``.       |
 +--------------+--------------------------------------+
 
-The image is stored as a linear vector of size :math:`1\times N`, where
-:math:`N` is the number of pixels per dimension, i.e. ``pixels``. The image
-should be reshaped into a 3-dimensional array before use though. In Matlab, do::
-
-    reshapedImage = reshape(image, [pixels, pixels, pixels]);
-
-In Python, do::
-
-    import numpy as np
-
-    reshapedImage = np.reshape(image, (pixels, pixels, pixels))
-
 All options
 ^^^^^^^^^^^
 

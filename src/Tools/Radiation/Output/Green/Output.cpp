@@ -38,7 +38,12 @@ void Green::Finish() {
 void Green::Generate() {
     SFile *sf = SFile::Create(this->output, SFILE_MODE_WRITE);
 
-    sf->WriteList("func", global_function, fsize);
+    // Store as linear or multi-dimensional array?
+    if (this->storeFAsLinearArray)
+        sf->WriteList("func", global_function, fsize);
+    else
+        sf->WriteMultiArray("func", global_function, this->ndimensions, this->dimensions);
+
     sf->WriteList("r", this->rgrid, this->nr);
     sf->WriteList("param1", this->p1grid, this->n1);
     sf->WriteList("param2", this->p2grid, this->n2);
