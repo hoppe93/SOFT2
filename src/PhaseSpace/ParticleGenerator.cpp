@@ -154,20 +154,35 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
                 "Too many parameters specified for 'mpi_distribute_mode'. Expected exactly one parameter."
             );
 
-        if (s->GetString() == "all")
-            this->mpi_distribute_mode = MPI_DISTMODE_ALL;
-        else if (s->GetString() == "radius")
+        string str = s->GetString();
+        if (str == "radius" || str == "a" || str == "r" || str == "rho")
             this->mpi_distribute_mode = MPI_DISTMODE_RADIUS;
-        else if (s->GetString() == "1")
+        else if (str == "1")
             this->mpi_distribute_mode = MPI_DISTMODE_MOMENTUM1;
-        else if (s->GetString() == "2")
+        else if (str == "2")
             this->mpi_distribute_mode = MPI_DISTMODE_MOMENTUM2;
         else {
             for (int i = 0; i < pg_ncoordinates; i++) {
-                if (s->GetText() == pg_coordinate_names[i]) {
-                    // TODO
+                if (str == pg_coordinate_names[i]) {
+                    if (pg_coordinate_types[i] == this->mom1type)
+                        this->mpi_distribute_mode = MPI_DISTMODE_MOMENTUM1;
+                    else if (pg_coordinate_types[i] == this->mom2type)
+                        this->mpi_distribute_mode = MPI_DISTMODE_MOMENTUM2;
+                    else
+                        throw ParticleGeneratorException(
+                            "Unable to distribute parameter '%s' over MPI. The parameter is not part of the phase space.",
+                            str.c_str()
+                        );
+
+                    break;
                 }
             }
+
+            if (i == pg_ncoordinates)
+                throw ParticleGeneratorException(
+                    "Unrecognized parameter '%s' specified to be distributed over MPI.",
+                    str.c_str()
+                );
         }
     }
 #endif
@@ -261,8 +276,50 @@ ParticleGenerator::~ParticleGenerator() {
 /**
  * Generate the individual coordinate grids of the phase space.
  */
-void ParticleGenerator::GenerateCoordinateGrids() {
+void ParticleGenerator::GenerateCoordinateGrids(
+    enum MPI_Distribute_Mode
+#ifdef WITH_MPI
+    param
+#endif
+) {
     unsigned int i;
+
+    this->end_ir = this->nr;
+    this->end_i1 = this->n1;
+    this->end_i2 = this->n2;
+
+    // TODO
+#ifdef WITH_MPI
+    int nprocesses, mpi_rank;
+    MPI_Comm_size(MPI_COMM_WORLD, &nprocesses);
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+
+    if (param == MPI_DISTMODE_RADIUS) {
+        unsigned int dr = nr / nprocesses;
+        if (mpi_rank >= (nr % nprocesses))
+            dr++;
+
+        this->ir     = mpi_rank*dr;
+        this->end_ir = ir + dr;
+    } else if (param == MPI_DISTMODE_MOMENTUM1) {
+        unsigned int d1 = n1 / nprocesses;
+        if (mpi_rank >= (n1 % nprocesses))
+            d1++;
+
+        this->i1     = mpi_rank*d1;
+        this->end_i1 = i1 + d1;
+    } else if (param == MPI_DISTMODE_MOMENTUM2) {
+        unsigned int d2 = n2 / nprocesses;
+        if (mpi_rank >= (n2 % nprocesses))
+            d2++;
+
+        this->i2     = mpi_rank*d2;
+        this->end_i2 = i2 + d2;
+    } else
+        throw ParticleGeneratorException(
+            "GenerateCoordinateGrids(): Unrecognized MPI distribution mode: %d.", param
+        );
+#endif
 
     rgrid  = new slibreal_t[this->nr];
     p1grid = new slibreal_t[this->n1];
@@ -485,9 +542,6 @@ bool ParticleGenerator::Generate(Particle *part, MagneticField2D *mf, Distributi
 	{
 		if (this->finished) success = false;
 		else {
-			/*r  = r0  + dr*ir;
-			p1 = p10 + dp1*i1;
-			p2 = p20 + dp2*i2;*/
             r  = this->rgrid[ir];
             p1 = this->p1grid[i1];
             p2 = this->p2grid[i2];
@@ -498,15 +552,15 @@ bool ParticleGenerator::Generate(Particle *part, MagneticField2D *mf, Distributi
 
 			ir++;
 
-			if (ir >= nr) {
+			if (ir >= end_ir) {
 				ir = 0;
 				i1++;
 				
-				if (i1 >= n1) {
+				if (i1 >= end_i1) {
 					i1 = 0;
 					i2++;
 
-					if (i2 >= n2) {
+					if (i2 >= end_i2) {
 						this->finished = true;
 						i2 = 0;
 					}

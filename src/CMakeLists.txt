@@ -52,6 +52,7 @@ set(phasespace_tests
 	"${PROJECT_SOURCE_DIR}/tests/deep/PhaseSpace/Test_ParticleGenerator.cpp"
 )
 set(soft
+    "${PROJECT_SOURCE_DIR}/src/MemoryManager.cpp"
     "${PROJECT_SOURCE_DIR}/src/SOFT/Info.cpp"
     "${PROJECT_SOURCE_DIR}/src/SOFT/Run.cpp"
     "${PROJECT_SOURCE_DIR}/src/SOFT/SOFT.cpp"

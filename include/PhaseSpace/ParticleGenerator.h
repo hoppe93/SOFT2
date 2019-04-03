@@ -19,7 +19,8 @@ class ParticleGenerator {
         slibreal_t *rgrid=nullptr, *p1grid=nullptr, *p2grid=nullptr;
 		slibreal_t charge, mass;
 		unsigned int ir, i1, i2,
-					 nr, n1, n2;
+					 nr, n1, n2,
+                     end_ir, end_i1, end_i2;
 		int mom1type, mom2type;				// Momentum types
 
 		int specified_position=Particle::POSITION_PARTICLE;
@@ -34,13 +35,12 @@ class ParticleGenerator {
         ProgressTracker *progress;
 
         enum MPI_Distribute_Mode {
-            MPI_DISTMODE_ALL,
             MPI_DISTMODE_RADIUS,
             MPI_DISTMODE_MOMENTUM1,
             MPI_DISTMODE_MOMENTUM2
         };
 
-        enum MPI_Distribute_Mode mpi_distribute_mode=MPI_DISTMODE_ALL;
+        enum MPI_Distribute_Mode mpi_distribute_mode=MPI_DISTMODE_RADIUS;
 	public:
 		ParticleGenerator(MagneticField2D*, ConfigBlock*, struct global_settings*);
         ~ParticleGenerator();
@@ -51,7 +51,7 @@ class ParticleGenerator {
 		void _Calculate_Xpol(MagneticField2D*, bool, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t, slibreal_t&, slibreal_t&);
 
 		bool Generate(Particle*, MagneticField2D*, DistributionFunction *f=nullptr);
-        void GenerateCoordinateGrids(int mpi_distribute_parameter=Particle::COORDINATE_);
+        void GenerateCoordinateGrids(enum MPI_Distribute_Mode mpi_distribute_parameter=MPI_Distribute_Mode::MPI_DISTMODE_RADIUS);
         void GenerateRhoeffTable(MagneticField2D*);
         void GetRadialCoordinate(ConfigBlock*, const std::string&, slibreal_t, slibreal_t);
 		void InitializeParticle(
