@@ -14,6 +14,7 @@
 
 #ifdef WITH_MPI
 #   include <mpi.h>
+#   include "SMPI.h"
 #endif
 
 using namespace std;
@@ -33,7 +34,7 @@ int main(int argc, char *argv[]) {
     SOFT *soft;
 
 #ifdef WITH_MPI
-    MPI_Init(&argc, &argv);
+    SMPI::init(&argc, &argv);
 #endif
 	
 	/* Handle command-line arguments */
@@ -70,7 +71,7 @@ int main(int argc, char *argv[]) {
     }
 
 #ifdef WITH_MPI
-    MPI_Finalize();
+    SMPI::finalize();
 #endif
 
     return 0;

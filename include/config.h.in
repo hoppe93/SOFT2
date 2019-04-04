@@ -7,6 +7,10 @@
 #cmakedefine DEBUG
 #cmakedefine WITH_MPI
 
+#ifdef WITH_MPI
+#   define MPI_ROOT_PROCESS 0
+#endif
+
 #define SOFT_GIT_REFSPEC "@GIT_REFSPEC@"
 #define SOFT_GIT_SHA1 "@GIT_SHA1@"
 #define SOFT_GIT_TAG "@GIT_TAG@"

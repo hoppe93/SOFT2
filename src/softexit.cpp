@@ -18,7 +18,7 @@
  */
 void softexit(int exitcode) {
 #ifdef WITH_MPI
-    MPI_Finalize();
+    SMPI::finalize();
 #endif
 
 	exit(exitcode);

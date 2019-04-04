@@ -288,7 +288,6 @@ void ParticleGenerator::GenerateCoordinateGrids(
     this->end_i1 = this->n1;
     this->end_i2 = this->n2;
 
-    // TODO
 #ifdef WITH_MPI
     int nprocesses, mpi_rank;
     MPI_Comm_size(MPI_COMM_WORLD, &nprocesses);

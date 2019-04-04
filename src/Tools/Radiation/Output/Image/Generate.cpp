@@ -52,6 +52,25 @@ void Image::Finish() {
  * Called on the root thread only.
  */
 void Image::Generate() {
+#ifdef WITH_MPI
+    int nprocesses, mpi_rank;
+    MPI_Comm_size(MPI_COMM_WORLD, &nprocesses);
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+
+    MPI_Reduce(
+        global_image,                       // send_data
+        global_image,                       // recv_data
+        this->nrowpixels*this->ncolpixels,  // count
+        MPI_SLIBREAL_T,                     // datatype
+        MPI_SUM,                            // operation
+        MPI_ROOT_PROCESS,                   // root
+        MPI_COMM_WORLD                      // comunicator
+    );
+
+    if (mpi_rank != MPI_ROOT_PROCESS)
+        return;
+#endif
+
     SFile *sf = SFile::Create(this->output, SFILE_MODE_WRITE);
 
     slibreal_t **img = new slibreal_t*[this->nrowpixels];
