@@ -1,6 +1,12 @@
 
 #include <string>
-#include <SOFT.h>
+
+#include "config.h"
+#include "SOFT.h"
+
+#ifdef WITH_MPI
+#   include <mpi.h>
+#endif
 
 /**
  * Prints an error message to stderr.
@@ -18,12 +24,23 @@ void SOFT::PrintError(const SOFT::message_t id, const std::string& msg, Args&& .
     if (!SOFT::VerifyMessage(id))
         return;
 
-#ifdef COLOR_TERMINAL
-    std::string fullmsg = "\x1B[1;31m[ERROR]\x1B[0m "+msg+"\n";
+#ifdef WITH_MPI
+    int mpi_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+#   ifdef COLOR_TERMINAL
+    std::string fullmsg = "\x1B[1;31m[ERROR]\x1B[0m \x1B[1;33m[PROC #\x1B[31m%d\x1B[33m]\x1B[0m "+msg+"\n";
+#   else
+    std::string fullmsg = "[ERROR] [PROC #%d] "+msg+"\n";
+#   endif
+    fprintf(stderr, fullmsg.c_str(), mpi_rank, std::forward<Args>(args) ...);
 #else
+#   ifdef COLOR_TERMINAL
+    std::string fullmsg = "\x1B[1;31m[ERROR]\x1B[0m "+msg+"\n";
+#   else
     std::string fullmsg = "[ERROR] "+msg+"\n";
-#endif
+#   endif
     fprintf(stderr, fullmsg.c_str(), std::forward<Args>(args) ...);
+#endif
 }
 
 /**
@@ -43,6 +60,14 @@ template<typename ... Args>
 void SOFT::PrintWarning(const SOFT::message_t id, const std::string& msg, Args&& ... args) {
     if (!SOFT::VerifyMessage(id))
         return;
+
+#ifdef WITH_MPI
+    int mpi_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+
+    if (mpi_rank != MPI_ROOT_PROCESS)
+        return;
+#endif
 
 #ifdef COLOR_TERMINAL
     std::string fullmsg = "\x1B[1;33m[WARNING]\x1B[0m "+msg+"\n";
@@ -67,6 +92,14 @@ template<typename ... Args>
 void SOFT::PrintInfo(const SOFT::message_t id, const std::string& msg, Args&& ... args) {
     if (!SOFT::VerifyMessage(id))
         return;
+    
+#ifdef WITH_MPI
+    int mpi_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+
+    if (mpi_rank != MPI_ROOT_PROCESS)
+        return;
+#endif
 
     std::string fullmsg = msg+"\n";
     fprintf(stdout, fullmsg.c_str(), std::forward<Args>(args) ...);

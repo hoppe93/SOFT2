@@ -7,6 +7,7 @@
 
 #ifdef WITH_MPI
 #   include <mpi.h>
+#   include "SMPI.h"
 #endif
 
 /**

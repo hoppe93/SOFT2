@@ -289,9 +289,9 @@ void ParticleGenerator::GenerateCoordinateGrids(
     this->end_i2 = this->n2;
 
 #ifdef WITH_MPI
-    int nprocesses, mpi_rank;
-    MPI_Comm_size(MPI_COMM_WORLD, &nprocesses);
-    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+    unsigned int nprocesses, mpi_rank;
+    MPI_Comm_size(MPI_COMM_WORLD, (int*)&nprocesses);
+    MPI_Comm_rank(MPI_COMM_WORLD, (int*)&mpi_rank);
 
     if (param == MPI_DISTMODE_RADIUS) {
         unsigned int dr = nr / nprocesses;

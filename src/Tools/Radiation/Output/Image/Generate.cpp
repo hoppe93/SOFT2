@@ -6,7 +6,12 @@
 
 #include <omp.h>
 #include <softlib/config.h>
+#include "config.h"
 #include "Tools/Radiation/Output/Image.h"
+
+#ifdef WITH_MPI
+#   include "SMPI.h"
+#endif
 
 using namespace __Radiation;
 
@@ -61,7 +66,7 @@ void Image::Generate() {
         global_image,                       // send_data
         global_image,                       // recv_data
         this->nrowpixels*this->ncolpixels,  // count
-        MPI_SLIBREAL_T,                     // datatype
+        SMPI::MPI_SLIBREAL_T,               // datatype
         MPI_SUM,                            // operation
         MPI_ROOT_PROCESS,                   // root
         MPI_COMM_WORLD                      // comunicator

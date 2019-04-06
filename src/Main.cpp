@@ -34,7 +34,12 @@ int main(int argc, char *argv[]) {
     SOFT *soft;
 
 #ifdef WITH_MPI
-    SMPI::init(&argc, &argv);
+    try {
+        SMPI::init(&argc, &argv);
+    } catch (SMPI::MPIException &ex) {
+        SOFT::PrintError("%s", ex.what());
+        softexit(1);
+    }
 #endif
 	
 	/* Handle command-line arguments */

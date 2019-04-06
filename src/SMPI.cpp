@@ -2,15 +2,19 @@
  * Custom MPI wrapper for SOFT
  */
 
+#include "config.h"
+
 #ifndef WITH_MPI
 #   error "The SMPI module requires SOFT to be compiled with MPI."
 #endif
 
 #include <mpi.h>
-#include "smpi.h"
+#include "SMPI.h"
 
 namespace SMPI {
     MPI_Datatype MPI_SLIBREAL_T;
+
+    MPI_Op *SUM;
 
     /**
      * Initialize MPI for SOFT by making a call to
@@ -19,8 +23,8 @@ namespace SMPI {
      * argc: Number of command-line arguments passed to the program.
      * argv: Command-line arguments passed to the program.
      */
-    void init(int argc, char *argv[]) {
-        MPI_Init(&argc, &argv);
+    void init(int *argc, char ***argv) {
+        MPI_Init(argc, argv);
 
         // Register data types
         if (std::is_same<slibreal_t, float>::value)
@@ -33,6 +37,9 @@ namespace SMPI {
             throw MPIException("Unable to register MPI datatype for 'slibreal_t': 'slibreal_t' is of an unknown type.");
 
         verify(MPI_Type_commit(&MPI_SLIBREAL_T));
+
+        // Definte 'SUM' operation for MPI_SLIBREAL_T
+        verify(MPI_Op_create(
     }
 
     void finalize() {
@@ -40,9 +47,16 @@ namespace SMPI {
     }
 
     void verify(int err) {
-        if (MPI_SUCCESS)
+        if (err == MPI_SUCCESS)
             return;
         else
             throw MPIException(err);
     }
+
+    /**************************
+     * CUSTOM OPERATIONS      *
+     **************************/
+    void reduce_sum(void *a, void *b, int *len, MPI_Datatyp *type) {
+    }
 }
+

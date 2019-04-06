@@ -151,6 +151,10 @@ set(tool_radiation_tests
     "${PROJECT_SOURCE_DIR}/tests/deep/Tools/Radiation/Models/Cone/Reverse/Test_ConeProjectionReverse.cpp"
 )
 
+set(mpi
+    "${PROJECT_SOURCE_DIR}/src/SMPI.cpp"
+)
+
 if (DEBUG)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wno-format-security -fopenmp -O0 -g -D_FILE_OFFSET_BITS=64")
 else (DEBUG)
@@ -167,6 +171,11 @@ endif (PROFILING)
 set(all_tools ${tool_orbits} ${tool_radiation})
 set(core ${init} ${orbit} ${phasespace} ${soft} ${tools} ${all_tools})
 set(target ${main} ${core})
+
+if (WITH_MPI)
+    set(target ${target} ${mpi})
+endif (WITH_MPI)
+
 add_executable(soft ${target})
 
 if (BUILD_TESTS)
@@ -236,11 +245,11 @@ endif (OFFICIAL_MATLAB)
 
 # Compile with MPI support?
 if (WITH_MPI)
-    find_package(MPI CXX)
+    find_package(MPI COMPONENTS CXX)
     if (MPI_CXX_FOUND)
         include_directories(${MPI_CXX_INCLUDE_DIRS})
 
-        set_target_properties(soft PROPERTIES COMPILE_FLAGS "${MPI_CXX_COMPILE_OPTIONS}" "${MPI_CXX_COMPILE_DEFINITIONS}")
+        set_target_properties(soft PROPERTIES COMPILE_FLAGS "${MPI_CXX_COMPILE_OPTIONS} ${MPI_CXX_COMPILE_DEFINITIONS}")
         set_target_properties(soft PROPERTIES LINK_FLAGS "${MPI_CXX_LINK_FLAGS}")
         target_link_libraries(soft "${MPI_CXX_LIBRARIES}")
     else (MPI_CXX_FOUND)

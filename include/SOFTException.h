@@ -13,7 +13,7 @@ class SOFTException : public SOFTLibException {
     private:
         std::vector<std::string> modules;
 	public:
-        SOFTException();
+        SOFTException() {}
 
 		template<typename ... Args>
 		SOFTException(const std::string& msg, Args&& ... args) : SOFTLibException(msg, std::forward<Args>(args) ...) {}

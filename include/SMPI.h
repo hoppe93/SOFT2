@@ -6,10 +6,14 @@
 #endif
 
 #include <mpi.h>
-#include <softlib/SOFTLibException.h>
+#include "SOFTException.h"
 
 namespace SMPI {
     extern MPI_Datatype MPI_SLIBREAL_T;
+
+    void init(int*, char***);
+    void finalize();
+    void verify(int);
 
     class MPIException : public SOFTException {
         private:
