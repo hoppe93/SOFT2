@@ -10,10 +10,16 @@
 
 namespace SMPI {
     extern MPI_Datatype MPI_SLIBREAL_T;
+    extern MPI_Op SUM;
+
+    extern bool verbose;
 
     void init(int*, char***);
     void finalize();
     void verify(int);
+
+    // Custom operations
+    void reduce_sum(slibreal_t*, slibreal_t*, int*, MPI_Datatype*);
 
     class MPIException : public SOFTException {
         private:

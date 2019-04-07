@@ -63,6 +63,7 @@ class SOFT {
             WARNING_TRMC_BUGGY_CONE_MODEL,
             // Tools/Radiation/Output/Green
             WARNING_TROG_IMAGE_NOT_LAST,
+            // [Must always come last]
             MESSAGE_LAST
         } message_t;
 
@@ -81,6 +82,11 @@ class SOFT {
         static void PrintInfo(const message_t, const std::string&, Args&& ...);
         template<typename ... Args>
         static void PrintInfo(const std::string&, Args&& ...);
+
+#ifdef WITH_MPI
+        template<typename ... Args>
+        static void PrintMPI(const std::string&, Args&& ...);
+#endif
 
         static const std::string PRINT_YES, PRINT_NO;
 

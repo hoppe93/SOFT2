@@ -8,9 +8,14 @@
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
 
+#include "config.h"
 #include "Init/Init.h"
 #include "SOFT.h"
 #include "SOFTException.h"
+
+#ifdef WITH_MPI
+#   include "SMPI.h"
+#endif
 
 using namespace std;
 
@@ -48,6 +53,12 @@ struct global_settings *InitGlobalSettings(ConfigBlock& global) {
     if (global.GetSetting("distribution_function")->GetNumberOfValues() != 1)
         throw SOFTException("distribution_function: Invalid value assigned to parameter. Expected single name of distribution function to use.");
     globset->distribution = global.GetSetting("distribution_function")->GetString();
+
+    // VERBOSE MPI OUTPUT?
+#ifdef WITH_MPI
+    if (global.GetSetting("mpi_verbose")->IsBool())
+        SMPI::verbose = global.GetSetting("mpi_verbose")->GetBool();
+#endif
 
     // NUMBER OF THREADS
     if (!global.GetSetting("num_threads")->IsUnsignedInteger32()) {

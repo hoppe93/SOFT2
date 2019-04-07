@@ -14,7 +14,9 @@
 namespace SMPI {
     MPI_Datatype MPI_SLIBREAL_T;
 
-    MPI_Op *SUM;
+    MPI_Op SUM;
+
+    bool verbose = true;
 
     /**
      * Initialize MPI for SOFT by making a call to
@@ -39,7 +41,7 @@ namespace SMPI {
         verify(MPI_Type_commit(&MPI_SLIBREAL_T));
 
         // Definte 'SUM' operation for MPI_SLIBREAL_T
-        verify(MPI_Op_create(
+        verify(MPI_Op_create((MPI_User_function*)reduce_sum, 1, &SUM));
     }
 
     void finalize() {
@@ -56,7 +58,12 @@ namespace SMPI {
     /**************************
      * CUSTOM OPERATIONS      *
      **************************/
-    void reduce_sum(void *a, void *b, int *len, MPI_Datatyp *type) {
+    void reduce_sum(slibreal_t *a, slibreal_t *b, int *len, MPI_Datatype *type) {
+        if (*type == SMPI::MPI_SLIBREAL_T) {
+            for (int i = 0; i < *len; i++)
+                b[i] += a[i];
+        } else
+            throw MPIException("Data of unrecognized type passed to 'reduce_sum()': %d.", *type);
     }
 }
 

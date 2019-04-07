@@ -62,15 +62,24 @@ void Image::Generate() {
     MPI_Comm_size(MPI_COMM_WORLD, &nprocesses);
     MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
 
+    void *inbuf = global_image;
+
+    if (mpi_rank == MPI_ROOT_PROCESS)
+        inbuf = MPI_IN_PLACE;
+
+    SOFT::PrintMPI("Reducing image '%s'...", this->GetName().c_str());
+
     MPI_Reduce(
-        global_image,                       // send_data
+        inbuf,                              // send_data
         global_image,                       // recv_data
         this->nrowpixels*this->ncolpixels,  // count
         SMPI::MPI_SLIBREAL_T,               // datatype
-        MPI_SUM,                            // operation
+        SMPI::SUM,                            // operation
         MPI_ROOT_PROCESS,                   // root
         MPI_COMM_WORLD                      // comunicator
     );
+
+    SOFT::PrintMPI("Image '%s' reduced.", this->GetName().c_str());
 
     if (mpi_rank != MPI_ROOT_PROCESS)
         return;

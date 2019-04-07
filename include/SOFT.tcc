@@ -6,6 +6,7 @@
 
 #ifdef WITH_MPI
 #   include <mpi.h>
+#   include "SMPI.h"
 #endif
 
 /**
@@ -104,4 +105,23 @@ void SOFT::PrintInfo(const SOFT::message_t id, const std::string& msg, Args&& ..
     std::string fullmsg = msg+"\n";
     fprintf(stdout, fullmsg.c_str(), std::forward<Args>(args) ...);
 }
+
+#ifdef WITH_MPI
+template<typename ... Args>
+void SOFT::PrintMPI(const std::string& msg, Args&& ... args) {
+    if (!SMPI::verbose)
+        return;
+
+    int mpi_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+
+#   ifdef COLOR_TERMINAL
+    std::string fullmsg = "\x1B[1;33m[PROC #\x1B[31m%d\x1B[33m]\x1B[0m "+msg+"\n";
+#   else
+    std::string fullmsg = "[PROC #%d] "+msg+"\n";
+#   endif
+
+    fprintf(stdout, fullmsg.c_str(), mpi_rank, std::forward<Args>(args) ...);
+}
+#endif
 

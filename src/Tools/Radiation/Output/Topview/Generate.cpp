@@ -8,6 +8,10 @@
 #include <softlib/config.h>
 #include "Tools/Radiation/Output/Topview.h"
 
+#ifdef WITH_MPI
+#   include "SMPI.h"
+#endif
+
 using namespace __Radiation;
 
 slibreal_t *Topview::global_topview = nullptr;
@@ -36,6 +40,34 @@ void Topview::Finish() {
  * Called on the root thread only.
  */
 void Topview::Generate() {
+#ifdef WITH_MPI
+    int nprocesses, mpi_rank;
+    MPI_Comm_size(MPI_COMM_WORLD, &nprocesses);
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+
+    void *inbuf = global_topview;
+
+    if (mpi_rank == MPI_ROOT_PROCESS)
+        inbuf = MPI_IN_PLACE;
+
+    SOFT::PrintMPI("Reducing topview '%s'...", this->GetName().c_str());
+
+    MPI_Reduce(
+        inbuf,                              // send_data
+        global_topview,                     // recv_data
+        this->npixels*this->npixels,        // count
+        SMPI::MPI_SLIBREAL_T,               // datatype
+        SMPI::SUM,                          // operation
+        MPI_ROOT_PROCESS,                   // root
+        MPI_COMM_WORLD                      // comunicator
+    );
+
+    SOFT::PrintMPI("Topview '%s' reduced.", this->GetName().c_str());
+
+    if (mpi_rank != MPI_ROOT_PROCESS)
+        return;
+#endif
+
     SFile *sf = SFile::Create(this->output, SFILE_MODE_WRITE);
 
     slibreal_t **img = new slibreal_t*[this->npixels];

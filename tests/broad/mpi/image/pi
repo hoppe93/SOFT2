@@ -40,7 +40,7 @@ tools = rad;
     detector = det;
     ntoroidal = 7000;
     model = cone;
-    output = image;
+    output = image topview;
 }
 @Detector det {
     aperture = 0.006;
@@ -55,5 +55,9 @@ tools = rad;
 }
 @RadiationOutput image (image) {
     output = cone.mat;
+    pixels = 600;
+}
+@RadiationOutput topview (topview) {
+    output = topview.mat;
     pixels = 600;
 }

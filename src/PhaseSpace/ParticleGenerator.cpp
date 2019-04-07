@@ -295,21 +295,21 @@ void ParticleGenerator::GenerateCoordinateGrids(
 
     if (param == MPI_DISTMODE_RADIUS) {
         unsigned int dr = nr / nprocesses;
-        if (mpi_rank >= (nr % nprocesses))
+        if (mpi_rank < (nr % nprocesses))
             dr++;
 
         this->ir     = mpi_rank*dr;
         this->end_ir = ir + dr;
     } else if (param == MPI_DISTMODE_MOMENTUM1) {
         unsigned int d1 = n1 / nprocesses;
-        if (mpi_rank >= (n1 % nprocesses))
+        if (mpi_rank < (n1 % nprocesses))
             d1++;
 
         this->i1     = mpi_rank*d1;
         this->end_i1 = i1 + d1;
     } else if (param == MPI_DISTMODE_MOMENTUM2) {
         unsigned int d2 = n2 / nprocesses;
-        if (mpi_rank >= (n2 % nprocesses))
+        if (mpi_rank < (n2 % nprocesses))
             d2++;
 
         this->i2     = mpi_rank*d2;
