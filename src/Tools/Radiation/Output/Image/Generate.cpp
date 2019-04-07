@@ -69,15 +69,21 @@ void Image::Generate() {
 
     SOFT::PrintMPI("Reducing image '%s'...", this->GetName().c_str());
 
-    MPI_Reduce(
-        inbuf,                              // send_data
-        global_image,                       // recv_data
-        this->nrowpixels*this->ncolpixels,  // count
-        SMPI::MPI_SLIBREAL_T,               // datatype
-        SMPI::SUM,                            // operation
-        MPI_ROOT_PROCESS,                   // root
-        MPI_COMM_WORLD                      // comunicator
-    );
+    unsigned int pxls = this->nrowpixels*this->ncolpixels;
+    MPI_Reduce(inbuf, global_image, pxls, SMPI::MPI_SLIBREAL_T, SMPI::SUM, MPI_ROOT_PROCESS, MPI_COMM_WORLD);
+
+    if (this->MeasuresPolarization()) {
+        void *inbuf_Q=global_imageQ, *inbuf_U=global_imageU, *inbuf_V=global_imageV;
+        if (mpi_rank == MPI_ROOT_PROCESS) {
+            inbuf_Q = MPI_IN_PLACE;
+            inbuf_U = MPI_IN_PLACE;
+            inbuf_V = MPI_IN_PLACE;
+        }
+
+        MPI_Reduce(inbuf_Q, global_imageQ, pxls, SMPI::MPI_SLIBREAL_T, SMPI::SUM, MPI_ROOT_PROCESS, MPI_COMM_WORLD);
+        MPI_Reduce(inbuf_U, global_imageU, pxls, SMPI::MPI_SLIBREAL_T, SMPI::SUM, MPI_ROOT_PROCESS, MPI_COMM_WORLD);
+        MPI_Reduce(inbuf_V, global_imageV, pxls, SMPI::MPI_SLIBREAL_T, SMPI::SUM, MPI_ROOT_PROCESS, MPI_COMM_WORLD);
+    }
 
     SOFT::PrintMPI("Image '%s' reduced.", this->GetName().c_str());
 

@@ -18,9 +18,9 @@ tools = rad;
 }
 
 @ParticleGenerator PGen {
-    a = 0,0.95,400;
-    p=60,60,1;
-    thetap=0.2,0.2,1;
+    a = 0,0.95,4;
+    p=10,60,10;
+    thetap=0.1,0.4,10;
 }
 
 @ParticlePusher PPusher {
@@ -40,24 +40,20 @@ tools = rad;
     detector = det;
     ntoroidal = 7000;
     model = cone;
-    output = image topview;
+    output = sovvolume;
 }
 @Detector det {
     aperture = 0.006;
     direction = 0,1.0,0;
     position = 1.7,-1.7,0;
     vision_angle = 0.70 fov;
-    spectrum = no;
+    spectrum = 500e-9, 800e-9, 20;
 }
 @RadiationModel cone (cone) {
     emission = synchrotron;
     projection = reverse;
 }
-@RadiationOutput image (image) {
-    output = cone.mat;
-    pixels = 600;
+@RadiationOutput sovvolume (sovvolume) {
+    output = "sovvolume.mat";
 }
-@RadiationOutput topview (topview) {
-    output = topview.mat;
-    pixels = 600;
-}
+

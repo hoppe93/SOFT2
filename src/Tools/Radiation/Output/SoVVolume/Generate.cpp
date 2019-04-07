@@ -4,11 +4,18 @@
  * Generate an output image file.
  */
 
+#include <cstdlib>
 #include <omp.h>
 #include <softlib/config.h>
 #include "Tools/Radiation/Output/SoVVolume.h"
 
+#ifdef WITH_MPI
+#   include <mpi.h>
+#   include "SMPI.h"
+#endif
+
 using namespace __Radiation;
+using namespace std;
 
 slibreal_t *SoVVolume::global_volumearray = nullptr;
 
@@ -36,6 +43,22 @@ void SoVVolume::Finish() {
  * Called on the root thread only.
  */
 void SoVVolume::Generate() {
+#ifdef WITH_MPI
+    int mpi_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+
+    void *inbuf = global_volumearray;
+    if (mpi_rank == MPI_ROOT_PROCESS)
+        inbuf = MPI_IN_PLACE;
+    
+    SOFT::PrintMPI("Reducing SoV volume '%s'...", this->GetName().c_str());
+    MPI_Reduce(inbuf, global_volumearray, this->narrayelements, SMPI::MPI_SLIBREAL_T, SMPI::SUM, MPI_ROOT_PROCESS, MPI_COMM_WORLD);
+    SOFT::PrintMPI("SoV volume '%s' reduced.", this->GetName().c_str());
+
+    if (mpi_rank != MPI_ROOT_PROCESS)
+        return;
+#endif
+
     SFile *sf = SFile::Create(this->output, SFILE_MODE_WRITE);
 
     //sf->WriteList("volumearray", global_volumearray, this->narrayelements);

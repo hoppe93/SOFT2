@@ -22,7 +22,7 @@ const unsigned int SoVVolume::NDEFAULT_QUANTITIES = 0;
  * Allocate the array holding the SoV volume.
  */
 void SoVVolume::AllocateVolume() {
-    this->volumearray = new slibreal_t[this->arraysize];
+    this->volumearray = new slibreal_t[this->narrayelements];
     for (size_t i = 0; i < this->narrayelements; i++)
         this->volumearray[i] = 0.0;
 }

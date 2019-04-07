@@ -52,15 +52,7 @@ void Topview::Generate() {
 
     SOFT::PrintMPI("Reducing topview '%s'...", this->GetName().c_str());
 
-    MPI_Reduce(
-        inbuf,                              // send_data
-        global_topview,                     // recv_data
-        this->npixels*this->npixels,        // count
-        SMPI::MPI_SLIBREAL_T,               // datatype
-        SMPI::SUM,                          // operation
-        MPI_ROOT_PROCESS,                   // root
-        MPI_COMM_WORLD                      // comunicator
-    );
+    MPI_Reduce(inbuf, global_topview, this->npixels*this->npixels, SMPI::MPI_SLIBREAL_T, SMPI::SUM, MPI_ROOT_PROCESS, MPI_COMM_WORLD);
 
     SOFT::PrintMPI("Topview '%s' reduced.", this->GetName().c_str());
 

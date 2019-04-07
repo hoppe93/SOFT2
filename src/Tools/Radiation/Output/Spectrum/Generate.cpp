@@ -8,6 +8,11 @@
 #include <softlib/config.h>
 #include "Tools/Radiation/Output/Spectrum.h"
 
+#ifdef WITH_MPI
+#   include <mpi.h>
+#   include "SMPI.h"
+#endif
+
 using namespace __Radiation;
 
 slibreal_t
@@ -57,6 +62,38 @@ void Spectrum::Finish() {
  * Called on the root thread only.
  */
 void Spectrum::Generate() {
+#ifdef WITH_MPI
+    int nprocesses, mpi_rank;
+    MPI_Comm_size(MPI_COMM_WORLD, &nprocesses);
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+
+    void *inbuf = global_I;
+
+    if (mpi_rank == MPI_ROOT_PROCESS)
+        inbuf = MPI_IN_PLACE;
+
+    SOFT::PrintMPI("Reducing spectrum '%s'...", this->GetName().c_str());
+
+    MPI_Reduce(inbuf, global_I, this->nwavelengths, SMPI::MPI_SLIBREAL_T, SMPI::SUM, MPI_ROOT_PROCESS, MPI_COMM_WORLD);
+
+    if (this->MeasuresPolarization()) {
+        void *inbuf_Q=global_Q, *inbuf_U=global_U, *inbuf_V=global_V;
+        if (mpi_rank == MPI_ROOT_PROCESS) {
+            inbuf_Q = MPI_IN_PLACE;
+            inbuf_U = MPI_IN_PLACE;
+            inbuf_V = MPI_IN_PLACE;
+        }
+
+        MPI_Reduce(inbuf_Q, global_Q, this->nwavelengths, SMPI::MPI_SLIBREAL_T, SMPI::SUM, MPI_ROOT_PROCESS, MPI_COMM_WORLD);
+        MPI_Reduce(inbuf_U, global_U, this->nwavelengths, SMPI::MPI_SLIBREAL_T, SMPI::SUM, MPI_ROOT_PROCESS, MPI_COMM_WORLD);
+        MPI_Reduce(inbuf_V, global_V, this->nwavelengths, SMPI::MPI_SLIBREAL_T, SMPI::SUM, MPI_ROOT_PROCESS, MPI_COMM_WORLD);
+    }
+
+    SOFT::PrintMPI("Spectrum '%s' reduced.", this->GetName().c_str());
+
+    if (mpi_rank != MPI_ROOT_PROCESS)
+        return;
+#endif
     SFile *sf = SFile::Create(this->output, SFILE_MODE_WRITE);
 
     sf->WriteList("wavelengths", this->wavelengths, this->nwavelengths);

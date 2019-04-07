@@ -4,6 +4,7 @@ import os.path
 import sys
 import subprocess
 import h5py
+import tempfile
 
 SOFTPATH = '../../build/src/soft'
 
@@ -39,7 +40,39 @@ def runSOFT(pi):
 
     return stderr_data
 
-class Image:
+def runSOFT_mpi(pi):
+    """
+    Run SOFT throught MPIRUN utility, passing
+    on 'pi' on stdin to the executable.
+    """
+    global SOFTPATH
+
+    pifile, path = tempfile.mkstemp()
+    try:
+        with os.fdopen(pifile, 'w') as f:
+            f.write(pi)
+
+        args = ["mpirun", "-n", "4", SOFTPATH, path]
+        env = os.environ
+
+        p = subprocess.Popen(args, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
+        stderr_data = p.communicate()[0].decode('utf-8')
+    finally:
+        os.remove(path)
+
+    if p.returncode is not 0:
+        raise RuntimeError("SOFT exited with a non-zero exit code ("+str(p.returncode)+").\n{}".format(stderr_data))
+
+    return
+
+class SOFTOutputBase:
+    def tostring(self, arr):
+        """
+        Convert the given MATLAB string to a Python string.
+        """
+        return "".join(map(chr, arr[:,:][:,0].tolist()))
+    
+class Image(SOFTOutputBase):
     def __init__(self, filename):
         with h5py.File(filename, 'r') as f:
             self.image = f['image'][:,:]
@@ -48,7 +81,7 @@ class Image:
             self.detectorVisang = f['detectorVisang'][:,:]
             self.wall = f['wall'][:,:]
 
-class Green:
+class Green(SOFTOutputBase):
     def __init__(self, filename):
         with h5py.File(filename, 'r') as f:
             self.func = f['func'][:]
@@ -61,13 +94,17 @@ class Green:
             self.param2name = self.tostring(f['param2name'])
             self.format     = self.tostring(f['type'])
 
-    def tostring(self, arr):
-        """
-        Convert the given MATLAB string to a Python string.
-        """
-        return "".join(map(chr, arr[:,:][:,0].tolist()))
+class SoVVolume(SOFTOutputBase):
+    def __init__(self, filename):
+        with h5py.File(filename, 'r') as f:
+            self.volumearray = f['volumearray'][:]
+            self.param1      = f['param1'][:]
+            self.param2      = f['param2'][:]
 
-class Spectrum:
+            self.param1name  = self.tostring(f['param1name'])
+            self.param2name  = self.tostring(f['param2name'])
+
+class Spectrum(SOFTOutputBase):
     def __init__(self, filename):
         with h5py.File(filename, 'r') as f:
             self.I = f['I'][:,:]

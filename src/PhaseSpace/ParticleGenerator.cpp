@@ -284,6 +284,10 @@ void ParticleGenerator::GenerateCoordinateGrids(
 ) {
     unsigned int i;
 
+    this->start_ir = 0;
+    this->start_i1 = 0;
+    this->start_i2 = 0;
+
     this->end_ir = this->nr;
     this->end_i1 = this->n1;
     this->end_i2 = this->n2;
@@ -298,22 +302,25 @@ void ParticleGenerator::GenerateCoordinateGrids(
         if (mpi_rank < (nr % nprocesses))
             dr++;
 
-        this->ir     = mpi_rank*dr;
-        this->end_ir = ir + dr;
+        this->ir       = mpi_rank*dr;
+        this->start_ir = this->ir;
+        this->end_ir   = ir + dr;
     } else if (param == MPI_DISTMODE_MOMENTUM1) {
         unsigned int d1 = n1 / nprocesses;
         if (mpi_rank < (n1 % nprocesses))
             d1++;
 
-        this->i1     = mpi_rank*d1;
-        this->end_i1 = i1 + d1;
+        this->i1       = mpi_rank*d1;
+        this->start_i1 = this->i1;
+        this->end_i1   = i1 + d1;
     } else if (param == MPI_DISTMODE_MOMENTUM2) {
         unsigned int d2 = n2 / nprocesses;
         if (mpi_rank < (n2 % nprocesses))
             d2++;
 
-        this->i2     = mpi_rank*d2;
-        this->end_i2 = i2 + d2;
+        this->i2       = mpi_rank*d2;
+        this->start_i2 = this->i2;
+        this->end_i2   = i2 + d2;
     } else
         throw ParticleGeneratorException(
             "GenerateCoordinateGrids(): Unrecognized MPI distribution mode: %d.", param
@@ -552,16 +559,16 @@ bool ParticleGenerator::Generate(Particle *part, MagneticField2D *mf, Distributi
 			ir++;
 
 			if (ir >= end_ir) {
-				ir = 0;
+				ir = this->start_ir;
 				i1++;
 				
 				if (i1 >= end_i1) {
-					i1 = 0;
+					i1 = this->start_i1;
 					i2++;
 
 					if (i2 >= end_i2) {
 						this->finished = true;
-						i2 = 0;
+						i2 = this->start_i2;
 					}
 				}
 			}

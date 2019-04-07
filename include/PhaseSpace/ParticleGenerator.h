@@ -20,6 +20,7 @@ class ParticleGenerator {
 		slibreal_t charge, mass;
 		unsigned int ir, i1, i2,
 					 nr, n1, n2,
+                     start_ir, start_i1, start_i2,
                      end_ir, end_i1, end_i2;
 		int mom1type, mom2type;				// Momentum types
 
