@@ -9,6 +9,7 @@
 #include "Tools/Radiation/Output/Space3D.h"
 
 using namespace __Radiation;
+using namespace std;
 
 /**
  * Handle output from the given model.

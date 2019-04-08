@@ -153,7 +153,6 @@ void Green::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
             throw GreenException("Invalid value assigned to parameter 'mpi_mode'. Expected 'chunked' or 'contiguous'.");
     } else
         this->mpi_output_mode = MPI_Output_Mode::CONTIGUOUS;
-    
 
     // output
     if (!conf->HasSetting("output"))

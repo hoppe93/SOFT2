@@ -8,7 +8,13 @@
 #include <softlib/config.h>
 #include "Tools/Radiation/Output/Space3D.h"
 
+#ifdef WITH_MPI
+#   include <mpi.h>
+#   include "SMPI.h"
+#endif
+
 using namespace __Radiation;
+using namespace std;
 
 /**
  * Finish processing on each thread.
@@ -22,6 +28,22 @@ void Space3D::Finish() { }
  * Called on the root thread only.
  */
 void Space3D::Generate() {
+#ifdef WITH_MPI
+    int mpi_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+
+    void *inbuf = this->s3dimage;
+
+    if (mpi_rank == MPI_ROOT_PROCESS)
+        inbuf = MPI_IN_PLACE;
+
+    SOFT::PrintMPI("Reducing S3D '%s'...", this->GetName().c_str());
+    MPI_Reduce(inbuf, this->s3dimage, this->imagesize, SMPI::MPI_SLIBREAL_T, SMPI::SUM, MPI_ROOT_PROCESS, MPI_COMM_WORLD);
+    SOFT::PrintMPI("S3D '%s' reduced.", this->GetName().c_str());
+
+    if (mpi_rank != MPI_ROOT_PROCESS)
+        return;
+#endif
     SFile *sf = SFile::Create(this->output, SFILE_MODE_WRITE);
 
     //slibreal_t pixls[3] = {(slibreal_t)pixelsX, (slibreal_t)pixelsY, (slibreal_t)pixelsZ};

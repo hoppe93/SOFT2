@@ -108,6 +108,19 @@ class SoVVolume(SOFTOutputBase):
             self.param1name  = self.tostring(f['param1name'])
             self.param2name  = self.tostring(f['param2name'])
 
+class Space3D(SOFTOutputBase):
+    def __init__(self, filename):
+        with h5py.File(filename, 'r') as f:
+            self.image = f['image'][:]
+            self.pixels = int(f['pixels'][0,0])
+
+            self.xmin = f['xmin'][0,0]
+            self.xmax = f['xmax'][0,0]
+            self.ymin = f['ymin'][0,0]
+            self.ymax = f['ymax'][0,0]
+            self.zmin = f['zmin'][0,0]
+            self.zmax = f['zmax'][0,0]
+
 class Spectrum(SOFTOutputBase):
     def __init__(self, filename):
         with h5py.File(filename, 'r') as f:
