@@ -1,5 +1,5 @@
 build
-examples/__pychache__
+examples/__pycache__
 examples/AngularDistribution/data
 examples/Bremsstrahlung/data
 examples/Green/data
@@ -23,3 +23,11 @@ tests/broad/isotropic/*.mat
 __pychache__
 .gdb_history
 .vscode
+tests/broad/__pycache__
+tests/broad/distribution/__pycache__
+tests/broad/green/12ij/*.h5
+tests/broad/green/total/*.mat
+tests/broad/mpi/green/*.mat
+tests/broad/mpi/most/*.mat
+tests/broad/mpi/sovvolume/*.mat
+tests/broad/polarization/*.mat
