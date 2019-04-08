@@ -11,6 +11,13 @@ class ParticleGenerator;
 #include "SOFT.h"
 
 class ParticleGenerator {
+    public:
+        enum MPI_Distribute_Mode {
+            MPI_DISTMODE_RADIUS,
+            MPI_DISTMODE_MOMENTUM1,
+            MPI_DISTMODE_MOMENTUM2
+        };
+
 	private:
 		slibreal_t r0, r1, dr,
 				   p10, p11, dp1,
@@ -35,12 +42,6 @@ class ParticleGenerator {
 
         ProgressTracker *progress;
 
-        enum MPI_Distribute_Mode {
-            MPI_DISTMODE_RADIUS,
-            MPI_DISTMODE_MOMENTUM1,
-            MPI_DISTMODE_MOMENTUM2
-        };
-
         enum MPI_Distribute_Mode mpi_distribute_mode=MPI_DISTMODE_RADIUS;
 	public:
 		ParticleGenerator(MagneticField2D*, ConfigBlock*, struct global_settings*);
@@ -64,9 +65,20 @@ class ParticleGenerator {
         void SetRadialCoordinate(MagneticField2D*, ConfigBlock*);
 
         // Getters
+        enum MPI_Distribute_Mode GetDistributeMode() { return this->mpi_distribute_mode; }
+
+        unsigned int GetEndR() { return this->end_ir; }
+        unsigned int GetEnd1() { return this->end_i1; }
+        unsigned int GetEnd2() { return this->end_i2; }
+
         unsigned int GetNr() { return this->nr; }
         unsigned int GetN1() { return this->n1; }
         unsigned int GetN2() { return this->n2; }
+
+        unsigned int GetStartR() { return this->start_ir; }
+        unsigned int GetStart1() { return this->start_i1; }
+        unsigned int GetStart2() { return this->start_i2; }
+
         unsigned int Size()  { return this->nr*this->n1*this->n2; }
 
         int GetP1Type() { return mom1type; }

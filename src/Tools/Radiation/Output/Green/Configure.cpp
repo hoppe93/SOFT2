@@ -7,6 +7,7 @@
 #include <string>
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
+#include "config.h"
 #include "SOFT.h"
 #include "Tools/Radiation/Output/Green.h"
 
@@ -44,14 +45,40 @@ void Green::PrepareAllocateGreen() {
     this->ndimensions = this->nformat;
     this->dimensions = new sfilesize_t[this->nformat];
 
+    unsigned int NR=this->nr, N1=this->n1, N2=this->n2;
+#ifdef WITH_MPI
+    if (this->mpi_output_mode == MPI_Output_Mode::CHUNKED) {
+        NR = this->end_r - this->start_r;
+        N1 = this->end_1 - this->start_1;
+        N2 = this->end_2 - this->start_2;
+    }
+#endif
+
+    // Update phase-space grids in case they are
+    // limited by MPI "chunked" mode
+    slibreal_t *gr = new slibreal_t[NR];
+    slibreal_t *g1 = new slibreal_t[N1];
+    slibreal_t *g2 = new slibreal_t[N2];
+    
+    for (unsigned int i = 0; i < NR; i++)
+        gr[i] = this->rgrid[i + this->start_r];
+    for (unsigned int i = 0; i < N1; i++)
+        g1[i] = this->p1grid[i + this->start_1];
+    for (unsigned int i = 0; i < N2; i++)
+        g2[i] = this->p2grid[i + this->start_2];
+    
+    this->rgrid  = gr;
+    this->p1grid = g1;
+    this->p2grid = g2;
+
     size_t s;
     for (i = 0; i < this->nformat; i++) {
         switch (this->format[i]) {
-            case '1': s = this->n1; this->hasP1 = true; this->i1 = i; break;
-            case '2': s = this->n2; this->hasP2 = true; this->i2 = i; break;
+            case '1': s = N1; this->hasP1 = true; this->i1 = i; break;
+            case '2': s = N2; this->hasP2 = true; this->i2 = i; break;
             case 'i': s = this->subnrowpixels; this->hasI = true; this->ii = i; break;
             case 'j': s = this->subncolpixels; this->hasJ = true; this->ij = i; break;
-            case 'r': s = this->nr; this->hasR = true; this->ir = i; break;
+            case 'r': s = NR; this->hasR = true; this->ir = i; break;
             case 'w': s = this->nw; this->hasW = true; this->iw = i; break;
             default:
                 throw GreenException("Invalid character in Green's function format string: %c.", this->format[i]);
@@ -114,6 +141,19 @@ void Green::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
 
         this->nformat = this->format.length();
     }
+
+    // MPI (output) mode
+    if (conf->HasSetting("mpi_mode")) {
+        s = conf->GetSetting("mpi_mode");
+        if (s->GetString() == "chunked")
+            this->mpi_output_mode = MPI_Output_Mode::CHUNKED;
+        else if (s->GetString() == "contiguous")
+            this->mpi_output_mode = MPI_Output_Mode::CONTIGUOUS;
+        else
+            throw GreenException("Invalid value assigned to parameter 'mpi_mode'. Expected 'chunked' or 'contiguous'.");
+    } else
+        this->mpi_output_mode = MPI_Output_Mode::CONTIGUOUS;
+    
 
     // output
     if (!conf->HasSetting("output"))

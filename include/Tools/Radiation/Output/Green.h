@@ -13,6 +13,11 @@
 
 namespace __Radiation {
     class Green : public RadiationOutput {
+        public:
+            enum MPI_Output_Mode {
+                CHUNKED,
+                CONTIGUOUS
+            };
         private:
             std::string output;
             std::string format;
@@ -48,6 +53,13 @@ namespace __Radiation {
 
             int
                 nr, n1, n2, nw;
+            
+            unsigned int
+                end_r, end_1, end_2,
+                start_r, start_1, start_2;
+            
+            enum ParticleGenerator::MPI_Distribute_Mode mpi_distribute_mode;
+            enum MPI_Output_Mode mpi_output_mode = MPI_Output_Mode::CONTIGUOUS;
         public:
             Green(Detector*, MagneticField2D*, ParticleGenerator*);
             ~Green();
@@ -60,6 +72,8 @@ namespace __Radiation {
 
             // Only called on root thread
             void Generate();
+
+            std::string GetChunkedName(const int);
 
             void PrepareAllocateGreen();
             void GetIndex(__Radiation::Detector*, __Radiation::RadiationParticle*, size_t*, size_t*);

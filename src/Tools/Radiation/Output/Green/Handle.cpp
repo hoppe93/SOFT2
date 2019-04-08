@@ -9,6 +9,7 @@
 #include "Tools/Radiation/Output/Image.h"
 
 using namespace __Radiation;
+using namespace std;
 
 /**
  * Handle the result from the given radiation model.
@@ -159,11 +160,11 @@ void Green::GetIndex(
 
     for (int i = 0; i < this->nformat; i++) {
         switch (format[i]) {
-            case '1': *index += rp->GetIndexP1() * factors[i]; break;
-            case '2': *index += rp->GetIndexP2() * factors[i]; break;
+            case '1': *index += (rp->GetIndexP1() - this->start_1) * factors[i]; break;
+            case '2': *index += (rp->GetIndexP2() - this->start_2) * factors[i]; break;
             case 'i': *index += I * factors[i]; break;
             case 'j': *index += J * factors[i]; break;
-            case 'r': *index += rp->GetIndexR() * factors[i]; break;
+            case 'r': *index += (rp->GetIndexR() - this->start_r) * factors[i]; break;
             case 'w': *wavindex = this->factors[i]; break;
             default:
                 throw GreenException("Unrecognized character in Green's function format: %c.", format[i]);

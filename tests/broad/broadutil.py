@@ -19,11 +19,15 @@ def init():
     global SOFTPATH
 
     if not os.path.isfile(SOFTPATH):
-        SOFTPATH = '../'+SOFTPATH
-        if not os.path.isfile(SOFTPATH):
+        succ = False
+        for i in range(0,5):
             SOFTPATH = '../'+SOFTPATH
-            if not os.path.isfile(SOFTPATH):
-                raise RuntimeError('Unable to find SOFT executable.')
+            if os.path.isfile(SOFTPATH):
+                succ = True
+                break
+
+        if not succ:
+            raise RuntimeError('Unable to find SOFT executable.')
     
 def runSOFT(pi):
     """
@@ -40,7 +44,7 @@ def runSOFT(pi):
 
     return stderr_data
 
-def runSOFT_mpi(pi):
+def runSOFT_mpi(pi, nprocesses=4):
     """
     Run SOFT throught MPIRUN utility, passing
     on 'pi' on stdin to the executable.
@@ -52,7 +56,7 @@ def runSOFT_mpi(pi):
         with os.fdopen(pifile, 'w') as f:
             f.write(pi)
 
-        args = ["mpirun", "-n", "4", SOFTPATH, path]
+        args = ["mpirun", "-n", str(nprocesses), SOFTPATH, path]
         env = os.environ
 
         p = subprocess.Popen(args, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
