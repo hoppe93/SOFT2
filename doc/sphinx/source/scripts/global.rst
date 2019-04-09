@@ -42,6 +42,15 @@ List of global options
 
    More details can be found on the page about :ref:`module-magneticfield`.
 
+.. option:: mpi_verbose
+
+   :Default value: ``no``
+   :Allowed values: ``yes`` and ``no``
+
+   If ``yes``, outputs some information about the MPI communication to help
+   debug MPI-related issues. This option is only available when SOFT2 has been
+   compiled with MPI support.
+
 .. option:: num_threads
 
    :Default value: ``OMP_NUM_THREADS``

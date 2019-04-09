@@ -100,6 +100,17 @@ void Green::PrepareAllocateGreen() {
     if ((this->hasI || this->hasJ) && !this->pixelsset)
         throw GreenException("Green's function contains pixels, but the number of pixels was not set.");
 
+#ifdef WITH_MPI
+    if (this->mpi_output_mode == MPI_Output_Mode::CHUNKED) {
+        if (this->mpi_distribute_mode == ParticleGenerator::MPI_DISTMODE_RADIUS && !this->hasR)
+            throw GreenException("The MPI Distribute Mode is set to 'radius', but the radial parameter is not part of the Green's function.");
+        else if (this->mpi_distribute_mode == ParticleGenerator::MPI_DISTMODE_MOMENTUM1 && !this->hasP1)
+            throw GreenException("The MPI Distribute Mode is set to '1', but the first momentum parameter is not part of the Green's function.");
+        else if (this->mpi_distribute_mode == ParticleGenerator::MPI_DISTMODE_MOMENTUM2 && !this->hasP2)
+            throw GreenException("The MPI Distribute Mode is set to '2', but the second momentum parameter is not part of the Green's function.");
+    }
+#endif
+
     this->containsAllMomentumSpaceParameters = (this->hasP1 && this->hasP2 && this->hasR);
 }
 

@@ -11,19 +11,21 @@ angle and initial position).
 Summary of options
 ^^^^^^^^^^^^^^^^^^
 
-+--------------------------------------------+------------------------------------------------------------------+
-| **Option**                                 | **Description**                                                  |
-+--------------------------------------------+------------------------------------------------------------------+
-| :option:`@ParticleGenerator charge`        | Charge of particle (in units of elementary charge).              |
-+--------------------------------------------+------------------------------------------------------------------+
-| :option:`@ParticleGenerator driftshifttol` | Relative tolerance when computing the drift orbit shift.         |
-+--------------------------------------------+------------------------------------------------------------------+
-| :option:`@ParticleGenerator mass`          | Rest mass of particle (in units of the electron rest mass).      |
-+--------------------------------------------+------------------------------------------------------------------+
-| :option:`@ParticleGenerator position`      | Whether specified position refers to particle or guiding-center. |
-+--------------------------------------------+------------------------------------------------------------------+
-| :option:`@ParticleGenerator progress`      | Instructs SOFT to output info on the simulation progress.        |
-+--------------------------------------------+------------------------------------------------------------------+
++--------------------------------------------------+------------------------------------------------------------------+
+| **Option**                                       | **Description**                                                  |
++--------------------------------------------------+------------------------------------------------------------------+
+| :option:`@ParticleGenerator charge`              | Charge of particle (in units of elementary charge).              |
++--------------------------------------------------+------------------------------------------------------------------+
+| :option:`@ParticleGenerator driftshifttol`       | Relative tolerance when computing the drift orbit shift.         |
++--------------------------------------------------+------------------------------------------------------------------+
+| :option:`@ParticleGenerator mass`                | Rest mass of particle (in units of the electron rest mass).      |
++--------------------------------------------------+------------------------------------------------------------------+
+| :option:`@ParticleGenerator mpi_distribute_mode` | Specifies which parameter to split among MPI processes.          |
++--------------------------------------------------+------------------------------------------------------------------+
+| :option:`@ParticleGenerator position`            | Whether specified position refers to particle or guiding-center. |
++--------------------------------------------------+------------------------------------------------------------------+
+| :option:`@ParticleGenerator progress`            | Instructs SOFT to output info on the simulation progress.        |
++--------------------------------------------------+------------------------------------------------------------------+
 
 In addition to these options, the following phase space parameters can also be
 specified. Exactly one spatial and two momentum parameters must be specified,
@@ -85,6 +87,18 @@ the *particle* position using the ``position`` option::
        thetap = 0.1, 0.3, 100;   # Pitch angle (rad)
    }
 
+**With MPI** --- The following example is near-identical to the electron example
+above, but explicitly instructs SOFT to split the ``gamma`` (energy) parameter
+among the MPI processes::
+
+   @ParticleGenerator PGen_electron {
+       r                   = 0, 0.30, 100;    # Minor radius (m)
+       gamma               = 1.1, 3.0, 100;   # Energy       (mc^2)
+       thetap              = 0.02, 0.8, 100;  # Pitch angle  (rad)
+       progress            = 100;             # Output 100 progress messages
+       mpi_distribute_mode = gamma;           # Divide the energy parameter among MPI processes
+   }
+
 Options
 ^^^^^^^
 
@@ -117,6 +131,24 @@ Options
    rest mass. In these units, the proton mass is
    :math:`m_{\rm p}\approx 1836.15267389` [#wikimassratio]_.
 
+.. option:: mpi_distribute_mode
+
+   :Default value: ``radius``
+   :Allowed values: ``1``, ``2``, ``radius`` and all of the phase-space parameters listed under :ref:`partgen-phase-space-params`.
+
+   When running in MPI mode (MPI = Message Passing Interface; distributed
+   memory parallelization), this parameter can be used to specify how the phase
+   space should be divided among the MPI processes. In contrast to regular
+   OpenMP parallelization, which builds a queue of points in phase space, MPI
+   requires one phase space parameter to be divided evenly among the processes.
+
+   Which parameter to divide is specified by giving the name of the parameter,
+   as listed under :ref:`partgen-phase-space-params`, or by giving one of
+   ``1``, ``2`` and ``radius``. The former two cause SOFT to divide the first
+   and second momentum parameter respectively (i.e. the alphabetically first
+   and second momentum parameter), while the latter divides the radial
+   parameter, whichever it may be.
+
 .. option:: position
 
    :Default value: ``guiding-center``
@@ -139,6 +171,8 @@ Options
    roughly when the number of processed grid points is a multiple of ``N / n``.
 
 .. [#wikimassratio] https://en.wikipedia.org/wiki/Proton-to-electron_mass_ratio
+
+.. _partgen-phase-space-params:
 
 Phase space parameters
 ^^^^^^^^^^^^^^^^^^^^^^

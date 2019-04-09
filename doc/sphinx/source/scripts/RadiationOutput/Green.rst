@@ -48,6 +48,8 @@ Summary of options
 +-----------------------------------------------------+----------------------------------------------+
 | :option:`@RadiationOutput(green) format`            | Green's function format (i.e. dependences).  |
 +-----------------------------------------------------+----------------------------------------------+
+| :option:`@RadiationOutput(green) mpi_mode`          | How to generate the Green's function.        |
++-----------------------------------------------------+----------------------------------------------+
 | :option:`@RadiationOutput(green) output`            | Name of output file.                         |
 +-----------------------------------------------------+----------------------------------------------+
 | :option:`@RadiationOutput(green) pixels`            | Number of pixels.                            |
@@ -125,6 +127,59 @@ In the illustration above, these parameters are ``suboffseti = 3``,
    both be less than or equal to the value assigned to*
    :option:`@RadiationOutput(green) pixels`.
 
+.. _green-mpi-mode:
+
+MPI Mode
+--------
+When running with MPI, Green's functions can be generated and stored in two
+different ways. These two different modes of generation are referred to as
+**contiguous** mode and **chunked** mode, due to the way the function is stored
+on disk in each.
+
+Contiguous mode
+^^^^^^^^^^^^^^^
+In this mode, the Green's function will be stored in a single file on disk.
+Phase space is always divided among the MPI processes, but when all MPI
+processes have carried out all computations for their parts of phase space, the
+individual Green's functions are combined into a single function in the root
+process, which is then written to a single file.
+
+This mode is useful when the purpose for running with MPI is to further
+parallelize and speed up the computation. The total amount of memory required
+is equal to the size of the final Green's function, multiplied by the number of
+MPI processes *and* the number of threads per process. This mode can therefore
+be very memory-intensive.
+
+Chunked mode
+^^^^^^^^^^^^
+In chunked mode, each MPI process generates its own output file, containing a
+part of the full Green's function. The various parts of the Green's function can
+then be processed individually and combined to form a full function.
+
+What part of the Green's function each chunk corresponds to depends on how phase
+space was divided among the MPI processes, i.e. how the
+:option:`@ParticleGenerator mpi_distribute_mode` parameter was set. If, for
+example, ``mpi_distribute_mode`` was set to ``radius``, then each chunk
+will correspond to the radial interval processed by the MPI process that
+generated the chunk. *Note that this means that the parameter which is
+divided among the MPI processes must be a part of the Green's function.*
+
+In this mode, the output file name is specified as usual, i.e. as if only one
+single file were to be created. Each MPI process will then insert an index
+corresponding to its rank just before the file extension. Setting
+:option:`@RadiationOutput(green) output` to ``ourFile.mat`` in chunked mode
+will thus result in a number of files with names ``ourFile0.mat``,
+``ourFile1.mat`` etc. being generated. MPI ranks are zero-indexed, and thus
+the output files are so too.
+
+This mode is useful when generating very large Green's functions, as it allows
+you take advantage of the large amount of total memory offered by distributed
+memory systems. To maximize the amount of memory available for the Green's
+function in a simulation, set :option:`global num_threads` to ``1`` (i.e.
+one thread per MPI process). This will significantly slow down the simulation,
+but since each thread stores its own copy of the Green's function, it will
+also significantly reduce the memory usage of SOFT.
+
 All options
 -----------
 
@@ -200,6 +255,15 @@ All options
 
    For pixels, both ``i`` and ``j`` must specified; they may be
    specified in any order though.
+
+.. option:: mpi_mode
+
+   :Default value: ``contiguous``
+   :Allowed values: ``chunked`` and ``contiguous``
+
+   When SOFT2 is compiled with MPI, specifies how the Green's function is to be
+   generated and stored. See the discussion above about the
+   :ref:`green-mpi-mode` for details above the two available modes.
 
 .. option:: output
 

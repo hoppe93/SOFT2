@@ -14,6 +14,10 @@ following software installed on your system:
 - `GNU Scientific Library <https://www.gnu.org/software/gsl/>`_ version 2.0 or later
 - `HDF5 <https://www.hdfgroup.org/>`_
 
+If you intend to compile SOFT2 with MPI support, you also need an MPI library,
+such as `OpenMPI <https://www.open-mpi.org/>`_ (not to be confused with OpenMP,
+which is required as part of your compiler).
+
 Building softlib
 ----------------
 `softlib <https://github.com/hoppe93/softlib>`_ is a SOFT2 support library that
@@ -57,9 +61,9 @@ Each option is passed using the `-D` flag to CMake. The available options for `s
 +------------------+----------------------------------------------------+-------------------+-------------+
 | DEBUG            | Build a debug version of `softlib`                 | ``ON`` or ``OFF`` | ``OFF``     |
 +------------------+----------------------------------------------------+-------------------+-------------+
-| PRECISION_DOUBLE | Use double precision floating-point numbers [#f1]_ | ``ON`` or ``OFF`` | ``ON``      |
+| OFFICIAL_MATLAB  | Link against official MATLAB libraries [#f1]_      | ``ON`` or ``OFF`` | ``OFF``     |
 +------------------+----------------------------------------------------+-------------------+-------------+
-| OFFICIAL_MATLAB  | Link against official MATLAB libraries [#f2]_      | ``ON`` or ``OFF`` | ``OFF``     |
+| PRECISION_DOUBLE | Use double precision floating-point numbers [#f2]_ | ``ON`` or ``OFF`` | ``ON``      |
 +------------------+----------------------------------------------------+-------------------+-------------+
 
 .. [#f1] For SOFT2, ``PRECISION_DOUBLE`` should be turned on. Single-precision will yield very poor results.
@@ -141,6 +145,8 @@ using the ``-D`` command-line option. The following options are available:
 | OPTIMIZE_NATIVE  | Apply native compiler optimizations                | ``ON`` or ``OFF`` | ``ON``      |
 +------------------+----------------------------------------------------+-------------------+-------------+
 | PROFILING        | Compile with profiler flags                        | ``ON`` or ``OFF`` | ``OFF``     |
++------------------+----------------------------------------------------+-------------------+-------------+
+| WITH_MPI         | Compile with MPI support                           | ``ON`` or ``OFF`` | ``OFF``     |
 +------------------+----------------------------------------------------+-------------------+-------------+
 
 For example, to disable colored terminal output (useful if you're redirecting
