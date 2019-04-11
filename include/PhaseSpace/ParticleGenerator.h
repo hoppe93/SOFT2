@@ -52,6 +52,7 @@ class ParticleGenerator {
         slibreal_t CalculateVerticalOrbitDriftShift(MagneticField2D*, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t);
 		void _Calculate_Xpol(MagneticField2D*, bool, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t, slibreal_t&, slibreal_t&);
 
+        void AutoDetermineMPIMode();
 		bool Generate(Particle*, MagneticField2D*, DistributionFunction *f=nullptr);
         void GenerateCoordinateGrids(enum MPI_Distribute_Mode mpi_distribute_parameter=MPI_Distribute_Mode::MPI_DISTMODE_RADIUS);
         void GenerateRhoeffTable(MagneticField2D*);

@@ -155,7 +155,9 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
             );
 
         string str = s->GetString();
-        if (str == "radius" || str == "a" || str == "r" || str == "rho")
+        if (str == "auto")
+            AutoDetermineMPIMode();
+        else if (str == "radius" || str == "a" || str == "r" || str == "rho")
             this->mpi_distribute_mode = MPI_DISTMODE_RADIUS;
         else if (str == "1")
             this->mpi_distribute_mode = MPI_DISTMODE_MOMENTUM1;
@@ -184,7 +186,8 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
                     str.c_str()
                 );
         }
-    }
+    } else
+        AutoDetermineMPIMode();
 #endif
 
     GenerateCoordinateGrids(this->mpi_distribute_mode);
@@ -271,6 +274,42 @@ ParticleGenerator::~ParticleGenerator() {
     delete [] this->p2grid;
     delete [] this->p1grid;
     delete [] this->rgrid;
+}
+
+/**
+ * Automatically determines which MPI Distribute Mode
+ * that is most suitable for this simulation.
+ */
+void ParticleGenerator::AutoDetermineMPIMode() {
+    // Automatically select the appropriate
+    // phase space parameter to distribute
+    unsigned int n;
+    if (this->nr > this->n1 && this->nr > this->n2) {
+        this->mpi_distribute_mode = MPI_DISTMODE_RADIUS;
+        n = this->nr;
+    } else if (this->n1 > this->n2) {
+        this->mpi_distribute_mode = MPI_DISTMODE_MOMENTUM1;
+        n = this->n1;
+    } else {
+        this->mpi_distribute_mode = MPI_DISTMODE_MOMENTUM2;
+        n = this->n2;
+    }
+
+    int nproc;
+    MPI_Comm_size(MPI_COMM_WORLD, &nproc);
+
+    if (n < (unsigned int)nproc)
+        SOFT::PrintWarning(
+            SOFT::WARNING_PG_INEFFICIENT_PARALLELIZATION,
+            "Inefficient MPI parallelization: The number of points in the most well-resolved phase space parameter (%u) are fewer than the number of MPI processes (%u).",
+            n, nproc
+        );
+    else if (n % nproc)
+        SOFT::PrintWarning(
+            SOFT::WARNING_PG_INEFFICIENT_PARALLELIZATION,
+            "Inefficient MPI parallelization: The number of points in the most well-resolved phase space parameter (%u) is not divisible by the number of MPI processes (%u).",
+            n, nproc
+        );
 }
 
 /**

@@ -53,6 +53,8 @@ class SOFT {
         // Output routines
         typedef enum {
             MESSAGE_GENERAL,
+            // Tools/ParticleGenerator
+            WARNING_PG_INEFFICIENT_PARALLELIZATION,
             // Orbit/ParticlePusher
             WARNING_OPP_UNRECOGNIZED_SETTING,
             // Tools/Radiation
