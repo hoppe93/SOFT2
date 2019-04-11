@@ -1,3 +1,5 @@
+.. _compiling:
+
 Compiling
 =========
 Building SOFT2 is a two-step process. First, you must download and build the

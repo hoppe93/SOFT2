@@ -133,8 +133,8 @@ Options
 
 .. option:: mpi_distribute_mode
 
-   :Default value: ``radius``
-   :Allowed values: ``1``, ``2``, ``radius`` and all of the phase-space parameters listed under :ref:`partgen-phase-space-params`.
+   :Default value: ``auto``.
+   :Allowed values: ``1``, ``2``, ``auto``, ``radius`` and all of the phase-space parameters listed under :ref:`partgen-phase-space-params`.
 
    When running in MPI mode (MPI = Message Passing Interface; distributed
    memory parallelization), this parameter can be used to specify how the phase
@@ -148,6 +148,9 @@ Options
    and second momentum parameter respectively (i.e. the alphabetically first
    and second momentum parameter), while the latter divides the radial
    parameter, whichever it may be.
+
+   If ``auto`` is specified, SOFT2 chooses the phase space parameter with the
+   largest number of grid points. This is the default setting.
 
 .. option:: position
 
