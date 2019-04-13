@@ -276,6 +276,7 @@ ParticleGenerator::~ParticleGenerator() {
     delete [] this->rgrid;
 }
 
+#ifdef WITH_MPI
 /**
  * Automatically determines which MPI Distribute Mode
  * that is most suitable for this simulation.
@@ -311,6 +312,7 @@ void ParticleGenerator::AutoDetermineMPIMode() {
             n, nproc
         );
 }
+#endif
 
 /**
  * Generate the individual coordinate grids of the phase space.
