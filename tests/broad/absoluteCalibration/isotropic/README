@@ -1,0 +1,10 @@
+THE ISOTROPIC TEST FOR ABSOLUTE CALIBRATION
+-------------------------------------------
+The purpose of this test is to evaluate the amount of emitted isotropic
+radiation from a given tokamak using a more direct method than the one used by
+SOFT (and thus avoid the additional Jacobians etc. that arise in SOFT).
+
+To this end, the amount of radiation received by a detector of given size,
+with a given field-of-view, from a single point of space, is evaluated
+analytically and then integrated over all of space. The spatial integration,
+which is triple integral, is evaluated in cylindrical coordinates.

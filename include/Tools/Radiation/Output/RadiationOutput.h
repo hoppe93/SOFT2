@@ -33,6 +33,8 @@ namespace __Radiation {
 			static const char
 				DETECTOR_APERTURE[],
 				DETECTOR_DIRECTION[],
+				DETECTOR_EHAT1[],
+				DETECTOR_EHAT2[],
 				DETECTOR_POSITION[],
 				DETECTOR_VISANG[],
 				RO_DOMAIN[],

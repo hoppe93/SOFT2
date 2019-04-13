@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include "SOFT.h"
 #include "Tools/Radiation/Output/RadiationOutput.h"
 
 using namespace __Radiation;
@@ -12,6 +13,8 @@ using namespace std;
 const char
 	RadiationOutput::DETECTOR_APERTURE[]  = "detectorAperture",
 	RadiationOutput::DETECTOR_DIRECTION[] = "detectorDirection",
+	RadiationOutput::DETECTOR_EHAT1[]     = "detectorEhat1",
+	RadiationOutput::DETECTOR_EHAT2[]     = "detectorEhat2",
 	RadiationOutput::DETECTOR_POSITION[]  = "detectorPosition",
 	RadiationOutput::DETECTOR_VISANG[]    = "detectorVisang",
 	RadiationOutput::RO_DOMAIN[]		  = "domain",
@@ -38,6 +41,24 @@ void RadiationOutput::InitializeCommonQuantities() {
 			slibreal_t detdir[3];
 			this->detector->GetDirection().ToArray(detdir);
 			sf->WriteList(this->DETECTOR_DIRECTION, detdir, 3);
+		})
+	);
+
+	// detectorEhat1
+	all_quantities.insert(
+		PAIR(DETECTOR_EHAT1, [this](SFile *sf) {
+			slibreal_t e1[3];
+			this->detector->GetEHat1().ToArray(e1);
+			sf->WriteList(this->DETECTOR_EHAT1, e1, 3);
+		})
+	);
+
+	// detectorEhat2
+	all_quantities.insert(
+		PAIR(DETECTOR_EHAT2, [this](SFile *sf) {
+			slibreal_t e2[3];
+			this->detector->GetEHat2().ToArray(e2);
+			sf->WriteList(this->DETECTOR_EHAT2, e2, 3);
 		})
 	);
 
@@ -147,7 +168,7 @@ void RadiationOutput::ConfigureCommonQuantities(
 				vector<string>::iterator el = cqb;
 				while (el != cqe && *el != s) el++;
 
-				if (el != cqe)
+				if (el == cqe)
 					common_quantities.push_back(s);
 			}
 		}
@@ -161,9 +182,26 @@ void RadiationOutput::ConfigureCommonQuantities(
  * output: Output 'SFile' to which quantities should be written.
  */
 void RadiationOutput::WriteCommonQuantities(SFile *output) {
+	vector<string> notFound;
+
 	for (vector<string>::iterator it = common_quantities.begin(); it != common_quantities.end(); it++) {
 		if (all_quantities.find(*it) != all_quantities.end())
 			all_quantities[*it](output);
+		else
+			notFound.push_back(*it);
+	}
+
+	// Emit warning if some quantity was not found
+	if (notFound.size() > 0) {
+		string acum = "";
+		for (vector<string>::iterator it = notFound.begin(); it != notFound.end(); it++) {
+			if (it != notFound.begin())
+				acum += ", ";
+
+			acum += *it;
+		}
+
+		SOFT::PrintWarning(SOFT::WARNING_TRO_COMMON_NOT_RECOGNIZED, "%s: The following common quantities were not recognized: %s.", this->name.c_str(), acum.c_str());
 	}
 }
 

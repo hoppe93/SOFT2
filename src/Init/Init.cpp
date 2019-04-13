@@ -25,7 +25,9 @@ const string soft_init_defaults=
 "distribution_function=__unit_distribution_function__;\n"
 "include_drifts=no;\n"
 "magnetic_field=__default__;\n"
+#ifdef WITH_MPI
 "mpi_verbose=no;\n"
+#endif
 "num_threads=__default__;\n"
 "particle_generator=__default__;\n"
 "particle_pusher=__default__;\n"

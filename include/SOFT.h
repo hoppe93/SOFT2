@@ -63,6 +63,8 @@ class SOFT {
             WARNING_TRMAD_ABNORMALLY_LARGE_BETA,
             // Tools/Radiation/Models/Cone
             WARNING_TRMC_BUGGY_CONE_MODEL,
+			// Tools/Radiation/Output
+			WARNING_TRO_COMMON_NOT_RECOGNIZED,
             // Tools/Radiation/Output/Green
             WARNING_TROG_IMAGE_NOT_LAST,
             // [Must always come last]

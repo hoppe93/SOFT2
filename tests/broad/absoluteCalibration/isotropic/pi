@@ -1,0 +1,60 @@
+# BASIC SOFT RUN SCRIPT
+#
+# This script defines basic settings.
+# #######
+
+magnetic_field = MF_UnitQ;
+particle_generator = PGen;
+particle_pusher = PPusher;
+tools = rad;
+
+@MagneticField MF_UnitQ (analytical) {
+    B0 = 5.0;
+    Rm = 1.7;
+    rminor = 0.5;
+    qtype  = constant;
+    qa1 = 1.0;
+    sigmaB = cw;
+}
+
+@ParticleGenerator PGen {
+    a = 0,0.95,400;
+    p=60,60,1;
+    thetap=0.2,0.2,1;
+}
+
+@ParticlePusher PPusher {
+    equation = guiding-center;
+    timeunit = poloidal;
+    time = 1;
+    nt = 1000;
+}
+
+@Equation guiding-center {
+    method = rkdp45;
+    tolerance = 1e-8;
+}
+
+# Tool stuff
+@Radiation rad {
+    detector = det;
+    ntoroidal = 500;
+    model = isotropic;
+    output = image;
+	wall_opacity = transparent;
+}
+@Detector det {
+    aperture = 0.006;
+    direction = 0,1.0,0;
+    position = 1.7,-1.7,0;
+    vision_angle = 0.70 fov;
+	spectrum = no;
+}
+@RadiationModel isotropic (isotropic) {
+    value = 1;
+}
+@RadiationOutput image (image) {
+	common = default +detectorEhat1 +detectorEhat2 +detectorAperture;
+    output = "isotropic.mat";
+    pixels = 1;
+}

@@ -70,6 +70,23 @@ def runSOFT_mpi(pi, nprocesses=4):
     return
 
 class SOFTOutputBase:
+
+    commonq = [
+        "detectorAperture",
+        "detectorDirection",
+        "detectorEhat1",
+        "detectorEhat2",
+        "detectorPosition",
+        "detectorVisang",
+        "domain",
+        "wall"
+    ]
+
+    def loadcommon(self, f):
+        for cq in self.commonq:
+            if cq in f:
+                setattr(self, cq, f[cq][:])
+
     def tostring(self, arr):
         """
         Convert the given MATLAB string to a Python string.
@@ -80,10 +97,8 @@ class Image(SOFTOutputBase):
     def __init__(self, filename):
         with h5py.File(filename, 'r') as f:
             self.image = f['image'][:,:]
-            self.detectorPosition = f['detectorPosition'][:,:]
-            self.detectorDirection = f['detectorDirection'][:,:]
-            self.detectorVisang = f['detectorVisang'][:,:]
-            self.wall = f['wall'][:,:]
+            
+            self.loadcommon(f)
 
 class Green(SOFTOutputBase):
     def __init__(self, filename):
@@ -98,6 +113,8 @@ class Green(SOFTOutputBase):
             self.param2name = self.tostring(f['param2name'])
             self.format     = self.tostring(f['type'])
 
+            self.loadcommon(f)
+
 class SoVVolume(SOFTOutputBase):
     def __init__(self, filename):
         with h5py.File(filename, 'r') as f:
@@ -107,6 +124,8 @@ class SoVVolume(SOFTOutputBase):
 
             self.param1name  = self.tostring(f['param1name'])
             self.param2name  = self.tostring(f['param2name'])
+
+            self.loadcommon(f)
 
 class Space3D(SOFTOutputBase):
     def __init__(self, filename):
@@ -120,6 +139,8 @@ class Space3D(SOFTOutputBase):
             self.ymax = f['ymax'][0,0]
             self.zmin = f['zmin'][0,0]
             self.zmax = f['zmax'][0,0]
+
+            self.loadcommon(f)
 
 class Spectrum(SOFTOutputBase):
     def __init__(self, filename):
@@ -135,4 +156,6 @@ class Spectrum(SOFTOutputBase):
 
             if 'V' in f: self.V = f['V'][:,:]
             else: self.V = None
+
+            self.loadcommon(f)
             
