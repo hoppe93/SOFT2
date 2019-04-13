@@ -41,31 +41,33 @@ an inverse problem.
 Summary of options
 ------------------
 
-+-----------------------------------------------------+----------------------------------------------+
-| **Option**                                          | **Description**                              |
-+-----------------------------------------------------+----------------------------------------------+
-| :option:`@RadiationOutput(green) f_as_linear_array` | Store the output function as a linear array. |
-+-----------------------------------------------------+----------------------------------------------+
-| :option:`@RadiationOutput(green) format`            | Green's function format (i.e. dependences).  |
-+-----------------------------------------------------+----------------------------------------------+
-| :option:`@RadiationOutput(green) mpi_mode`          | How to generate the Green's function.        |
-+-----------------------------------------------------+----------------------------------------------+
-| :option:`@RadiationOutput(green) output`            | Name of output file.                         |
-+-----------------------------------------------------+----------------------------------------------+
-| :option:`@RadiationOutput(green) pixels`            | Number of pixels.                            |
-+-----------------------------------------------------+----------------------------------------------+
-| :option:`@RadiationOutput(green) stokesparams`      | Whether or not to store Stokes parameters.   |
-+-----------------------------------------------------+----------------------------------------------+
-| :option:`@RadiationOutput(green) suboffseti`        | Sub-image offset in vertical direction.      |
-+-----------------------------------------------------+----------------------------------------------+
-| :option:`@RadiationOutput(green) suboffsetj`        | Sub-image offset in horizontal direction.    |
-+-----------------------------------------------------+----------------------------------------------+
-| :option:`@RadiationOutput(green) subpixels`         | Number of pixels in sub-image.               |
-+-----------------------------------------------------+----------------------------------------------+
-| :option:`@RadiationOutput(green) with_f`            | Multiply with the distribution function.     |
-+-----------------------------------------------------+----------------------------------------------+
-| :option:`@RadiationOutput(green) with_jacobian`     | Multiply with the guiding-center Jacobian.   |
-+-----------------------------------------------------+----------------------------------------------+
++-----------------------------------------------------+----------------------------------------------------------+
+| **Option**                                          | **Description**                                          |
++-----------------------------------------------------+----------------------------------------------------------+
+| :option:`@RadiationOutput(green) common`            | List of common quantities to include in the output file. |
++-----------------------------------------------------+----------------------------------------------------------+
+| :option:`@RadiationOutput(green) f_as_linear_array` | Store the output function as a linear array.             |
++-----------------------------------------------------+----------------------------------------------------------+
+| :option:`@RadiationOutput(green) format`            | Green's function format (i.e. dependences).              |
++-----------------------------------------------------+----------------------------------------------------------+
+| :option:`@RadiationOutput(green) mpi_mode`          | How to generate the Green's function.                    |
++-----------------------------------------------------+----------------------------------------------------------+
+| :option:`@RadiationOutput(green) output`            | Name of output file.                                     |
++-----------------------------------------------------+----------------------------------------------------------+
+| :option:`@RadiationOutput(green) pixels`            | Number of pixels.                                        |
++-----------------------------------------------------+----------------------------------------------------------+
+| :option:`@RadiationOutput(green) stokesparams`      | Whether or not to store Stokes parameters.               |
++-----------------------------------------------------+----------------------------------------------------------+
+| :option:`@RadiationOutput(green) suboffseti`        | Sub-image offset in vertical direction.                  |
++-----------------------------------------------------+----------------------------------------------------------+
+| :option:`@RadiationOutput(green) suboffsetj`        | Sub-image offset in horizontal direction.                |
++-----------------------------------------------------+----------------------------------------------------------+
+| :option:`@RadiationOutput(green) subpixels`         | Number of pixels in sub-image.                           |
++-----------------------------------------------------+----------------------------------------------------------+
+| :option:`@RadiationOutput(green) with_f`            | Multiply with the distribution function.                 |
++-----------------------------------------------------+----------------------------------------------------------+
+| :option:`@RadiationOutput(green) with_jacobian`     | Multiply with the guiding-center Jacobian.               |
++-----------------------------------------------------+----------------------------------------------------------+
 
 Example configuration
 ---------------------
@@ -102,6 +104,21 @@ The output file always contains the following variables:
 +-----------------+----------------------------------------------------------------------------------------------------------------+
 | ``wavelengths`` | Spectrum grid (wavelength for synchrotron, photon energy normalized to electron rest mass for bremsstrahlung). |
 +-----------------+----------------------------------------------------------------------------------------------------------------+
+
+Common quantities
+^^^^^^^^^^^^^^^^^
+By default, the following "common quantities" are also included in the output
+file:
+
++------------+-----------------------------------------------------------+
+| **Name**   | **Description**                                           |
++------------+-----------------------------------------------------------+
+| ``domain`` | Tokamak wall or separatrix (depending on which was used). |
++------------+-----------------------------------------------------------+
+
+*For details about which other common quantities can be included in the output,
+please consult the page about the* :ref:`module-radiationoutput` *class of
+modules.*
 
 Subset images
 -------------
@@ -184,6 +201,14 @@ All options
 -----------
 
 .. program:: @RadiationOutput(green)
+
+.. option:: common
+
+   :Default value: ``none``
+   :Allowed values: See the list on :ref:`module-radiationoutput`.
+
+   Specifies which "common quantities" to include in the output file. A full
+   list of possible options is given on :ref:`module-radiationoutput`.
 
 .. option:: f_as_linear_array
 

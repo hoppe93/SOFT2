@@ -13,6 +13,8 @@ Summary of options
 +--------------------------------------------+------------------------------------------------------------------+
 | **Option**                                 | **Description**                                                  |
 +--------------------------------------------+------------------------------------------------------------------+
+| :option:`@RadiationOutput(topview) common` | List of common quantities to include in the output file.         |
++--------------------------------------------+------------------------------------------------------------------+
 | :option:`@RadiationOutput(topview) output` | Sets the name of the output file.                                |
 +--------------------------------------------+------------------------------------------------------------------+
 | :option:`@RadiationOutput(topview) pixels` | Specifies the number of pixels in each direction of the topview. |
@@ -55,30 +57,42 @@ The output file contains the following variables:
 +-----------------------+---------------------------------------------------------+
 | **Variable**          | **Description**                                         |
 +-----------------------+---------------------------------------------------------+
+| ``image``             | Radiation image matrix.                                 |
++-----------------------+---------------------------------------------------------+
+
+Common quantities
+-----------------
+By default, the following "common quantities" are also included in the output
+file:
+
++-----------------------+---------------------------------------------------------+
+| **Name**              | **Description**                                         |
++-----------------------+---------------------------------------------------------+
 | ``detectorDirection`` | Unit vector representing viewing direction of detector. |
 +-----------------------+---------------------------------------------------------+
 | ``detectorPosition``  | Vector representing position of detector.               |
 +-----------------------+---------------------------------------------------------+
 | ``detectorVisang``    | (Full) FOV vision angle of the detector.                |
 +-----------------------+---------------------------------------------------------+
-| ``image``             | Radiation image matrix.                                 |
-+-----------------------+---------------------------------------------------------+
 | ``wall``              | Domain contour used for the simulation.                 |
 +-----------------------+---------------------------------------------------------+
 
-Metadata
---------
-Four variables containing a form of metadata are always present in the ouput
-file. These are the ``detectorDirection``, ``detectorPosition``,
-``detectorVisang`` and ``wall`` variables which give the detector viewing
-direction, position, vision angle and the domain contour used in the simulation.
-Note that the vision angle is given for the field-of-view, and is twice the
-value given as input for backwards-compatibility reasons.
+*For details about which other common quantities can be included in the output,
+please consult the page about the* :ref:`module-radiationoutput` *class of
+modules.*
 
 All options
 ^^^^^^^^^^^
 
 .. program:: @RadiationOutput(topview)
+
+.. option:: common
+
+   :Default value: ``none``
+   :Allowed values: See the list on :ref:`module-radiationoutput`.
+
+   Specifies which "common quantities" to include in the output file. A full
+   list of possible options is given on :ref:`module-radiationoutput`.
 
 .. option:: output
 

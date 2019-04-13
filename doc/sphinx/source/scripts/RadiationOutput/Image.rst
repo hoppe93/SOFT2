@@ -10,8 +10,11 @@ SOFT.
 
 Summary of options
 ^^^^^^^^^^^^^^^^^^
+
 +------------------------------------------------+------------------------------------------------------------------------------------------------+
 | **Option**                                     | **Description**                                                                                |
++------------------------------------------------+------------------------------------------------------------------------------------------------+
+| :option:`@RadiationOutput(image) common`       | List of common quantities to include in the output file.                                       |
 +------------------------------------------------+------------------------------------------------------------------------------------------------+
 | :option:`@RadiationOutput(image) output`       | Sets the name of the output file.                                                              |
 +------------------------------------------------+------------------------------------------------------------------------------------------------+
@@ -90,13 +93,7 @@ Output file structure
 The output file contains the following variables:
 
 +-----------------------+----------------------+---------------------------------------------------------+
-| **Variable**          | **Special option**   | **Description**                                         |
-+-----------------------+----------------------+---------------------------------------------------------+
-| ``detectorDirection`` | No                   | Unit vector representing viewing direction of detector. |
-+-----------------------+----------------------+---------------------------------------------------------+
-| ``detectorPosition``  | No                   | Vector representing position of detector.               |
-+-----------------------+----------------------+---------------------------------------------------------+
-| ``detectorVisang``    | No                   | (Full) FOV vision angle of the detector.                |
+| **Variable**          | **Included when**    | **Description**                                         |
 +-----------------------+----------------------+---------------------------------------------------------+
 | ``image``             | ``stokesparams=no``  | Radiation image matrix.                                 |
 +-----------------------+----------------------+---------------------------------------------------------+
@@ -108,27 +105,39 @@ The output file contains the following variables:
 +-----------------------+----------------------+---------------------------------------------------------+
 | ``StokesV``           | ``stokesparams=yes`` | Image of Stokes :math:`V` parameter.                    |
 +-----------------------+----------------------+---------------------------------------------------------+
-| ``wall``              | No                   | Domain contour used for the simulation.                 |
-+-----------------------+----------------------+---------------------------------------------------------+
 
-Metadata
---------
-Four variables containing a form of metadata are always present in the ouput
-file. These are the ``detectorDirection``, ``detectorPosition``,
-``detectorVisang`` and ``wall`` variables which give the detector viewing
-direction, position, vision angle and the domain contour used in the simulation.
-Note that the vision angle is given for the field-of-view, and is twice the
-value given as input for backwards-compatibility reasons.
+Common quantities
+-----------------
+By default, the following "common quantities" are also included in the output
+file:
 
-The actual image is contained *either* in the ``image`` variable if the input
-parameter ``stokesparams=no``, or in the ``StokesI``, ``StokesQ``, ``StokesU``
-and ``StokesQ`` variables if ``stokesparams=yes``. These variables are
-matrices of the same size as the number of pixels specified in the input file.
-Note that the first dimension corresponds to :math:`\hat{e}_1`, which always
-lies in the horizontal plane, meaning the one often desires to transpose the
-image before showing it.
++-----------------------+---------------------------------------------------------+
+| **Name**              | **Description**                                         |
++-----------------------+---------------------------------------------------------+
+| ``detectorDirection`` | Unit vector representing viewing direction of detector. |
++-----------------------+---------------------------------------------------------+
+| ``detectorPosition``  | Vector representing position of detector.               |
++-----------------------+---------------------------------------------------------+
+| ``detectorVisang``    | (Full) FOV vision angle of the detector.                |
++-----------------------+---------------------------------------------------------+
+| ``wall``              | Domain contour used for the simulation.                 |
++-----------------------+---------------------------------------------------------+
+
+*For details about which other common quantities can be included in the output,
+please consult the page about the* :ref:`module-radiationoutput` *class of
+modules.*
 
 .. note::
+
+   The actual image is contained *either* in the ``image`` variable if the input
+   parameter ``stokesparams=no``, or in the ``StokesI``, ``StokesQ``, ``StokesU``
+   and ``StokesQ`` variables if ``stokesparams=yes``. These variables are
+   matrices of the same size as the number of pixels specified in the input file.
+   Note that the first dimension corresponds to :math:`\hat{e}_1`, which always
+   lies in the horizontal plane, meaning the one often desires to transpose the
+   image before showing it.
+
+.. tip::
 
    If you are uncertain about the direction of the image, you can try to move
    the camera vertically upwards or downwards. When doing so, you should expect
@@ -138,6 +147,14 @@ All options
 ^^^^^^^^^^^
 
 .. program:: @RadiationOutput(image)
+
+.. option:: common
+
+   :Default value: ``none``
+   :Allowed values: See the list on :ref:`module-radiationoutput`.
+
+   Specifies which "common quantities" to include in the output file. A full
+   list of possible options is given on :ref:`module-radiationoutput`.
 
 .. option:: output
 
