@@ -24,6 +24,7 @@ __pychache__
 .gdb_history
 .vscode
 tests/broad/__pycache__
+tests/broad/12w/*.mat
 tests/broad/distribution/__pycache__
 tests/broad/green/12ij/*.h5
 tests/broad/green/total/*.mat
