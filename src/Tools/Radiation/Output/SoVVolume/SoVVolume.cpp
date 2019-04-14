@@ -13,7 +13,7 @@ using namespace __Radiation;
  * Constructor.
  */
 SoVVolume::SoVVolume(Detector *d, MagneticField2D *m, ParticleGenerator *pgen)
-    : RadiationOutput(d, m) {
+    : RadiationOutput(d, m, pgen) {
 
     this->np1    = pgen->GetN1();
     this->np2    = pgen->GetN2();

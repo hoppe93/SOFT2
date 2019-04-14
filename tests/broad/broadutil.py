@@ -79,6 +79,11 @@ class SOFTOutputBase:
         "detectorPosition",
         "detectorVisang",
         "domain",
+        "param1",
+        "param1name",
+        "param2",
+        "param2name",
+        "r",
         "wall"
     ]
 
@@ -93,13 +98,6 @@ class SOFTOutputBase:
         """
         return "".join(map(chr, arr[:,:][:,0].tolist()))
     
-class Image(SOFTOutputBase):
-    def __init__(self, filename):
-        with h5py.File(filename, 'r') as f:
-            self.image = f['image'][:,:]
-            
-            self.loadcommon(f)
-
 class Green(SOFTOutputBase):
     def __init__(self, filename):
         with h5py.File(filename, 'r') as f:
@@ -113,6 +111,13 @@ class Green(SOFTOutputBase):
             self.param2name = self.tostring(f['param2name'])
             self.format     = self.tostring(f['type'])
 
+            self.loadcommon(f)
+
+class Image(SOFTOutputBase):
+    def __init__(self, filename):
+        with h5py.File(filename, 'r') as f:
+            self.image = f['image'][:,:]
+            
             self.loadcommon(f)
 
 class SoVVolume(SOFTOutputBase):

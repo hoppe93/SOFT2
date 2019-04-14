@@ -13,6 +13,7 @@ namespace __Radiation {
 #include <softlib/Configuration.h>
 #include <softlib/SFile.h>
 #include "Tools/Radiation/Models/Model.h"
+#include "PhaseSpace/ParticleGenerator.h"
 #include "Tools/Radiation/RadiationParticle.h"
 
 namespace __Radiation {
@@ -29,6 +30,7 @@ namespace __Radiation {
         protected:
             Detector *detector;
             MagneticField2D *magfield;
+			ParticleGenerator *particlegenerator;
 
 			static const char
 				DETECTOR_APERTURE[],
@@ -37,13 +39,19 @@ namespace __Radiation {
 				DETECTOR_EHAT2[],
 				DETECTOR_POSITION[],
 				DETECTOR_VISANG[],
+				PARAM1[],
+				PARAM1NAME[],
+				PARAM2[],
+				PARAM2NAME[],
 				RO_DOMAIN[],
 				RO_WALL[],
+				R[],
 				TP_BOUNDARY[];
         public:
-            RadiationOutput(Detector *d, MagneticField2D *m) {
+            RadiationOutput(Detector *d, MagneticField2D *m, ParticleGenerator *pgen) {
                 this->detector = d;
                 this->magfield = m;
+				this->particlegenerator = pgen;
 				this->InitializeCommonQuantities();
             }
             virtual ~RadiationOutput() { }

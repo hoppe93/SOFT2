@@ -12,11 +12,15 @@
 using namespace __Radiation;
 using namespace std;
 
-const string SoVVolume::DEFAULT_QUANTITIES[] = {"none"};
-/*template<typename T, unsigned int sz>
+const string SoVVolume::DEFAULT_QUANTITIES[] = {
+	RadiationOutput::PARAM1,
+	RadiationOutput::PARAM1NAME,
+	RadiationOutput::PARAM2,
+	RadiationOutput::PARAM2NAME
+};
+template<typename T, unsigned int sz>
 unsigned int __def_size(T(&)[sz]) { return sz; }
-const unsigned int SoVVolume::NDEFAULT_QUANTITIES = __def_size(SoVVolume::DEFAULT_QUANTITIES);*/
-const unsigned int SoVVolume::NDEFAULT_QUANTITIES = 0;
+const unsigned int SoVVolume::NDEFAULT_QUANTITIES = __def_size(SoVVolume::DEFAULT_QUANTITIES);
 
 /**
  * Allocate the array holding the SoV volume.

@@ -18,6 +18,11 @@ const char
 	RadiationOutput::DETECTOR_POSITION[]  = "detectorPosition",
 	RadiationOutput::DETECTOR_VISANG[]    = "detectorVisang",
 	RadiationOutput::RO_DOMAIN[]		  = "domain",
+	RadiationOutput::PARAM1[]             = "param1",
+	RadiationOutput::PARAM1NAME[]         = "param1name",
+	RadiationOutput::PARAM2[]             = "param2",
+	RadiationOutput::PARAM2NAME[]         = "param2name",
+	RadiationOutput::R[]                  = "r",
 	RadiationOutput::RO_WALL[]            = "wall",
 	RadiationOutput::TP_BOUNDARY[]		  = "tpBoundary";
 
@@ -76,6 +81,59 @@ void RadiationOutput::InitializeCommonQuantities() {
 		PAIR(DETECTOR_VISANG, [this](SFile *sf) {
 			slibreal_t visang = 2.0 * this->detector->GetVisionAngleFOV();
 			sf->WriteList(this->DETECTOR_VISANG, &visang, 1);
+		})
+	);
+
+	// param1
+	all_quantities.insert(
+		PAIR(PARAM1, [this](SFile *sf) {
+			slibreal_t *param1 = this->particlegenerator->GetP1Grid();
+			unsigned int n1 = this->particlegenerator->GetN1();
+			int param1type = this->particlegenerator->GetP1Type();
+			string param1name = Particle::GetCoordinateName(param1type);
+
+			sf->WriteList(this->PARAM1, param1, n1);
+			sf->WriteString("param1name", param1name);
+		})
+	);
+
+	// param1name
+	all_quantities.insert(
+		PAIR(PARAM1NAME, [this](SFile *sf) {
+			int param1type = this->particlegenerator->GetP1Type();
+			string param1name = Particle::GetCoordinateName(param1type);
+
+			sf->WriteString("param1name", param1name);
+		})
+	);
+
+	// param2
+	all_quantities.insert(
+		PAIR(PARAM2, [this](SFile *sf) {
+			slibreal_t *param2 = this->particlegenerator->GetP2Grid();
+			unsigned int n2 = this->particlegenerator->GetN2();
+
+			sf->WriteList(this->PARAM2, param2, n2);
+		})
+	);
+
+	// param2name
+	all_quantities.insert(
+		PAIR(PARAM2NAME, [this](SFile *sf) {
+			int param2type = this->particlegenerator->GetP2Type();
+			string param2name = Particle::GetCoordinateName(param2type);
+
+			sf->WriteString("param2name", param2name);
+		})
+	);
+
+	// r
+	all_quantities.insert(
+		PAIR(R, [this](SFile *sf) {
+			slibreal_t *r = this->particlegenerator->GetRGrid();
+			unsigned int nr = this->particlegenerator->GetNr();
+
+			sf->WriteList(this->R, r, nr);
 		})
 	);
 

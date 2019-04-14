@@ -13,7 +13,7 @@ using namespace __Radiation;
 /**
  * Constructor.
  */
-Image::Image(Detector *d, MagneticField2D *m, ParticleGenerator *__UNUSED__(pgen)) : RadiationOutput(d, m) { }
+Image::Image(Detector *d, MagneticField2D *m, ParticleGenerator *pgen) : RadiationOutput(d, m, pgen) { }
 
 /**
  * Destructor.

@@ -54,7 +54,7 @@ tools = rad;
     value = 1;
 }
 @RadiationOutput image (image) {
-	common = default +detectorEhat1 +detectorEhat2 +detectorAperture;
+	common = default +detectorEhat1 +detectorEhat2 +detectorAperture +param1 +param2;
     output = "isotropic.mat";
     pixels = 1;
 }

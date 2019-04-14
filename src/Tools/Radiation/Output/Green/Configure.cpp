@@ -15,6 +15,11 @@ using namespace std;
 using namespace __Radiation;
 
 const string Green::DEFAULT_QUANTITIES[] = {
+	RadiationOutput::PARAM1,
+	RadiationOutput::PARAM1NAME,
+	RadiationOutput::PARAM2,
+	RadiationOutput::PARAM2NAME,
+	RadiationOutput::R,
 	RadiationOutput::RO_DOMAIN
 };
 template<typename T, unsigned int sz>

@@ -12,7 +12,7 @@ using namespace __Radiation;
 /**
  * Constructor.
  */
-Topview::Topview(Detector *d, MagneticField2D *m, ParticleGenerator *__UNUSED__(pgen)) : RadiationOutput(d, m) {
+Topview::Topview(Detector *d, MagneticField2D *m, ParticleGenerator *pgen) : RadiationOutput(d, m, pgen) {
     this->max_radius = m->GetMaxRadius();
 }
 
