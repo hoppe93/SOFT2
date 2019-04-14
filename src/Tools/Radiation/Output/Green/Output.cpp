@@ -80,11 +80,6 @@ void Green::Generate() {
     else
         sf->WriteMultiArray("func", global_function, this->ndimensions, this->dimensions);
 
-    sf->WriteList("r", this->rgrid, this->nr);
-    sf->WriteList("param1", this->p1grid, this->n1);
-    sf->WriteList("param2", this->p2grid, this->n2);
-    sf->WriteString("param1name", Particle::GetCoordinateName(this->p1type));
-    sf->WriteString("param2name", Particle::GetCoordinateName(this->p2type));
     sf->WriteString("type", this->format);
     sf->WriteList("wavelengths", this->detector->GetWavelengths(), this->nw);
 

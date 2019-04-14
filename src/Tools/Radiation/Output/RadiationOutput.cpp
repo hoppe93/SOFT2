@@ -2,10 +2,13 @@
  * Implementation of routines common to all output modules.
  */
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include "SOFT.h"
 #include "Tools/Radiation/Output/RadiationOutput.h"
+
+#include <H5Cpp.h>
 
 using namespace __Radiation;
 using namespace std;
@@ -89,11 +92,8 @@ void RadiationOutput::InitializeCommonQuantities() {
 		PAIR(PARAM1, [this](SFile *sf) {
 			slibreal_t *param1 = this->particlegenerator->GetP1Grid();
 			unsigned int n1 = this->particlegenerator->GetN1();
-			int param1type = this->particlegenerator->GetP1Type();
-			string param1name = Particle::GetCoordinateName(param1type);
 
 			sf->WriteList(this->PARAM1, param1, n1);
-			sf->WriteString("param1name", param1name);
 		})
 	);
 
@@ -242,12 +242,12 @@ void RadiationOutput::ConfigureCommonQuantities(
 void RadiationOutput::WriteCommonQuantities(SFile *output) {
 	vector<string> notFound;
 
-	for (vector<string>::iterator it = common_quantities.begin(); it != common_quantities.end(); it++) {
-		if (all_quantities.find(*it) != all_quantities.end())
-			all_quantities[*it](output);
-		else
-			notFound.push_back(*it);
-	}
+		for (vector<string>::iterator it = common_quantities.begin(); it != common_quantities.end(); it++) {
+			if (all_quantities.find(*it) != all_quantities.end()) {
+				all_quantities[*it](output);
+			} else
+				notFound.push_back(*it);
+		}
 
 	// Emit warning if some quantity was not found
 	if (notFound.size() > 0) {
