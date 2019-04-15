@@ -19,10 +19,10 @@ import matplotlib.pyplot as plt
 
 PMIN = 20.0
 PMAX = 40.0
-NP   = 2
+NP   = 3
 TMIN = 0.1
 TMAX = 0.3
-NT   = 2
+NT   = 3
 TOLERANCE = 1e-7
 
 def plotGreen(i,j):
@@ -31,7 +31,17 @@ def plotGreen(i,j):
     """
     GF = broadutil.Green("green.mat")
 
-    plt.plot(GF.func[i,j,:])
+    P, THETAP = np.meshgrid(GF.param1, GF.param2)
+    gf = GF.func[i,j,:]*P[i,j]**2*np.sin(THETAP[i,j])
+    plt.plot(GF.wavelengths[0,:]*1e9, gf, linewidth=3)
+
+    runSpectrum(P[i,j], THETAP[i,j])
+
+    spec = broadutil.Spectrum('spectrum.mat')
+    plt.plot(spec.wavelengths[0,:]*1e9, spec.I[0,:], linewidth=3)
+
+    print(spec.I / gf)
+
     plt.show()
 
 def runGreen():
@@ -86,6 +96,7 @@ if __name__ == '__main__':
         broadutil.init()
         sys.exit(run('../../../../build/src/soft'))
     elif len(sys.argv) == 3:
+        broadutil.init()
         i, j = int(sys.argv[1]), int(sys.argv[2])
         plotGreen(i, j)
     else:
