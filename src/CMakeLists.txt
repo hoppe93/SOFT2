@@ -3,6 +3,7 @@ include_directories("${PROJECT_SOURCE_DIR}/include")
 
 set(CMAKE_MODULE_PATH "${CMAKE_BINARY_DIR}/Modules/" CACHE PATH "CMake module path" FORCE)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_LIBSTDCXX_LINK_FLAGS "-lstdc++")
 
 option(BUILD_TESTS "Build unit tests" OFF)
 option(COLOR_TERMINAL "Allow colorful SOFT output" ON)
@@ -177,6 +178,14 @@ if (WITH_MPI)
 endif (WITH_MPI)
 
 add_executable(soft ${target})
+
+# Set LIBSTDC++ link flags
+get_target_property(STDCXX_LINK_FLAGS soft LINK_FLAGS)
+if (STDCXX_LINK_FLAGS STREQUAL "STDCXX_LINK_FLAGS-NOTFOUND")
+    set_target_properties(soft PROPERTIES LINK_FLAGS "${CMAKE_LIBSTDCXX_LINK_FLAGS}")
+else ()
+    set_target_properties(soft PROPERTIES LINK_FLAGS "${CMAKE_LIBSTDCXX_LINK_FLAGS} ${STDCXX_LINK_FLAGS}")
+endif ()
 
 if (BUILD_TESTS)
 	set(core_tests ${main_tests} ${orbit_tests} ${phasespace_tests} ${soft} ${tool_radiation_tests})
