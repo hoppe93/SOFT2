@@ -256,7 +256,10 @@ void ConeSynchrotronEmission::IntegrateSpectrum() {
 
 void ConeSynchrotronEmission::IntegrateSpectrumStokes() {
     unsigned x;
-    slibreal_t i=0, q=0, u=0;
+    slibreal_t
+        i=0.5 * (I[0] + I[nwavelengths-1]),
+        q=0.5 * (Q[0] + Q[nwavelengths-1]),
+        u=0.5 * (U[0] + U[nwavelengths-1]);
 
     for (x = 1; x < nwavelengths-1; x++)
         i += I[x];

@@ -45,26 +45,29 @@ namespace __Radiation {
             struct angdist_params angdistParams;
 
             static void _Rotate(Vector<3>&, const slibreal_t, const slibreal_t);
+
+            struct Optics::Efield Efield;
         public:
             ADSynchrotronEmission(
-                Detector*, struct global_settings*,
+                Detector*, MagneticField2D*, struct global_settings*,
                 std::size_t qagsLimit=100, slibreal_t qagsEpsRel=1e-3
             );
             ~ADSynchrotronEmission();
 
-            virtual slibreal_t Evaluate(Vector<3>&, slibreal_t, slibreal_t, bool) override;
+            virtual slibreal_t Evaluate(RadiationParticle*, Vector<3>&, slibreal_t, slibreal_t, bool) override;
 
             virtual void CalculateAngularDistribution(Vector<3>&, slibreal_t, slibreal_t) override;
-            virtual void CalculatePolarization(Vector<3>&, slibreal_t, slibreal_t) override;
+            virtual void CalculatePolarization(RadiationParticle*, Vector<3>&, slibreal_t, slibreal_t) override;
             virtual void CalculateSpectrum(Vector<3>&, slibreal_t, slibreal_t) override;
             template<bool calculatePolarization>
-            void __CalculateSpectrum(Vector<3>&, slibreal_t, slibreal_t);
+            void __CalculateSpectrum(RadiationParticle*, Vector<3>&, slibreal_t, slibreal_t);
 
             struct angdist_params *GetParams() { return &angdistParams; }
 
             virtual void InitializeToroidalStep(const slibreal_t, const slibreal_t) override;
             void InitializeToroidalStepAD(const slibreal_t, const slibreal_t);
             void IntegrateSpectrum();
+            void IntegrateSpectrumStokes();
 
             virtual void Prepare(RadiationParticle*, bool) override;
             void PrepareAngularDistribution(RadiationParticle*);

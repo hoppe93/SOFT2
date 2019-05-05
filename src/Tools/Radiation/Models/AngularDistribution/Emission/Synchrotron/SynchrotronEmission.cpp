@@ -15,6 +15,7 @@ using namespace __Radiation;
  * Constructor.
  *
  * det:        Detector object defining the detector properties.
+ * mf:         Magnetic field object.
  * globset:    Global settings object (used to determine whether
  *             or not to enable drifts).
  * I, Q, U, V: Pre-allocated arrays consisting of 'nwavelengths'
@@ -23,9 +24,9 @@ using namespace __Radiation;
  *             spectrum (as set in 'det').
  */
 ADSynchrotronEmission::ADSynchrotronEmission(
-    Detector *det, struct global_settings *globset,
+    Detector *det, MagneticField2D *mf, struct global_settings *globset,
     size_t qagsLimit, slibreal_t qagsEpsRel
-) : ADEmission(det) {
+) : ADEmission(det, mf) {
     this->includeDrifts = globset->include_drifts;
 
     if (includeDrifts && det->GetNWavelengths() != 0)
@@ -53,15 +54,18 @@ ADSynchrotronEmission::~ADSynchrotronEmission() { }
  *      synchrotron radiation.
  */
 slibreal_t ADSynchrotronEmission::Evaluate(
-    Vector<3> &n, slibreal_t sinMu,  slibreal_t cosMu, bool pol
+    RadiationParticle *rp, Vector<3> &n,
+    slibreal_t sinMu,  slibreal_t cosMu, bool pol
 ) {
     if (nwavelengths == 0) {
         CalculateAngularDistribution(n, sinMu, cosMu);
     } else {
         if (!pol)
             CalculateSpectrum(n, sinMu, cosMu);
-        else
-            CalculatePolarization(n, sinMu, cosMu);
+        else {
+            CalculatePolarization(rp, n, sinMu, cosMu);
+            IntegrateSpectrumStokes();
+        }
 
         IntegrateSpectrum();
     }
@@ -107,5 +111,27 @@ void ADSynchrotronEmission::IntegrateSpectrum() {
         s += I[i];
 
     this->power = s * (wavelengths[1]-wavelengths[0]);
+}
+
+/**
+ * Integrate Stokes parameters.
+ */
+void ADSynchrotronEmission::IntegrateSpectrumStokes() {
+    unsigned x;
+    slibreal_t
+        q=0.5 * (Q[0] + Q[nwavelengths-1]),
+        u=0.5 * (U[0] + U[nwavelengths-1]),
+        v=0.5 * (V[0] + V[nwavelengths-1]);
+
+    for (x = 1; x < nwavelengths-1; x++)
+        q += Q[x];
+    for (x = 1; x < nwavelengths-1; x++)
+        u += U[x];
+    for (x = 1; x < nwavelengths-1; x++)
+        v += V[x];
+
+    this->powerQ = q;
+    this->powerU = u;
+    this->powerV = v;
 }
 

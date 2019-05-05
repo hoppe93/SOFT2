@@ -21,7 +21,7 @@ slibreal_t ADEval2D::Integrate(
 
     EvaluateAngles(0.0, 0.0, rp, a);
     
-    this->emission->Evaluate(a.n, a.sinMu, a.cosMu, pol);
+    this->emission->Evaluate(rp, a.n, a.sinMu, a.cosMu, pol);
     slibreal_t area = this->detector->GetAperture();
     area *= area;
     slibreal_t nDotNHat = rp->GetRCPHat().Dot(this->detector->GetDirection());

@@ -12,7 +12,15 @@ using namespace __Radiation;
 /*************************
  * PREPARATION FUNCTIONS *
  *************************/
-void ADSynchrotronEmission::PreparePolarization(RadiationParticle*) { }
+void ADSynchrotronEmission::PreparePolarization(RadiationParticle *rp) {
+    PrepareSpectrum(rp);
+
+    this->Efield.nE = this->nwavelengths;
+
+    this->Efield.Ex2  = new slibreal_t[this->Efield.nE];
+    this->Efield.Ey2  = new slibreal_t[this->Efield.nE];
+    this->Efield.ExEy = new slibreal_t[this->Efield.nE];
+}
 void ADSynchrotronEmission::PrepareSpectrum(RadiationParticle *rp) {
     this->gamma = rp->GetGamma();
     this->igamma2 = 1.0 / (gamma*gamma);
@@ -42,8 +50,9 @@ void ADSynchrotronEmission::PrepareSpectrum(RadiationParticle *rp) {
  * synchrotron radiation.
  */
 void ADSynchrotronEmission::CalculatePolarization(
+    RadiationParticle *rp,
     Vector<3> &n, slibreal_t sinMu,  slibreal_t cosMu
-) { __CalculateSpectrum<true>(n, sinMu, cosMu); }
+) { __CalculateSpectrum<true>(rp, n, sinMu, cosMu); }
 
 /**
  * Wrapper for calculating angular and spectral
@@ -51,7 +60,7 @@ void ADSynchrotronEmission::CalculatePolarization(
  */
 void ADSynchrotronEmission::CalculateSpectrum(
     Vector<3> &n, slibreal_t sinMu,  slibreal_t cosMu
-) { __CalculateSpectrum<false>(n, sinMu, cosMu); }
+) { __CalculateSpectrum<false>(nullptr, n, sinMu, cosMu); }
 
 /**
  * Function for calculating the spectrum of emitted synchrotron
@@ -64,6 +73,7 @@ void ADSynchrotronEmission::CalculateSpectrum(
  */
 template<bool calculatePolarization>
 void ADSynchrotronEmission::__CalculateSpectrum(
+    RadiationParticle *rp,
     Vector<3>&, slibreal_t sinMu,  slibreal_t cosMu
 ) {
     unsigned int i;
@@ -79,6 +89,19 @@ void ADSynchrotronEmission::__CalculateSpectrum(
         return;
     }
 
+    if (calculatePolarization) {
+        Vector<3> bhat = this->magfield->Eval(rp->GetPosition());
+        bhat.Normalize();
+
+        slibreal_t r = rp->GetRCP().Norm();
+        Vector<3> rcphat = rp->GetRCP() / r;
+        slibreal_t nDotB = rcphat.Dot(bhat);
+
+        this->Efield.zhat = rcphat;
+        this->Efield.yhat =-Vector<3>::Cross(rcphat, bhat) / (slibreal_t)sqrt(1.0 - nDotB*nDotB);
+        this->Efield.xhat = Vector<3>::Cross(this->Efield.yhat, this->Efield.zhat);
+    }
+
     for (i = 0; i < nwavelengths; i++) {
         slibreal_t
             l = wavelengths[i],
@@ -91,7 +114,15 @@ void ADSynchrotronEmission::__CalculateSpectrum(
             xK13 = synchrotron_func3(xi),
             xK23 = synchrotron_func2(xi);
 
-        I[i] = pfac * (xK23*xK23 + fac13*xK13*xK13);
+        if (calculatePolarization) {
+            Efield.Ex2[i] = pfac*xK23*xK23;
+            Efield.Ey2[i] = pfac*fac13*xK13*xK13;
+            Efield.ExEy[i] = sqrt(fac13)*pfac*xK13*xK23;
+        } else
+            I[i] = pfac * (xK23*xK23 + fac13*xK13*xK13);
     }
+
+    if (calculatePolarization)
+        this->detector->GetOptics()->ApplyOptics(Efield, I, Q, U, V);
 }
 
