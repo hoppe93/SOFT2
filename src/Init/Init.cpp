@@ -10,6 +10,7 @@ using namespace std;
 
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
+#include <softlib/Configuration/ConfigurationScript.h>
 #include <softlib/MagneticField/MagneticField2D.h>
 
 #include "config.h"
@@ -44,7 +45,7 @@ const string soft_init_defaults=
  *       initialize the SOFT object and its children.
  */
 SOFT *InitSOFT(Configuration *input) {
-    Configuration *conf;
+    ConfigurationScript *conf;
     ConfigBlock *cfb, root;
     SOFT *soft;
     string defaults;
@@ -54,7 +55,7 @@ SOFT *InitSOFT(Configuration *input) {
     defaults = InitSOFTDefaults();
 
     // Override default settings
-    conf = new Configuration();
+    conf = new ConfigurationScript();
     InitConfig(conf);
     conf->FromString(defaults, "<SOFT defaults>");
     conf->Merge(*input, true);

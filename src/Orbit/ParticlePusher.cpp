@@ -10,6 +10,7 @@
 
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
+#include <softlib/Configuration/ConfigurationScript.h>
 #include <softlib/Integrator.h>
 #include <softlib/IntegratorEquation.h>
 #include <softlib/RKDP45.h>
@@ -139,7 +140,7 @@ ParticlePusher::ParticlePusher(
  * it with default values.
  */
 void ParticlePusher::InitDefaults() {
-    Configuration c;
+    ConfigurationScript c;
 	settings = c.FromString(ParticlePusher_config);
 }
 

@@ -5,7 +5,7 @@
  * Email: hoppe@chalmers.se
  */
 
-#include <softlib/Configuration.h>
+#include <softlib/Configuration/ConfigurationScript.h>
 
 #include "config.h"
 #include "Init/Init.h"
@@ -30,7 +30,7 @@ using namespace std;
  * Passing more than one argument results in error.
  */
 int main(int argc, char *argv[]) {
-	Configuration *conf;
+	ConfigurationScript *conf;
     SOFT *soft;
 
 #ifdef WITH_MPI
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
 	
 	/* Handle command-line arguments */
     try {
-        conf = new Configuration();
+        conf = new ConfigurationScript();
         InitConfig(conf);
 
         if (argc == 1) {
