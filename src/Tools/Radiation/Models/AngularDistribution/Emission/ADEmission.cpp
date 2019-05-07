@@ -13,7 +13,9 @@ using namespace __Radiation;
  *
  * det:        Detector object defining the detector properties.
  */
-ADEmission::ADEmission(Detector *det) {
+ADEmission::ADEmission(Detector *det, MagneticField2D *mf) {
+    this->detector = det;
+    this->magfield = mf;
     this->nwavelengths = det->GetNWavelengths();
 
     if (this->nwavelengths > 0) {

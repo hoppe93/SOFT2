@@ -97,8 +97,8 @@ ADSynchrotronEmission *AngularDistribution::ConfigureSynchrotronEmission(ConfigB
     }
 
     return new ADSynchrotronEmission(
-        this->parent->detector, globset,
-        qagsLimit, qagsEpsRel
+        this->parent->detector, this->parent->magfield,
+        globset, qagsLimit, qagsEpsRel
     );
 }
 

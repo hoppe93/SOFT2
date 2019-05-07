@@ -2,6 +2,8 @@
 #define _ANGULAR_DISTRIBUTION_EMISSION_H
 
 #include <softlib/config.h>
+#include <softlib/MagneticField/MagneticField2D.h>
+#include "Tools/Radiation/Detector.h"
 #include "Tools/Radiation/Radiation.h"
 #include "Tools/Radiation/RadiationException.h"
 #include "Tools/Radiation/RadiationParticle.h"
@@ -12,15 +14,17 @@ namespace __Radiation {
             slibreal_t power, powerQ, powerU, powerV;
             slibreal_t *I, *Q, *U, *V, *wavelengths;
             unsigned int nwavelengths = 0;
+            Detector *detector;
+            MagneticField2D *magfield;
         public:
-            ADEmission(Detector*);
+            ADEmission(Detector*, MagneticField2D*);
             virtual ~ADEmission();
-            virtual slibreal_t Evaluate(Vector<3>&, slibreal_t, slibreal_t, bool) = 0;
+            virtual slibreal_t Evaluate(RadiationParticle*, Vector<3>&, slibreal_t, slibreal_t, bool) = 0;
             virtual void InitializeToroidalStep(const slibreal_t, const slibreal_t) = 0;
             virtual void Prepare(RadiationParticle*, bool) = 0;
 
             virtual void CalculateAngularDistribution(Vector<3>&, slibreal_t, slibreal_t) = 0;
-            virtual void CalculatePolarization(Vector<3>&, slibreal_t, slibreal_t) = 0;
+            virtual void CalculatePolarization(RadiationParticle*, Vector<3>&, slibreal_t, slibreal_t) = 0;
             virtual void CalculateSpectrum(Vector<3>&, slibreal_t, slibreal_t) = 0;
 
             slibreal_t *GetSpectrum() const { return this->I; }

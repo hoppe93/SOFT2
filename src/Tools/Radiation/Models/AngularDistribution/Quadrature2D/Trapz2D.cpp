@@ -105,7 +105,7 @@ slibreal_t ADTrapz2D::_OuterIntegral(
  */
 #define EVAL(s,p) \
     (s? \
-        (p? (this->emission->CalculatePolarization(a.n, a.sinMu, a.cosMu)):\
+        (p? (this->emission->CalculatePolarization(rp, a.n, a.sinMu, a.cosMu)):\
             (this->emission->CalculateSpectrum(a.n, a.sinMu, a.cosMu))\
         ):\
     this->emission->CalculateAngularDistribution(a.n, a.sinMu, a.cosMu))

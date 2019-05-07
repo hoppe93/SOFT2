@@ -35,66 +35,6 @@ void Korger::Configure(ConfigBlock*) {
  * of electric field components coming
  * from the same source direction.
  */
-/*
-void Korger::ApplyOptics(
-    const struct Optics::Efield &E,
-    slibreal_t *I, slibreal_t *Q,
-    slibreal_t *U, slibreal_t *V
-) {
-    // Construct projection operator
-    cVector
-        ap00 = detector->GetEHat1(),
-        ap45 = 1.0/sqrt(2.0) * (detector->GetEHat1() + detector->GetEHat2()),
-        ap90 = detector->GetEHat2();
-    complex<slibreal_t>
-        kap00 = E.zhat.Dot(ap00),
-        kap45 = E.zhat.Dot(ap45),
-        kap90 = E.zhat.Dot(ap90);
-    cVector
-        a00 = (ap00 - E.zhat*kap00) / (complex<slibreal_t>)sqrt(1.0 - norm(kap00)),
-        a45 = (ap45 - E.zhat*kap45) / (complex<slibreal_t>)sqrt(1.0 - norm(kap45)),
-        a90 = (ap90 - E.zhat*kap90) / (complex<slibreal_t>)sqrt(1.0 - norm(kap90));
-
-    cMatrix ONE, Tl;
-
-    // Unit matrix
-    ONE(0,0) = ONE(1,1) = ONE(2,2) = 1.0;
-    // Quarter-wave retarder
-    Tl(0,0) = Tl(2,2) = 1.0;
-    Tl(1,1) = -1i;
-
-    cMatrix Tp00 = ONE - cMatrix(a00, a00);
-    cMatrix Tp45 = ONE - cMatrix(a45, a45);
-    cMatrix Tp90 = ONE - cMatrix(a90, a90);
-
-    // Construct Stokes parameters from PI(psi)
-    for (unsigned int i = 0; i < E.nE; i++) {
-        cVector e = E.Ex[i] * E.xhat + E.Ey[i] * E.yhat;
-
-        cVector PI00vec = Tp00 * e;
-        cVector PI45vec = Tp45 * e;
-        cVector PI90vec = Tp90 * e;
-        cVector PIi45vec = (Tp45 * Tl) * e;
-
-        slibreal_t PI00 = real(PI00vec.Norm()); PI00 *= PI00;
-        slibreal_t PI45 = real(PI45vec.Norm()); PI45 *= PI45;
-        slibreal_t PI90 = real(PI90vec.Norm()); PI90 *= PI90;
-        slibreal_t PIi45 = real(PIi45vec.Norm()); PIi45 *= PIi45;
-
-        I[i] = PI00 + PI90;
-
-        if (Q != nullptr) Q[i] = PI00 - PI90;
-        if (U != nullptr) U[i] = 2.0 * PI45 - PI00 - PI90;
-        if (V != nullptr) V[i] = 2.0 * PIi45 - PI00 - PI90;
-    }
-}
-*/
-
-/**
- * Apply the Korger model to a spectrum
- * of electric field components coming
- * from the same source direction.
- */
 void Korger::ApplyOptics(
     const struct Optics::Efield &E,
     slibreal_t *I, slibreal_t *Q,
@@ -107,15 +47,14 @@ void Korger::ApplyOptics(
 
     slibreal_t
         a1 = e1.Dot(E.yhat), a2 = e2.Dot(E.yhat),
-        b1 = e1.Dot(E.xhat), b2 = e2.Dot(E.xhat)/*,
-        c1 = e1.Dot(E.zhat), c2 = e2.Dot(E.zhat)*/;
+        b1 = e1.Dot(E.xhat), b2 = e2.Dot(E.xhat);
 
     for (unsigned int i = 0; i < E.nE; i++) {
         slibreal_t
             PI0  = (E.Ex2[i]*a2*a2 + E.Ey2[i]*b2*b2) / (a2*a2 + b2*b2),
             PI4  = (E.Ex2[i]*(a2-a1)*(a2-a1) + E.Ey2[i]*(b2-b1)*(b2-b1)) / ((a1-a2)*(a1-a2) + (b1-b2)*(b1-b2)),
             PI2  = (E.Ex2[i]*a1*a1 + E.Ey2[i]*b1*b1) / (a1*a1 + b1*b1),
-            PIi4 = PI0+PI2;  // TODO
+            PIi4 = 0.5*(E.Ex2[i] + E.Ey2[i]) - E.ExEy[i];
 
         I[i] = PI0 + PI2;
 
