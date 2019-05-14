@@ -84,9 +84,9 @@ void Green::Generate() {
     sf->WriteList("wavelengths", this->detector->GetWavelengths(), this->nw);
 
     if (this->hasI)
-        sf->WriteScalar("rowpixels", this->nrowpixels);
+        sf->WriteScalar("rowpixels", this->subnrowpixels);
     if (this->hasJ)
-        sf->WriteScalar("colpixels", this->ncolpixels);
+        sf->WriteScalar("colpixels", this->subncolpixels);
 
     if (this->storeStokesParameters)
         sf->WriteScalar("stokesparams", 1.0);
