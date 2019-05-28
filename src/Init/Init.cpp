@@ -123,7 +123,9 @@ slibreal_t init_get_scalar(ConfigBlock *conf, const string& name, const string& 
         throw SOFTException("%s: Required parameter '%s' not defined.", parent.c_str(), name.c_str());
     
     s = conf->GetSetting(name);
-    if (!s->IsScalar())
+    if (s->GetString() == "inf")
+        return std::numeric_limits<slibreal_t>::infinity();
+    else if (!s->IsScalar())
         throw SOFTException("%s: %s: Invalid value assigned to parameter. Expected real scalar value.", parent.c_str(), name.c_str());
 
     return s->GetScalar();

@@ -20,7 +20,7 @@ The analytical magnetic field in SOFT is defined as
 
 .. math::
 
-   B(r,\theta) = \frac{B_0 R_{\rm m}}{R_{\rm m} - r\cos\theta}\left( \frac{r}{q(r)R_{\rm m}} \hat{\boldsymbol{\theta}} + \sigma_B\hat{\boldsymbol{\varphi}} \right).
+   B(r,\theta) = \frac{B_0 R_{\rm m}}{R_{\rm m} - r\cos\theta}\left( \frac{r\sigma_I}{q(r)R_{\rm m}} \hat{\boldsymbol{\theta}} + \sigma_B\hat{\boldsymbol{\varphi}} \right).
 
 Here, :math:`r` denotes minor radius, :math:`\theta` denotes poloidal angle, and
 :math:`\hat{\boldsymbol{\theta}}` and :math:`\hat{\boldsymbol{\varphi}}` are
@@ -41,9 +41,45 @@ The radial profile of the safety factor can take four different forms in SOFT:
 
    q_{\rm exp}(r)   &= e^{q_{a1} r/r_0} + q_{a2},
 
+   q_{\rm curr}(r)  &= \frac{q_{a1}}{1 - \frac{2}{n+2}\left(\frac{r}{r_0}\right)^{q_{a2}}},
+
 where :math:`r_0` is the tokamak minor radius, :math:`r` is the minor radius
 coordinate, ranging between 0 and :math:`r_0`, and :math:`q_{a1}` and
 :math:`q_{a2}` are constants set by the user.
+
+Relation to plasma current (density)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The safety factor denoted :math:`q_{\rm curr}(r)` above is the safety factor
+resulting from a plasma current density of the form
+
+.. math::
+
+   \boldsymbol{j} = \sigma_I\hat{\boldsymbol{\varphi}}j(r)
+   = \sigma_I\hat{\boldsymbol{\varphi}} q_{a1}\left[ 1 - \left(\frac{r}{r_0}\right)^{q_{a2}} \right],
+
+where :math:`q_{a1}` is interpreted as the central current density. From this,
+the plasma current :math:`I` can be related to the central safety factor
+:math:`q_0\equiv q(0)`:
+
+.. math::
+    
+    I = \frac{2\pi B_0}{\mu_0 q_0 R_{\rm m}} r_0^2 \left( 1 - \frac{2}{n+2} \right),
+
+or conversely
+
+.. math::
+   
+   q_0 = \frac{2\pi B_0}{\mu_0 R_{\rm m} I} r_0^2 \left( 1 - \frac{2}{n+2} \right),
+
+where :math:`\mu_0\approx 4\pi\times 10^{-7}\,\text{H/m}` is the vacuum
+permeability. With :math:`B_0`, :math:`\mu_0`, :math:`R_{\rm m}` and :math:`r_0`
+in SI units, and the total plasma current in mega-ampere, the central safety
+factor can be computed from
+
+.. math::
+   
+   q_0 = \frac{5n}{n+2} \frac{B_0 r_0^2}{R_{\rm m} I}.
+
 
 *More information about how to configure an analytical magnetic field can
 be found at* :ref:`module-magneticfield`.

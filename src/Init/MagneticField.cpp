@@ -48,7 +48,7 @@ MagneticField2D *InitMagneticField(ConfigBlock *conf) {
 MagneticFieldAnalytical2D *InitMagneticFieldAnalytical(ConfigBlock *conf) {
     MagneticFieldAnalytical2D *mf;
     Setting *s;
-    slibreal_t B0, Rm, rminor, qa1=1.0, qa2=1.0;
+    slibreal_t B0, Rm, zm, rminor, qa1=1.0, qa2=1.0;
     enum MFAFieldSign tfs, pcs;
     enum MFASafetyFactorType qtype;
     string parent = "Magnetic field '"+conf->GetName()+"'";
@@ -66,6 +66,12 @@ MagneticFieldAnalytical2D *InitMagneticFieldAnalytical(ConfigBlock *conf) {
         throw SOFTException("%s: rminor: Invalid value assigned to parameter.", parent.c_str());
     if (Rm <= rminor)
         throw SOFTException("%s: Major radius must be strictly greater than minor radius.", parent.c_str());
+
+    // plasma vertical position
+    if (!conf->HasSetting("zm"))
+        zm = 0;
+    else
+        zm = init_get_scalar(conf, "zm", parent);
 
     // toroidal field sign
     if (!conf->HasSetting("sigmaB"))
@@ -98,7 +104,9 @@ MagneticFieldAnalytical2D *InitMagneticFieldAnalytical(ConfigBlock *conf) {
     if (s->GetNumberOfValues() != 1)
         throw SOFTException("%s: qtype: Invalid value assigned to parameter. Expected single value.", parent.c_str());
 
-    if (s->GetString() == "constant")
+    if (s->GetString() == "current")
+        qtype = MFASF_CURRENT;
+    else if (s->GetString() == "constant")
         qtype = MFASF_CONSTANT;
     else if (s->GetString() == "exponential")
         qtype = MFASF_EXPONENTIAL;
@@ -115,7 +123,7 @@ MagneticFieldAnalytical2D *InitMagneticFieldAnalytical(ConfigBlock *conf) {
     if (conf->HasSetting("qa2"))
         qa2 = init_get_scalar(conf, "qa2", parent);
 
-    mf = new MagneticFieldAnalytical2D(B0, Rm, rminor, tfs, pcs, qtype, qa1, qa2, conf->GetName(), conf->GetName());
+    mf = new MagneticFieldAnalytical2D(B0, Rm, zm, rminor, tfs, pcs, qtype, qa1, qa2, conf->GetName(), conf->GetName());
     return mf;
 }
 
