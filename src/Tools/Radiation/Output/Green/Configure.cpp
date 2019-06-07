@@ -307,12 +307,12 @@ void Green::ValidateFormat(const string &fmt) {
         }
     }
 
-    if (touched['i']) {
-        if (!touched['j'])
+    if (touched[(int)'i']) {
+        if (!touched[(int)'j'])
             throw GreenException("Only column pixel index specified to Green's function. Both row and column pixels must be specified simultaneously.");
         else if (fmt.substr(n-2, 2) != "ij" && fmt.substr(n-2, 2) != "ji")
             SOFT::PrintWarning(SOFT::WARNING_TROG_IMAGE_NOT_LAST, "It is recommended to put image (ij) at the end of the Green's function.");
-    } else if (touched['j'])
+    } else if (touched[(int)'j'])
         throw GreenException("Only column pixel index specified to Green's function. Both row and column pixels must be specified simultaneously.");
 }
 

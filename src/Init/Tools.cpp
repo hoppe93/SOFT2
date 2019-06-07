@@ -108,14 +108,14 @@ ToolHandler *SOFTLocal::InitTools(
 ) {
     unsigned int i, j;
     ToolHandler *th = new ToolHandler();
-    ConfigBlock root = input->GetRootBlock();
+    ConfigBlock *root = input->GetRootBlock();
 
     vector<string> tools = globset->tools;
     for (i = 0; i < tools.size(); i++) {
         for (j = 0; j < INIT_TOOLS_NTOOLS; j++) {
-            if (root.HasSubBlock(toolinit_tools[j].id, tools[i])) {
-                ConfigBlock *cb = root.GetConfigBlock(toolinit_tools[j].id, tools[i]);
-                Tool *t = toolinit_tools[j].init(globset, cb, &root, partgen, pusher, magfield);
+            if (root->HasSubBlock(toolinit_tools[j].id, tools[i])) {
+                ConfigBlock *cb = root->GetConfigBlock(toolinit_tools[j].id, tools[i]);
+                Tool *t = toolinit_tools[j].init(globset, cb, root, partgen, pusher, magfield);
 
                 th->AddTool(t);
                 break;

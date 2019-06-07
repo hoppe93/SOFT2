@@ -105,7 +105,7 @@ void Particle::InitializeMomentum(const int t1, const int t2, const slibreal_t p
 				throw ParticleException("Invalid combination of coordinates! Coordinate 'xi' can be combined with 'gamma', 'p', 'ppar' and 'pperp'.");
 			break;
 		default:
-			throw ParticleException("Unrecognized type of first momentum coordinate: "+t1);
+			throw ParticleException("Unrecognized type of first momentum coordinate: %d", t1);
 	}
 
     this->dparam1 *= fabs(dp1);
@@ -188,7 +188,7 @@ void Particle::ToPP(
 				throw ParticleException("Invalid combination of coordinates! Coordinate 'xi' can be combined with 'gamma', 'p', 'ppar' and 'pperp'.");
 			break;
 		default:
-			throw ParticleException("Unrecognized type of first momentum coordinate: "+t1);
+			throw ParticleException("Unrecognized type of first momentum coordinate: %d", t1);
 	}
 }
 

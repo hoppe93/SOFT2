@@ -71,13 +71,13 @@ namespace __Radiation {
             virtual void Welcome(const std::string&) override;
 
             // Only called on root thread
-            void Generate();
+            void Generate() override;
 
             std::string GetChunkedName(const int);
 
             void PrepareAllocateGreen();
-            void GetIndex(__Radiation::Detector*, __Radiation::RadiationParticle*, size_t*, size_t*);
-            bool MeasuresPolarization() { return storeStokesParameters; }
+            bool GetIndex(__Radiation::Detector*, __Radiation::RadiationParticle*, size_t*, size_t*);
+            bool MeasuresPolarization() override { return storeStokesParameters; }
 
             std::string TranslateFormat(const std::string&);
             void ValidateFormat(const std::string&);

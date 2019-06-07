@@ -39,7 +39,7 @@ namespace __Radiation {
             void AllocateTopview();
             void GetTopviewPixel(RadiationParticle*, unsigned int*, unsigned int*);
 
-            bool MeasuresPolarization() { return false; }
+            bool MeasuresPolarization() override { return false; }
     };
 
     class TopviewException : public RadiationOutputException {

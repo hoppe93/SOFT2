@@ -23,7 +23,7 @@ enum orbittimeunit {
 class ParticlePusher {
 	private:
         bool calculateJacobianOrbit = true;
-		ConfigBlock settings;
+		ConfigBlock *settings;
 		Integrator<6> *integrator1, *integrator2;
         MagneticField2D *magfield;
         struct global_settings* globset;

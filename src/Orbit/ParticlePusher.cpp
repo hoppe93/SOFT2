@@ -75,7 +75,7 @@ ParticlePusher::ParticlePusher(
 
 	// Handle settings
 	if (conf != nullptr) {
-		vector<string> *v = settings.Merge(*conf);
+		vector<string> *v = settings->Merge(conf);
 		if (v != nullptr) {
 			int i, l = v->size();
 			for (i = 0; i < l; i++)
@@ -84,17 +84,17 @@ ParticlePusher::ParticlePusher(
 	}
 
 	// Interpret settings
-	InitEquation(settings["equation"], *eqnconf);
+	InitEquation((*settings)["equation"], *eqnconf);
 
     // Override nude value
-    if (settings["nudgevalue"] == "__default__") {
+    if ((*settings)["nudgevalue"] == "__default__") {
         // Set the 'nudge' value (radial distance between
         // orbits when calculating Jacobians).
         // Note that 'integrator_tol' is initialized when
         // the integrator is set, in 'InitEquation'.
         this->nudge_value = sqrt(this->integrator_tol * mf->GetMagneticAxisR());
     } else {
-        Setting *s = settings.GetSetting("nudgevalue");
+        Setting *s = settings->GetSetting("nudgevalue");
         if (!s->IsScalar())
             throw ParticlePusherException("Invalid value assigned to parameter 'nudgevalue'. Expected real scalar.");
 
@@ -102,31 +102,31 @@ ParticlePusher::ParticlePusher(
     }
 
     // Force numerical calculation of Jacobian determinant?
-    Setting *s = settings.GetSetting("force_numerical_jacobian");
+    Setting *s = settings->GetSetting("force_numerical_jacobian");
     if (!s->IsBool())
         throw ParticlePusherException("Invalid value assigned to parameter 'force_numerical_jacobian'. Expected boolean value.");
     else
         this->forceNumericalJacobian = s->GetBool();
 
     // Max time
-    this->maxtime = init_get_scalar(&settings, "time", "ParticlePusher");
+    this->maxtime = init_get_scalar(settings, "time", "ParticlePusher");
 
     // Time unit
-    if (settings["timeunit"] == "poloidal") {
-        if (settings["equation"] != "guiding-center")
+    if ((*settings)["timeunit"] == "poloidal") {
+        if ((*settings)["equation"] != "guiding-center")
             throw ParticlePusherException("Only the guiding-center equations of motion support the 'poloidal' time unit.");
 
         this->timeunit = ORBITTIMEUNIT_POLOIDAL;
-    } else if (settings["timeunit"] == "seconds")
+    } else if ((*settings)["timeunit"] == "seconds")
         this->timeunit = ORBITTIMEUNIT_SECONDS;
     else
-        throw ParticlePusherException("Unrecognized time unit: '%s'.", settings["timeunit"].c_str());
+        throw ParticlePusherException("Unrecognized time unit: '%s'.", (*settings)["timeunit"].c_str());
 
     // Set domain bounds
     mf->GetDomainBounds(domain_rmin, domain_rmax, domain_zmin, domain_zmax);
 
     // Number of time steps
-    this->ntimesteps = init_get_uint32(&settings, "nt", "ParticlePusher");
+    this->ntimesteps = init_get_uint32(settings, "nt", "ParticlePusher");
     this->retorbit = new Orbit(this->ntimesteps, globset->include_drifts);
     //this->retorbit = new Orbit(this->ntimesteps, true);
     this->solution = new slibreal_t[this->ntimesteps];

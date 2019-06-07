@@ -46,7 +46,7 @@ const string soft_init_defaults=
  */
 SOFT *InitSOFT(Configuration *input) {
     ConfigurationScript *conf;
-    ConfigBlock *cfb, root;
+    ConfigBlock *cfb, *root;
     SOFT *soft;
     string defaults;
 
@@ -67,19 +67,19 @@ SOFT *InitSOFT(Configuration *input) {
     soft->SetGlobalSettings(InitGlobalSettings(root));
 
     // MAGNETIC FIELD
-    cfb = root.GetConfigBlock(CONFBLOCK_MAGNETICFIELD, soft->GetGlobalSettings()->magnetic_field);
+    cfb = root->GetConfigBlock(CONFBLOCK_MAGNETICFIELD, soft->GetGlobalSettings()->magnetic_field);
     if (cfb == nullptr)
         throw SOFTException("Magnetic field '%s' not defined.", soft->GetGlobalSettings()->magnetic_field.c_str());
     soft->magfield = InitMagneticField(cfb);
 
     // DISTRIBUTION FUNCTION
-    cfb = root.GetConfigBlock(CONFBLOCK_DISTRIBUTION, soft->GetGlobalSettings()->distribution);
+    cfb = root->GetConfigBlock(CONFBLOCK_DISTRIBUTION, soft->GetGlobalSettings()->distribution);
     if (cfb == nullptr)
         throw SOFTException("Distribution function '%s' not defined.", soft->GetGlobalSettings()->distribution.c_str());
-    soft->distribution = InitDistributionFunction(soft->magfield, cfb, &root);
+    soft->distribution = InitDistributionFunction(soft->magfield, cfb, root);
     
     // PARTICLE GENERATOR
-    cfb = root.GetConfigBlock(CONFBLOCK_PARTICLEGENERATOR, soft->GetGlobalSettings()->particle_generator);
+    cfb = root->GetConfigBlock(CONFBLOCK_PARTICLEGENERATOR, soft->GetGlobalSettings()->particle_generator);
     if (cfb == nullptr)
         throw SOFTException("Particle generator '%s' not defined.", soft->GetGlobalSettings()->particle_generator.c_str());
     soft->partgen = new ParticleGenerator(soft->magfield, cfb, soft->GetGlobalSettings());
@@ -170,7 +170,7 @@ uint32_t init_get_uint32(ConfigBlock *conf, const string& name, const string& pa
  * name:   Name of parameter to read.
  * parent: Name of parent block to read parameter from.
  */
-string& init_get_string(ConfigBlock *conf, const string& name, const string& parent) {
+string init_get_string(ConfigBlock *conf, const string& name, const string& parent) {
     Setting *s;
     if (!conf->HasSetting(name))
         throw SOFTException("%s: Required parameter '%s' not defined.", parent.c_str(), name.c_str());

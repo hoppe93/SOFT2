@@ -11,7 +11,6 @@
 class GuidingCenterEquation : public SOFTEquation {
 	private:
 		bool include_drifts=false;
-		SOFT *soft;
 	public:
         static const int
             COORD_X   =0,

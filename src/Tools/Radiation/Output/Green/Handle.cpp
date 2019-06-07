@@ -21,7 +21,10 @@ using namespace std;
 void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
     size_t index = 0, wavindex = 0;
 
-    GetIndex(det, rp, &index, &wavindex);
+    // Get function index and make sure that the data
+    // is located within the subimage
+    if (!GetIndex(det, rp, &index, &wavindex))
+        return;
 
     // Compute differential element
     //slibreal_t diffel = rp->GetRDphi() * rp->GetJdtdrho();
@@ -134,12 +137,14 @@ void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
 
 /**
  * Computes the Green's function index corresponding
- * to the given particle.
+ * to the given particle. This function returns 'false'
+ * if the given radiation particle lies outside the
+ * subimage, and true otherwise.
  *
  * det: Object representing the detector used.
  * rp:  Particle emitting state.
  */
-void Green::GetIndex(
+bool Green::GetIndex(
     Detector *det, RadiationParticle *rp,
     size_t *index, size_t *wavindex
 ) {
@@ -150,9 +155,9 @@ void Green::GetIndex(
         Image::GetImagePixel(det, rp, this->nrowpixels, this->ncolpixels, I, J);
 
         if (I < suboffseti || I >= suboffseti+subnrowpixels)
-            return;
+            return false;
         if (J < suboffsetj || J >= suboffsetj+subncolpixels)
-            return;
+            return false;
 
         I -= suboffseti;
         J -= suboffsetj;
@@ -170,5 +175,7 @@ void Green::GetIndex(
                 throw GreenException("Unrecognized character in Green's function format: %c.", format[i]);
         }
     }
+
+    return true;
 }
 

@@ -128,7 +128,7 @@ __Radiation::Detector::Detector(ConfigBlock *conf, ConfigBlock *root) {
         else if (unit == "image")
             this->SetVisionAngle(visang, VISANG_TYPE_IMAGE);
         else
-            throw DetectorException("Detector '%s': Unrecognized unit for vision angle: %s.", this->name.c_str(), unit);
+            throw DetectorException("Detector '%s': Unrecognized unit for vision angle: %s.", this->name.c_str(), unit.c_str());
     } else
         throw DetectorException("Detector '%s': Invalid specification of vision angle: too many parameters.", this->name.c_str());
 

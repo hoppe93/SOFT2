@@ -3,6 +3,6 @@
 
 #include "SOFT.h"
 
-struct global_settings *InitGlobalSettings(ConfigBlock&);
+struct global_settings *InitGlobalSettings(ConfigBlock*);
 
 #endif/*_INIT_GLOBAL_H*/

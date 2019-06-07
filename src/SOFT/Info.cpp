@@ -8,7 +8,7 @@
 #include "config.h"
 #include "SOFTLocal.h"
 
-const char soft_git_refspec[] = SOFT_GIT_REFSPEC;
+//const char soft_git_refspec[] = SOFT_GIT_REFSPEC;
 const char soft_git_sha1[] = SOFT_GIT_SHA1;
 
 using namespace std;

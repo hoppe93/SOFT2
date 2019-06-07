@@ -35,7 +35,7 @@ namespace __Radiation {
             virtual void Welcome(const std::string&) override;
 
             // Only called on root thread
-            void Generate();
+            void Generate() override;
 
             void AllocateImage();
             void GetImagePixel(Detector*, RadiationParticle*, int&, int&);

@@ -122,7 +122,7 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
     else if (this->n1 < 1)
         throw ParticleGeneratorException(
             "Invalid number of points specified for velocity parameter '%s': %u.\n",
-            pg_coordinate_names[this->mom1type], this->n1
+            pg_coordinate_names[this->mom1type].c_str(), this->n1
         );
     else
         this->dp1 = 0.0;
@@ -132,7 +132,7 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
     else if (this->n2 < 1)
         throw ParticleGeneratorException(
             "Invalid number of points specified for velocity parameter '%s': %u.\n",
-            pg_coordinate_names[this->mom2type], this->n2
+            pg_coordinate_names[this->mom2type].c_str(), this->n2
         );
     else
         this->dp2 = 0.0;

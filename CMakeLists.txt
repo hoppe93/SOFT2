@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.9)
+# Required features/version
+# >= 3.9
+#    + Simple linking/compilation with OpenMP
+
 project(soft)
 subdirs(src)
 
