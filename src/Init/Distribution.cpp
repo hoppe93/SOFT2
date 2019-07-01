@@ -6,6 +6,7 @@
 #include <softlib/Configuration.h>
 #include <softlib/DistributionFunction/DistributionFunction.h>
 #include <softlib/DistributionFunction/AnalyticalAvalanche.h>
+#include <softlib/DistributionFunction/ExponentialPitch.h>
 #include <softlib/DistributionFunction/CODEDistributionFunction.h>
 #include <softlib/DistributionFunction/LUKEDistributionFunction.h>
 #include <softlib/DistributionFunction/LinearRadialProfile.h>
@@ -43,6 +44,8 @@ DistributionFunction *InitDistributionFunction(MagneticField2D *magfield, Config
         df = InitNORSEDistribution(magfield, conf, root);
     else if (type == "numerical")
         df = InitNumericalDistribution(magfield, conf);
+    else if (type == "pitch")
+        df = InitExponentialPitchDistribution(magfield, conf, root);
     else if (type == "unit")
         df = InitUnitDistributionFunction(magfield, conf, root);
     else
@@ -277,6 +280,44 @@ SOFTDistributionFunction *InitNumericalDistribution(MagneticField2D *magfield, C
     }
 
     return new SOFTDistributionFunction(name, magfield, logarithmize, interptype);
+}
+
+/**
+ * Initialize an exponential pitch distribution function.
+ *
+ * magfield: Magnetic field that the distribution lives in.
+ * conf:     Configuration of module.
+ */
+RadialDistributionFunction *InitExponentialPitchDistribution(MagneticField2D *magfield, ConfigBlock *conf, ConfigBlock *root) {
+    slibreal_t C;
+
+    if (!conf->HasSetting("C")) {
+        throw SOFTException(
+            "Distribution function '%s': Pitch distribution exponent 'C' not specified.",
+            conf->GetName().c_str()
+        );
+    } else {
+        Setting *s = conf->GetSetting("C");
+        if (!s->IsScalar())
+            throw SOFTException(
+                "Distribution function '%s': The given pitch distribution exponent 'C' is not a scalar.",
+                conf->GetName().c_str()
+            );
+
+        C = s->GetScalar();
+    }
+
+    RadialProfile *radprof;
+    if (conf->HasSetting("radprof")) {
+        Setting *set = conf->GetSetting("radprof");
+        radprof = InitRadialProfile(magfield, set, root, conf->GetName());
+    } else
+        radprof = new UniformRadialProfile();
+
+    // Combine...
+    return new RadialDistributionFunction(
+        radprof, new ExponentialPitch(C)
+    );
 }
 
 RadialDistributionFunction *InitUnitDistributionFunction(MagneticField2D *magfield, ConfigBlock *conf, ConfigBlock *root) {

@@ -16,6 +16,7 @@ distribution functions.
    DistributionFunction/Avalanche
    DistributionFunction/CODE
    DistributionFunction/Numerical
+   DistributionFunction/Pitch
    DistributionFunction/Unit
 
 Types
@@ -33,6 +34,8 @@ distribution function types are listed in the table below.
 | :ref:`module-distribution-code`      | A momentum-space distribution function directly from CODE.  |
 +--------------------------------------+-------------------------------------------------------------+
 | :ref:`module-distribution-numerical` | A SOFT numerical distribution function.                     |
++--------------------------------------+-------------------------------------------------------------+
+| :ref:`module-distribution-pitch`     | An exponential pitch distribution function.                 |
 +--------------------------------------+-------------------------------------------------------------+
 | :ref:`module-distribution-unit`      | A distribution function that is one everywhere.             |
 +--------------------------------------+-------------------------------------------------------------+
