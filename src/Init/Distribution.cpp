@@ -115,7 +115,7 @@ RadialDistributionFunction *InitCODEDistribution(MagneticField2D *magfield, Conf
         if (set->GetNumberOfValues() != 1)
             throw SOFTException("Distribution function '%s': name: Invalid value assigned to parameter. Expected string.", conf->GetName().c_str());
 
-        name = set->GetName();
+        name = set->GetString();
     }
 
     // Type of interpolation

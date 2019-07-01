@@ -17,6 +17,7 @@ Welcome to SOFTv2's documentation!
    dominant
    mpi
    examples
+   faq
 
 
 Indices and tables
