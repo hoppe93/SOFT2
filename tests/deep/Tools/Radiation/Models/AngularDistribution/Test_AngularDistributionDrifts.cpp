@@ -510,7 +510,7 @@ bool Test_AngularDistributionDrifts::VerifyIntegral(const slibreal_t tol) {
     globset.include_drifts = true;
     bool success = true;
 
-    ADSynchrotronEmission ade(det, &globset, qagsLimit, qagsRelTol);
+    ADSynchrotronEmission ade(det, mfa, &globset, qagsLimit, qagsRelTol);
 
     for (i = 0; i < NTESTPARTICLES && success; i++) {
         RadiationParticle *rp = GetRadiationParticle(mfa, det, i);

@@ -81,7 +81,7 @@ bool Test_ADQuadrature2D::IsotropicEmission(const string& modelname, slibreal_t 
 
     // Test with no spectrum
     Detector *det1 = GetDetector(0);
-    Test_ADQuadrature2D_Emission em1(det1);
+    Test_ADQuadrature2D_Emission em1(det1, nullptr);
     T q1(&em1, det1, forward<Args>(args) ...);
 
     for (unsigned int i = 0; i < NTESTPARTICLES; i++)
@@ -89,7 +89,7 @@ bool Test_ADQuadrature2D::IsotropicEmission(const string& modelname, slibreal_t 
 
     // Test with spectrum
     Detector *det2 = GetDetector(40);
-    Test_ADQuadrature2D_Emission em2(det2);
+    Test_ADQuadrature2D_Emission em2(det2, nullptr);
     T q2(&em2, det2, forward<Args>(args) ...);
 
     for (unsigned int i = 0; i < NTESTPARTICLES; i++)

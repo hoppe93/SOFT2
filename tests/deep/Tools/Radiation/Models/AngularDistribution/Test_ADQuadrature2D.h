@@ -2,6 +2,7 @@
 #define _TEST_ANGULAR_DISTRIBUTION_QUADRATURE2D_H
 
 #include <softlib/config.h>
+#include <softlib/MagneticField/MagneticField2D.h>
 #include "Tools/Radiation/Detector.h"
 #include "Tools/Radiation/RadiationParticle.h"
 #include "Tools/Radiation/Models/AngularDistribution/ADQuadrature2D.h"
@@ -10,14 +11,14 @@
 class Test_ADQuadrature2D_Emission : public __Radiation::ADEmission {
     private:
     public:
-        Test_ADQuadrature2D_Emission(__Radiation::Detector *d) : ADEmission(d) {}
+        Test_ADQuadrature2D_Emission(__Radiation::Detector *d, MagneticField2D *mf) : ADEmission(d, mf) {}
 
-        virtual slibreal_t Evaluate(Vector<3>&, slibreal_t, slibreal_t, bool) override;
+        virtual slibreal_t Evaluate(__Radiation::RadiationParticle*, Vector<3>&, slibreal_t, slibreal_t, bool) override;
         virtual void InitializeToroidalStep(const slibreal_t, const slibreal_t) override {}
         virtual void Prepare(__Radiation::RadiationParticle*, bool) override {}
 
         virtual void CalculateAngularDistribution(Vector<3>&, slibreal_t, slibreal_t) override;
-        virtual void CalculatePolarization(Vector<3>&, slibreal_t, slibreal_t) override;
+        virtual void CalculatePolarization(__Radiation::RadiationParticle*, Vector<3>&, slibreal_t, slibreal_t) override;
         virtual void CalculateSpectrum(Vector<3>&, slibreal_t, slibreal_t) override;
 };
 

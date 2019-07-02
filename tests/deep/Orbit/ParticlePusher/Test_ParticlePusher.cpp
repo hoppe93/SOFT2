@@ -17,6 +17,7 @@
 #include <sstream>
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
+#include <softlib/Configuration/ConfigurationScript.h>
 #include <softlib/constants.h>
 #include <softlib/MagneticField/MagneticFieldAnalytical2D.h>
 #include "Orbit/ParticlePusher.h"
@@ -53,7 +54,7 @@ ParticlePusher *Test_ParticlePusher::GenerateOrbit_push(const slibreal_t r, cons
     // in SOFTv1.
     MagneticFieldAnalytical2D *mfa =
         new MagneticFieldAnalytical2D(
-            B0, Rm, rminor, MFAFS_CCW, MFAFS_CCW, MFASF_CONSTANT, 1.0, 0.0
+            B0, Rm, zaxis, rminor, MFAFS_CCW, MFAFS_CCW, MFASF_CONSTANT, 1.0, 0.0
         );
 
     struct global_settings globset;
@@ -86,9 +87,9 @@ ParticlePusher *Test_ParticlePusher::GenerateOrbit_push(const slibreal_t r, cons
 
     eqconfig += "}";
 
-    Configuration *conf1 = new Configuration();
-    Configuration *conf2 = new Configuration();
-    CONFBLOCK_EQUATION = conf2->RegisterBlockType("@EquationGuiding");
+    ConfigurationScript *conf1 = new ConfigurationScript();
+    ConfigurationScript *conf2 = new ConfigurationScript();
+    CONFBLOCK_EQUATION = conf2->RegisterBlockType("@Equation");
 
     ConfigBlock cb = conf1->FromString(config, "config");
     ConfigBlock eq = conf2->FromString(eqconfig, "eqndefaults");

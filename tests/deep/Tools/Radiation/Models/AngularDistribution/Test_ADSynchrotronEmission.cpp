@@ -283,7 +283,7 @@ bool Test_ADSynchrotronEmission::Run(bool) {
     globset.include_drifts = false;
     Detector *det = GetDetector(0);
 
-    ADSynchrotronEmission ade(det, &globset);
+    ADSynchrotronEmission ade(det, nullptr, &globset);
 
     for (i = 0; i < NTESTPARTICLES && success; i++) {
         RadiationParticle *rp = GetRadiationParticle(i, det);
@@ -297,7 +297,7 @@ bool Test_ADSynchrotronEmission::Run(bool) {
         slibreal_t lambdac = GetLambdaC(rp);
 
         Detector *det2 = GetDetector(4000, lambdac/10.0, lambdac*1000.0);
-        ADSynchrotronEmission adsp(det2, &globset);
+        ADSynchrotronEmission adsp(det2, nullptr, &globset);
 
         // Test angular & spectral distribution
         success &= CheckAngularSpectralDistribution(adsp, rp, ANGDIST_TOL);

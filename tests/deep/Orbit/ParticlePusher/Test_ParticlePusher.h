@@ -32,7 +32,8 @@ class Test_ParticlePusher : public UnitTest {
         const slibreal_t
             B0=5.0,
             Rm=0.68,
-            rminor=0.22;
+            rminor=0.22,
+            zaxis=0;
 
     public:
         Test_ParticlePusher(const string& name) : UnitTest(name) {}
