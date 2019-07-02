@@ -14,7 +14,8 @@ class UnitTest {
         const slibreal_t
             MF_B0 = 5.0,
             MF_Rm = 0.68,
-            MF_rminor = 0.22;
+            MF_rminor = 0.22,
+            MF_zaxis = 0;
 	public:
 		UnitTest(const string&);
 		string& GetName();

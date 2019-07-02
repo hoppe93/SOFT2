@@ -200,6 +200,10 @@ get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 find_package(OpenMP REQUIRED)
 if (OpenMP_CXX_FOUND)
     target_link_libraries(soft PUBLIC OpenMP::OpenMP_CXX)
+
+    if (BUILD_TESTS)
+        target_link_libraries(soft_tests PUBLIC OpenMP::OpenMP_CXX)
+    endif (BUILD_TESTS)
 endif ()
 
 # Find SOFTLib

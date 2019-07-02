@@ -11,6 +11,7 @@
 
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
+#include <softlib/Configuration/ConfigurationScript.h>
 #include <softlib/MagneticField/MagneticFieldAnalytical2D.h>
 #include "Orbit/GuidingCenterEquation.h"
 #include "PhaseSpace/ParticleGenerator.h"
@@ -140,7 +141,7 @@ bool Test_ParticleGenerator::CheckEffectiveMagneticAxis() {
             mf, &globset
         );
 
-    Configuration *conf = new Configuration();
+    ConfigurationScript *conf = new ConfigurationScript();
     conf->FromString(config);
     ConfigBlock root = conf->GetRootBlock();
     ParticleGenerator *pg = new ParticleGenerator(mf, &root, &globset);
@@ -196,10 +197,11 @@ bool Test_ParticleGenerator::CheckPhaseSpaceGrid() {
         B0 = 5.0,
         rmajor = 0.68,
         rminor = 0.22,
+        zaxis  = 0,
         safety = 1.0;
     unsigned int i, j;
     MagneticFieldAnalytical2D *mf
-        = new MagneticFieldAnalytical2D(B0, rmajor, rminor, MFAFS_CW, MFAFS_CCW, MFASF_CONSTANT, safety, 0.0);
+        = new MagneticFieldAnalytical2D(B0, rmajor, zaxis, rminor, MFAFS_CW, MFAFS_CCW, MFASF_CONSTANT, safety, 0.0);
     struct global_settings *globset = new struct global_settings;
     globset->include_drifts = false;
 
@@ -330,7 +332,7 @@ bool Test_ParticleGenerator::Generate(
             p2arr[i] = p20 + (p21-p20) * ((slibreal_t)i)/((slibreal_t)(np2-1.0));
     } else p2arr[0] = p20;
 
-    Configuration *conf = new Configuration();
+    ConfigurationScript *conf = new ConfigurationScript();
     conf->FromString(config);
 
     if (conf->HasError()) {
@@ -421,9 +423,10 @@ bool Test_ParticleGenerator::TestInvalidInput() {
         B0 = 5.0,
         rmajor = 0.68,
         rminor = 0.22,
+        zaxis  = 0,
         safety = 1.0;
     MagneticFieldAnalytical2D *mf
-        = new MagneticFieldAnalytical2D(B0, rmajor, rminor, MFAFS_CW, MFAFS_CCW, MFASF_CONSTANT, safety, 0.0);
+        = new MagneticFieldAnalytical2D(B0, rmajor, zaxis, rminor, MFAFS_CW, MFAFS_CCW, MFASF_CONSTANT, safety, 0.0);
     struct global_settings *globset = new struct global_settings;
     globset->include_drifts = true;
 
@@ -447,12 +450,12 @@ bool Test_ParticleGenerator::TestInvalidInput() {
     string cnfstring;
 
     // Test invalid a
-    Configuration *conf;
+    ConfigurationScript *conf;
     for (i = 0; i < NA; i++) {
         cnfstring = invalid_a[i] + "\n" + valid_p + "\n" + valid_thetap;
 
         try {
-            conf = new Configuration();
+            conf = new ConfigurationScript();
             conf->FromString(cnfstring);
 
             ConfigBlock root = conf->GetRootBlock();
@@ -468,7 +471,7 @@ bool Test_ParticleGenerator::TestInvalidInput() {
         cnfstring = valid_a + "\n" + invalid_p[i] + "\n" + valid_thetap;
 
         try {
-            conf = new Configuration();
+            conf = new ConfigurationScript();
             conf->FromString(cnfstring);
 
             ConfigBlock root = conf->GetRootBlock();
