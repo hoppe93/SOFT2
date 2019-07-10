@@ -7,11 +7,13 @@
 #include "SOFT.h"
 #include "Tools/Radiation/Models/Cone.h"
 #include "Tools/Radiation/Models/Cone/ConeBremsstrahlungEmission.h"
+#include "Tools/Radiation/Models/Cone/ConeBremsstrahlungScreenedEmission.h"
 #include "Tools/Radiation/Models/Cone/ConeSynchrotronEmission.h"
 #include "Tools/Radiation/Models/Cone/ConeUnitEmission.h"
 #include "Tools/Radiation/Models/Cone/Projection/ConeProjection.h"
 #include "Tools/Radiation/Models/Cone/Projection/Original.h"
 #include "Tools/Radiation/Models/Cone/Projection/Reverse.h"
+
 
 using namespace std;
 using namespace __Radiation;
@@ -73,7 +75,14 @@ void Cone::ConfigureEmission(const string& emname, const slibreal_t zeff) {
             throw ConeBremsstrahlungException("The bremsstrahlung radiation model does not support polarization measurements.");
 
         this->emission = new ConeBremsstrahlungEmission(this->parent->detector, this->parent->magfield, zeff);
-    } else if (emname == "synchrotron") {
+    } else if (emname == "bremsstrahlung_screened") {
+        const unsigned int nspecies = 2;
+        slibreal_t Z[nspecies] = {1, 2};
+        slibreal_t Z0[nspecies] = {0, 1};
+        slibreal_t density[nspecies] = {1e19, 1e20};
+        this->emission = new ConeBremsstrahlungScreenedEmission(this->parent->detector, this->parent->magfield, nspecies, Z, Z0, density);
+    }
+else if (emname == "synchrotron") {
         this->emission = new ConeSynchrotronEmission(this->parent->detector, this->parent->magfield, this->parent->MeasuresPolarization());
     } else if (emname == "unit") {
         if (this->parent->MeasuresPolarization())

@@ -19,7 +19,7 @@ class Test_SynchrotronEmission : public UnitTest {
         slibreal_t Larmor(__Radiation::RadiationParticle*);
         __Radiation::Detector *GetDetector(unsigned int, slibreal_t l0=4e-7, slibreal_t l1=1e-6);
         slibreal_t GetLambdaC(__Radiation::RadiationParticle*);
-        __Radiation::RadiationParticle *GetRadiationParticle(unsigned int, __Radiation::Detector*, MagneticFieldAnalytical2D*); //tredje arg tillagt
+        __Radiation::RadiationParticle *GetRadiationParticle(unsigned int, __Radiation::Detector*, MagneticFieldAnalytical2D*);
         bool Run(bool);
 };
 

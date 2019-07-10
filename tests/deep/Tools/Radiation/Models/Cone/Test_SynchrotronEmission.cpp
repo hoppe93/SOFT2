@@ -109,18 +109,14 @@ bool Test_SynchrotronEmission::CheckTotalEmission(const slibreal_t tol) {
  */
 bool Test_SynchrotronEmission::CheckSpectrumEmission(const slibreal_t tol) {
     unsigned int i;
-    slibreal_t pwr, corr, Delta, lambdac, gamma2, pperp2, gammapar2, betaperp2;
+    slibreal_t pwr, corr, Delta, lambdac;
     Detector *dummyDet = GetDetector(0);
 
 	MagneticFieldAnalytical2D *dummy_mf = GetMagneticField();
 
     for (i = 0; i < NTESTPARTICLES; i++) {
-        RadiationParticle *rp = GetRadiationParticle(i, dummyDet, dummy_mf); //dummy_mf tillagd
+        RadiationParticle *rp = GetRadiationParticle(i, dummyDet, dummy_mf); 
 
-        //gamma2 = rp->GetGamma()*rp->GetGamma();
-        //pperp2 = rp->GetPperp()*rp->GetPperp();
-        //gammapar2 = gamma2 / (1.0 + pperp2);
-	//betaperp2 = pperp2 / gamma2; Tabort deklarationerna också! senare
         lambdac = GetLambdaC(rp);
 
         Detector *det = GetDetector(40001, lambdac/10.0, lambdac*1000.0);
@@ -130,7 +126,6 @@ bool Test_SynchrotronEmission::CheckSpectrumEmission(const slibreal_t tol) {
         cse.IntegrateSpectrum();
         
         pwr = cse.GetTotalEmission();
-	// multing by gammapar2*betaperp2 was before necessary to get agreement at low energies
         corr = Larmor(rp);
 
         Delta = fabs((pwr-corr)/corr);
@@ -174,20 +169,17 @@ slibreal_t Test_SynchrotronEmission::GetLambdaC(RadiationParticle *rp) {
         betapar2 = ppar2 / gamma2,
         betaperp2 = pperp2 / gamma2,
         beta = sqrt(betapar2+betaperp2),
-        //gammapar = gamma / sqrt(1.0 + pperp*pperp),
         l = 4.0*M_PI*ELECTRON_MASS*beta*LIGHTSPEED / (3.0*gamma2*ELEMENTARY_CHARGE);
     	
         Vector<3>& rhat = rp->GetRCP();
 	    rhat.Normalize();
 	    Vector<3> pos = rp->GetPosition();
-        Vector<3> Bvec = rp->GetBvec(); //Uppdateras inte på rätt sätt, men bör inte inte relvant för testet?
-    	//Vector<3> Bvec = this->magfield->Eval(rp->GetPosition()); //Behöver magfield
+        Vector<3> Bvec = rp->GetBvec();
 	    Vector<3> rh_cr_rh_cr_Bvec = Vector<3>::Cross(rhat, Vector<3>::Cross(rhat, Bvec));
 
         slibreal_t lc = l*1/rh_cr_rh_cr_Bvec.Norm();
 
     return lc;
-    //return (l*gammapar / (gamma*gamma*B)); //Gammal formel för lc
 }
 
 /**
@@ -222,9 +214,7 @@ RadiationParticle *Test_SynchrotronEmission::GetRadiationParticle(unsigned int i
         B = Bvec.Norm(),
         m = ELECTRON_MASS, q = -ELEMENTARY_CHARGE;
 		
-        //BB[3] = {1.0,0.0,0.0},
-        //Pp[3] = {p,0.0,0.0},
-        //Xx[3] = {0.0,0.0,0.0};
+
 		
     Vector<3> P = p*rhat;
 
