@@ -77,9 +77,9 @@ void Cone::ConfigureEmission(const string& emname, const slibreal_t zeff) {
         this->emission = new ConeBremsstrahlungEmission(this->parent->detector, this->parent->magfield, zeff);
     } else if (emname == "bremsstrahlung_screened") {
         const unsigned int nspecies = 2;
-        slibreal_t Z[nspecies] = {1, 2};
-        slibreal_t Z0[nspecies] = {0, 1};
-        slibreal_t density[nspecies] = {1e19, 1e20};
+        slibreal_t Z[nspecies] = {1., 2.};
+        slibreal_t Z0[nspecies] = {0., 1.};
+        slibreal_t density[nspecies] = {1.e19, 1.e20};
         this->emission = new ConeBremsstrahlungScreenedEmission(this->parent->detector, this->parent->magfield, nspecies, Z, Z0, density);
     }
 else if (emname == "synchrotron") {

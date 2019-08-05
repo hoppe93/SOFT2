@@ -7,13 +7,21 @@
 #include "Tools/Radiation/RadiationParticle.h"
 
 using namespace __Radiation;
-/* ConeBremsstrahlungScreenedEmission(Detector *det, MagneticField2D *mf, unsigned int nspecies, slibreal_t *Z, slibreal_t *Z0, slibreal_t *density)
-                : ConeEmission(det, mf), nspecies(nspecies), Z(Z), Z0(Z0), density(density) 
+ConeBremsstrahlungScreenedEmission::ConeBremsstrahlungScreenedEmission(Detector *det, MagneticField2D *mf, unsigned int nspecies, slibreal_t *Z, slibreal_t *Z0, slibreal_t *density)
+                : ConeEmission(det, mf), nspecies(nspecies)
 {
-    //this->r02 = ELECTRON_CHARGE*ELECTRON_CHARGE*ELECTRON_CHARGE*ELECTRON_CHARGE/(16*M_PI*M_PI*EPS0*EPS0*LIGHTSPEED*LIGHTSPEED*LIGHTSPEED*LIGHTSPEED*ELECTRON_MASS*ELECTRON_MASS);
-            }
+    this->Z = new slibreal_t[nspecies]; 
+    this->Z0 = new slibreal_t[nspecies];
+    this->density = new slibreal_t[nspecies];
+    for(unsigned int i = 0; i < nspecies; i++){
+        this->Z[i] = Z[i];
+        this->Z0[i] = Z0[i];
+        this->density[i] =  density[i];
+    }
+    this->r02 = ELECTRON_CHARGE*ELECTRON_CHARGE*ELECTRON_CHARGE*ELECTRON_CHARGE/(16*M_PI*M_PI*EPS0*EPS0*LIGHTSPEED*LIGHTSPEED*LIGHTSPEED*LIGHTSPEED*ELECTRON_MASS*ELECTRON_MASS);
+}
 
-/* //This part does not currently compile, might be source of problem
+
 
 /**
  * Calculates the total emission and/or spectrum and/or
@@ -40,9 +48,10 @@ void ConeBremsstrahlungScreenedEmission::HandleParticle(RadiationParticle *rp, b
 void ConeBremsstrahlungScreenedEmission::CalculateTotalEmission() { //Test will not work with RadiationParticle as argument here
     slibreal_t I = 0;   
     //this->r02 = ELECTRON_CHARGE*ELECTRON_CHARGE*ELECTRON_CHARGE*ELECTRON_CHARGE/(16*M_PI*M_PI*EPS0*EPS0*LIGHTSPEED*LIGHTSPEED*LIGHTSPEED*LIGHTSPEED*ELECTRON_MASS*ELECTRON_MASS);
-
+    //printf("%u", nspecies);
     for(unsigned int i=0; i < nspecies; i++){
         I = I + density[i]*Calculate4BS(Z[i]);
+        //printf("n = %e, Z = %e \n", density[i], Z[i]);
     }
     this->power = I;
 }
@@ -52,14 +61,86 @@ void ConeBremsstrahlungScreenedEmission::CalculateTotalEmission() { //Test will 
  */
 
 slibreal_t ConeBremsstrahlungScreenedEmission::Calculate4BS(slibreal_t Z) {
-    slibreal_t Zfakt = 4*Z*Z*r02/137;
-    slibreal_t lnfakt = log(183) + 0.5*log(Z) + 0.0555555555555556;
+    slibreal_t Z2fakt = 4*Z*Z*r02/137;
+    slibreal_t lnfakt = log(183) - 0.5*log(Z) + 0.0555555555555556;
     
-    return Zfakt*lnfakt;
+    return Z2fakt*lnfakt;
 }
 
 /**
- * Calculate the bremsstrahlung spectrum. NOTE!! HAS NOT HAD BEEN CHANGED TO HANDLE SCREENED EMISSION YET!!!!
+ * Calculate the bremsstrahlung screned emissiion spectrum.
+ *
+ * rp: Object representing the particle emitting state.
+ */
+/*
+void ConeBremsstrahlungScreenedEmission::CalculateSpectrum(RadiationParticle *rp) {
+    slibreal_t
+        gamma = rp->GetGamma(),
+        gamma2 = rp->GetGamma() * rp->GetGamma()
+        //p2 = rp->GetP2(),
+        p = sqrt(rp->GetP2());
+
+    slibreal_t m = ELECTRON_MASS,
+        c = LIGHTSPEED;        
+        
+    slibreal_t spec_cont = 0,
+        Spec_Int1,
+        Spec_Int2;
+	
+    
+    slibreal_t I[nwavelengths] = {0};
+    slibreal_t q0;
+    slibreal_t k_normed;
+    slibreal_t gmkn;
+    slibreal_t = pre_fact = 4*r02*alpha;
+    
+    for (unsigned int i = 0; i < nwavelengths; i++){
+        k_normed = 2*M_PI*HBAR/(wavelength[i]*m*c); //factor 1/(m*c) for normalization
+        gmkn = gamma-k_normed;
+        q0 = p - sqrt(gmkn*gmkn-1)-k_normed;
+        
+        for (unsigned int j = 0; j < nspecies; j++){
+            Spec_Int1 = FirstSpectrumIntegral(Z[j], Z0[j], q0); 
+            Spec_Int2 = SecondSpectrumIntegral(Z[j], Z0[j], q0); 
+            spec_cont = density[j]*((1+gmkn*gmkn/gamma2)*Spec_Int1 - 2*gmkn/(3*gamma)*Spec_Int2);
+        }
+        I[i] = pre_fact * wavelength[i]/(2*M_PI*hbar)*spec_cont;
+        spec_cont = 0;
+        
+    }
+   
+}
+
+slibreal_t ConeBremsstrahlungScreenedEmission::FirstSpectrumIntegral(slibreal_t Z, slibreal_t Z0, slibreal_t q0){
+    //kalla på CalculateFormFactor, integrera
+    slibreal_t Integral = 0;
+    slibreal_t Fjq = CalculateFormFactor(Z, Z0, q);
+    return Z*Z + Integral;
+}
+
+slibreal_t ConeBremsstrahlungScreenedEmission::SecondSpectrumIntegral(slibreal_t Z, slibreal_t Z0, slibreal_t q0){
+    //kalla på CalculateFormFactor, integrera
+    slibreal_t Integral = 0;
+    slibreal_t Fjq = CalculateFormFactor(Z, Z0, q);
+    return Z*Z + Integral;
+}
+*/
+
+/*
+ * Calculates the formfactor Fj(q), only very basic fomrula so far
+*/
+
+slibreal_t ConeBremsstrahlungScreenedEmission::CalculateFormFactor(slibreal_t Z, slibreal_t Z0, slibreal_t q){
+    slibreal_t Nej2 = (Z - Z0)*(Z - Z0);
+    slibreal_t a_bar = pow(9*M_PI*Nej2, 0.3333333333333333333333333)/(2*alpha*Z); //Kirilov, from "generalized collision..."
+    slibreal_t qabar3o2 = sqrt(q*q*q*a_bar*a_bar*a_bar);
+    return Nej2/(1+qabar3o2);
+    
+}
+
+
+/**
+ * Calculate the bremsstrahlung spectrum. OLD!!!! NOT SCREENED EMISSION!
  *
  * rp: Object representing the particle emitting state.
  */
