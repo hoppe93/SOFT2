@@ -18,6 +18,7 @@ ConeBremsstrahlungScreenedEmission::ConeBremsstrahlungScreenedEmission(Detector 
         this->Z0[i] = Z0[i];
         this->density[i] =  density[i];
     }
+    qagsWS = gsl_integration_workspace_alloc(qagsLimit); //GSL workspace
     this->r02 = ELECTRON_CHARGE*ELECTRON_CHARGE*ELECTRON_CHARGE*ELECTRON_CHARGE/(16*M_PI*M_PI*EPS0*EPS0*LIGHTSPEED*LIGHTSPEED*LIGHTSPEED*LIGHTSPEED*ELECTRON_MASS*ELECTRON_MASS);
 }
 
@@ -43,15 +44,11 @@ void ConeBremsstrahlungScreenedEmission::HandleParticle(RadiationParticle *rp, b
  * Calculate total emission of bremsstrahlung, heavily approximated.
  * Uses eg. 4BS from Koch and Motz
  * 
- *
  */
-void ConeBremsstrahlungScreenedEmission::CalculateTotalEmission() { //Test will not work with RadiationParticle as argument here
+void ConeBremsstrahlungScreenedEmission::CalculateTotalEmission() {
     slibreal_t I = 0;   
-    //this->r02 = ELECTRON_CHARGE*ELECTRON_CHARGE*ELECTRON_CHARGE*ELECTRON_CHARGE/(16*M_PI*M_PI*EPS0*EPS0*LIGHTSPEED*LIGHTSPEED*LIGHTSPEED*LIGHTSPEED*ELECTRON_MASS*ELECTRON_MASS);
-    //printf("%u", nspecies);
     for(unsigned int i=0; i < nspecies; i++){
         I = I + density[i]*Calculate4BS(Z[i]);
-        //printf("n = %e, Z = %e \n", density[i], Z[i]);
     }
     this->power = I;
 }
@@ -72,127 +69,153 @@ slibreal_t ConeBremsstrahlungScreenedEmission::Calculate4BS(slibreal_t Z) {
  *
  * rp: Object representing the particle emitting state.
  */
-/*
-void ConeBremsstrahlungScreenedEmission::CalculateSpectrum(RadiationParticle *rp) {
-    slibreal_t
-        gamma = rp->GetGamma(),
-        gamma2 = rp->GetGamma() * rp->GetGamma()
-        //p2 = rp->GetP2(),
-        p = sqrt(rp->GetP2());
 
-    slibreal_t m = ELECTRON_MASS,
-        c = LIGHTSPEED;        
-        
-    slibreal_t spec_cont = 0,
-        Spec_Int1,
-        Spec_Int2;
-	
-    
-    slibreal_t I[nwavelengths] = {0};
-    slibreal_t q0;
-    slibreal_t k_normed;
-    slibreal_t gmkn;
-    slibreal_t = pre_fact = 4*r02*alpha;
-    
-    for (unsigned int i = 0; i < nwavelengths; i++){
-        k_normed = 2*M_PI*HBAR/(wavelength[i]*m*c); //factor 1/(m*c) for normalization
-        gmkn = gamma-k_normed;
-        q0 = p - sqrt(gmkn*gmkn-1)-k_normed;
-        
-        for (unsigned int j = 0; j < nspecies; j++){
-            Spec_Int1 = FirstSpectrumIntegral(Z[j], Z0[j], q0); 
-            Spec_Int2 = SecondSpectrumIntegral(Z[j], Z0[j], q0); 
-            spec_cont = density[j]*((1+gmkn*gmkn/gamma2)*Spec_Int1 - 2*gmkn/(3*gamma)*Spec_Int2);
-        }
-        I[i] = pre_fact * wavelength[i]/(2*M_PI*hbar)*spec_cont;
-        spec_cont = 0;
-        
-    }
-   
-}
-
-slibreal_t ConeBremsstrahlungScreenedEmission::FirstSpectrumIntegral(slibreal_t Z, slibreal_t Z0, slibreal_t q0){
-    //kalla på CalculateFormFactor, integrera
-    slibreal_t Integral = 0;
-    slibreal_t Fjq = CalculateFormFactor(Z, Z0, q);
-    return Z*Z + Integral;
-}
-
-slibreal_t ConeBremsstrahlungScreenedEmission::SecondSpectrumIntegral(slibreal_t Z, slibreal_t Z0, slibreal_t q0){
-    //kalla på CalculateFormFactor, integrera
-    slibreal_t Integral = 0;
-    slibreal_t Fjq = CalculateFormFactor(Z, Z0, q);
-    return Z*Z + Integral;
-}
-*/
-
-/*
- * Calculates the formfactor Fj(q), only very basic fomrula so far
-*/
-
-slibreal_t ConeBremsstrahlungScreenedEmission::CalculateFormFactor(slibreal_t Z, slibreal_t Z0, slibreal_t q){
-    slibreal_t Nej2 = (Z - Z0)*(Z - Z0);
-    slibreal_t a_bar = pow(9*M_PI*Nej2, 0.3333333333333333333333333)/(2*alpha*Z); //Kirilov, from "generalized collision..."
-    slibreal_t qabar3o2 = sqrt(q*q*q*a_bar*a_bar*a_bar);
-    return Nej2/(1+qabar3o2);
-    
-}
-
-
-/**
- * Calculate the bremsstrahlung spectrum. OLD!!!! NOT SCREENED EMISSION!
- *
- * rp: Object representing the particle emitting state.
- */
 void ConeBremsstrahlungScreenedEmission::CalculateSpectrum(RadiationParticle *rp) {
     slibreal_t
         gamma = rp->GetGamma(),
         gamma2 = rp->GetGamma() * rp->GetGamma(),
-        p02 = rp->GetP2(),
-        p0 = sqrt(rp->GetP2());
-    
-    slibreal_t
-        pf = this->Z2 * this->r02Alpha,
-        TT1 = 4.0 / 3.0,
-        TT2, TT3, TT4, TT5,
-        L, LT1, LT2, LT3, LT4, LT5, LTF,
-        E, E2, p, p2, k, eps, eps0;
-
-    for (unsigned int i = 0; i < nwavelengths; i++) {
-        k = wavelengths[i];
-
-        if (k >= gamma - 1) {
-            I[i] = 0;
-            continue;
-        }
-
-        E = gamma - k;
-        E2 = E*E;
-        p2 = E2 - 1.0;
-        p = sqrt(p2);
-
-        eps  = 2.0*log(E+p);
-        eps0 = 2.0*log(gamma+p);
-
-        TT2 =-2.0*gamma*E*(p2 + p02)/(p2*p02);
-        TT3 = eps0*E/(p02*p0);
-        TT4 = eps*gamma/(p2*p);
-        TT5 =-eps*eps0/(p0*p);
-
-        L = 2.0*log((gamma*E - 1.0 + p*p0)/k);
-
-        LT1 = 8.0*gamma*E/(3.0*p0*p);
-        LT2 = k*k*(gamma2*E2 + p02*p2)/(p02*p0*p2*p);
-
-        LTF = k/(2.0*p0*p);
-        LT3 = eps0 * (gamma*E + p02)/(p02*p0);
-        LT4 =-eps  * (gamma*E + p2 )/(p2 *p );
-        LT5 = 2.0*k*gamma*E / (p2*p02);
+        p = sqrt(rp->GetP2());  
         
-        I[i] = pf * p/(k*p0) *
-            (TT1 + TT2 + TT3 + TT4 + TT5 +
-             L*(LT1 + LT2 + LTF*(LT3 + LT4 + LT5)));
+    slibreal_t spec_cont = 0,
+        Spec_Int1 = 0,
+        Spec_Int2 = 0,
+        Nej2,
+        a_bar;
+    slibreal_t q0,
+        k_normed,
+        gmkn,
+        pre_fact = 4*r02*alpha;
+    
+    for(unsigned int i = 0; i < nwavelengths; i++){
+       I[i] = 0;
     }
+
+    for (unsigned int j = 0; j < nspecies; j++){
+            Nej2 = (Z[j] - Z0[j])*(Z[j] - Z0[j]);
+            a_bar = pow(9*M_PI*Nej2, 0.3333333333333333333333333)/(2*alpha*Z[j]);
+    
+		for (unsigned int i = 0; i < nwavelengths; i++){
+		    k_normed = wavelengths[i]; 
+		    if (k_normed >= gamma - 1) {
+		        continue;
+		    }
+
+		    gmkn = gamma-k_normed;
+		    q0 = p - sqrt(gmkn*gmkn-1)-k_normed;
+		    
+		    
+		    
+		    Spec_Int1 = FirstSpectrumIntegral(Z[j], Nej2, a_bar, q0); 
+		    Spec_Int2 = SecondSpectrumIntegral(Z[j], Nej2, a_bar, q0); 
+		    spec_cont = density[j]*((1+gmkn*gmkn/gamma2)*(Z[j]*Z[j] + Spec_Int1) - 2*gmkn/(3*gamma)*(5*Z[j]*Z[j]/6 + Spec_Int2));
+		    
+		        
+		    
+		    I[i] += pre_fact/wavelengths[i]*spec_cont;
+		     
+		} 
+    }
+}
+
+//First spectrum integral
+slibreal_t ConeBremsstrahlungScreenedEmission::FirstSpectrumIntegral(slibreal_t Z, slibreal_t Nej2, slibreal_t a_bar, slibreal_t q0){
+    
+    struct func_params params = {Z, Nej2, a_bar, q0, 0};
+    gsl_function F;
+    F.function = &First_Integrand;
+    F.params = (void*)&params;
+    slibreal_t result,
+        qagsAbsErr;
+
+    gsl_integration_qags(&F, q0, 1, this->qagsEpsAbs, this->qagsEpsRel, this->qagsLimit, qagsWS, &result, &qagsAbsErr);
+    
+    return result;
+}
+
+//second spectrum integral
+
+slibreal_t ConeBremsstrahlungScreenedEmission::SecondSpectrumIntegral(slibreal_t Z, slibreal_t Nej2, slibreal_t a_bar, slibreal_t q0){
+   
+    struct func_params p = {Z, Nej2, a_bar, q0, 0}; //Function Parameters
+    gsl_function F;
+    
+    if(q0 <= 0.05){
+		F.function = &Second_Integrand_app_sq0;
+	}
+	else{
+		struct func_params p = {Z, Nej2, a_bar, q0, log(q0)};
+    	F.function = &Second_Integrand_app_lq0;
+	}
+	
+	//F.function = &Second_Integrand;
+    F.params = (void*)&p;
+    slibreal_t result,
+        qagsAbsErr;
+    
+    gsl_integration_qags(&F, q0, 1, this->qagsEpsAbs, this->qagsEpsRel, this->qagsLimit, qagsWS, &result, &qagsAbsErr);
+    return result;
+}
+
+//First spectrum integrand
+double ConeBremsstrahlungScreenedEmission::First_Integrand(slibreal_t q, void *p){
+    struct func_params *params = (struct func_params*)p; 
+    slibreal_t Fq = CalculateFormFactor(params->Nej2, params->a_bar, q);
+    slibreal_t Z = params->Z,
+        q0 = params->q0,
+        ZmF2 = (Z-Fq)*(Z-Fq),
+        q_fun = (q-q0)*(q-q0)/(q*q*q);
+    
+    return ZmF2*q_fun;
+}
+
+//second spectrum integrand, no approximation
+double ConeBremsstrahlungScreenedEmission::Second_Integrand(slibreal_t q, void *p){
+    struct func_params *params = (struct func_params*)p;
+    slibreal_t Fq = CalculateFormFactor(params->Nej2, params->a_bar, q),
+        q0 = params->q0,
+        Z = params->Z,
+        ZmF2 = (Z-Fq)*(Z-Fq),
+        q3 = q*q*q,
+        q02 = q0*q0,
+        q_fun = (q3+ 3*q*q02*(1-2*q*q02*log(q/q0))-4*q0*q02)/(q3*q);
+    
+    return ZmF2*q_fun;
+}
+
+//Second spectrum integrand, approximation of log-term for small q0, <0.05
+double ConeBremsstrahlungScreenedEmission::Second_Integrand_app_sq0(slibreal_t q, void *p){
+    struct func_params *params = (struct func_params*)p;
+    slibreal_t Fq = CalculateFormFactor(params->Nej2, params->a_bar, q),
+        q0 = params->q0,
+        Z = params->Z,
+        ZmF2 = (Z-Fq)*(Z-Fq),
+        q3 = q*q*q,
+        q02 = q0*q0,
+        q_fun = (q3+ 3*q*q02-4*q0*q02)/(q3*q);
+    
+    return ZmF2*q_fun;
+}
+
+//Second spectrum integrand, approximation of log-term for larger q0 >0.05
+double ConeBremsstrahlungScreenedEmission::Second_Integrand_app_lq0(slibreal_t q, void *p){
+    struct func_params *params = (struct func_params*)p;
+    slibreal_t Fq = CalculateFormFactor(params->Nej2, params->a_bar, q),
+        q0 = params->q0,
+        Z = params->Z,
+        ZmF2 = (Z-Fq)*(Z-Fq),
+        q3 = q*q*q,
+        q02 = q0*q0,
+		qm1 = q-1, qm2 = qm1*qm1, //qm4 = qm2*qm2, qm6 = qm4*qm2, //Extra is for higher order approximation
+        q_fun = (q3+ 3*q*q02*(1-2*q*q02*(qm1 - qm2/2 /*+ qm1*qm2/3 - qm4/4 + qm1*qm4/5 - qm6/6*/ - params->lnq0))-4*q0*q02)/(q3*q);
+    
+    return ZmF2*q_fun;
+}
+
+//Calculates the formfactor Fj(q), analythical formula from Kirilov
+
+slibreal_t ConeBremsstrahlungScreenedEmission::CalculateFormFactor(slibreal_t Nej2, slibreal_t a_bar, slibreal_t q){
+    slibreal_t qabar3o2 = sqrt(q*q*q*a_bar*a_bar*a_bar);
+    return Nej2/(1+qabar3o2); 
 }
 
 /**

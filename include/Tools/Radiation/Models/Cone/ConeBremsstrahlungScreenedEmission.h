@@ -7,6 +7,8 @@
 #include "Tools/Radiation/Radiation.h"
 #include "Tools/Radiation/RadiationParticle.h"
 
+#include <gsl/gsl_integration.h>
+
 namespace __Radiation {
     class ConeBremsstrahlungScreenedEmission : public ConeEmission {
         private:
@@ -24,22 +26,32 @@ namespace __Radiation {
             slibreal_t *Z;
             slibreal_t *Z0;
             slibreal_t *density;
-            slibreal_t r02; //= ELECTRON_CHARGE*ELECTRON_CHARGE*ELECTRON_CHARGE*ELECTRON_CHARGE/(16*M_PI*M_PI*EPS0*EPS0*LIGHTSPEED*LIGHTSPEED*LIGHTSPEED*LIGHTSPEED*ELECTRON_MASS*ELECTRON_MASS);
-            slibreal_t Z2;
+            slibreal_t r02;
+
+            double qagsEpsAbs=0.0,
+                   qagsEpsRel=1e-3;
+            std::size_t qagsLimit = 100;
+            gsl_integration_workspace *qagsWS = nullptr;
 
        public:
             ConeBremsstrahlungScreenedEmission(Detector *det, MagneticField2D *mf, unsigned int nspecies, slibreal_t *Z, slibreal_t *Z0, slibreal_t *density);
-                //: ConeEmission(det, mf), nspecies(nspecies), Z(Z), Z0(Z0), density(density) {
-            //}; //With the constructor in the .ccp file, this part needs to be removed, and repalced with a ";"
-            ~ConeBremsstrahlungScreenedEmission() {delete []this->Z; delete []this->Z0; delete []this->density;} //Having the destructor with the delete statements currently makes the test not work as it tries to delete pointers. Maybe they should not be there at all? 
+            ~ConeBremsstrahlungScreenedEmission() {delete []this->Z; delete []this->Z0; delete []this->density;
+                gsl_integration_workspace_free(qagsWS);
+}
+
             void HandleParticle(RadiationParticle*, bool);
 
             void CalculatePolarization(RadiationParticle*);
-            
+
+            struct func_params {slibreal_t Z; slibreal_t Nej2; slibreal_t a_bar; slibreal_t q0; slibreal_t lnq0;}; //Data-type for function parameters 
             void CalculateSpectrum(RadiationParticle*);
-            //slibreal_t FirstSpectrumIntegral(slibreal_t, slibreal_t, slibreal_t);
-            //slibreal_t SecondSpectrumIntegral(slibreal_t, slibreal_t, slibreal_t);
-            slibreal_t CalculateFormFactor(slibreal_t, slibreal_t, slibreal_t);
+            slibreal_t FirstSpectrumIntegral(slibreal_t, slibreal_t, slibreal_t, slibreal_t); 
+            slibreal_t SecondSpectrumIntegral(slibreal_t, slibreal_t, slibreal_t, slibreal_t);
+            static double First_Integrand(slibreal_t, void*);
+            static double Second_Integrand(slibreal_t, void*);
+            static double Second_Integrand_app_sq0(slibreal_t, void*); 
+            static double Second_Integrand_app_lq0(slibreal_t, void*); 
+            static slibreal_t CalculateFormFactor(slibreal_t, slibreal_t, slibreal_t);
             
             void CalculateTotalEmission(); 
             slibreal_t Calculate4BS(slibreal_t);
