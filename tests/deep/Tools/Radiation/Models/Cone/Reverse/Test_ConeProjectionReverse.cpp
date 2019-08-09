@@ -27,7 +27,7 @@ bool Test_ConeProjectionReverse::Run(bool) {
                BB[3] = {1.0,0.0,0.0};
     Vector<3> nhat(_nhat), Rd(_Rd), X(_X), phat(_phat), p;
 
-    Detector *det = new Detector(0.006, 1.0, nhat, Rd, 0);
+    Detector *det = new Detector(0.006, 0.0, 1.0, nhat, Rd, 0);
     ConeProjectionReverse *cp = new ConeProjectionReverse(det);
 
     RadiationParticle *rp = new RadiationParticle(

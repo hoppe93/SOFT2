@@ -37,13 +37,15 @@ plane. Its mathematical definition is
 
 .. math::
 
-   \hat{e}_1 = \begin{cases} \hat{y}, \quad&\text{ if } \hat{n}\cdot\hat{y} = 0,\\
-   \hat{x}\left(\hat{n}\cdot\hat{y}\right) - \hat{y}\left( \hat{n}\cdot\hat{x} \right),
+   \hat{e}_1 = \begin{cases} \hat{y}\cos\vartheta + \hat{z}\sin\vartheta, \quad&\text{ if } \hat{n}\cdot\hat{y} = 0,\\
+   \left[ \hat{x}\left(\hat{n}\cdot\hat{y}\right) - \hat{y}\left( \hat{n}\cdot\hat{x} \right)\right]\cos\vartheta + \hat{z}\sin\vartheta,
    \quad&\text{ otherwise}.
    \end{cases}
 
-From this, :math:`\hat{e}_2` is defined so that
-:math:`(\hat{e}_1, \hat{e}_2, \hat{n})` form a right-handed orthonormal basis:
+where :math:`\vartheta` denotes the angle between :math:`\hat{e}_1` and the
+horizontal plane (the "tilt angle"). From this, :math:`\hat{e}_2` is defined
+so that :math:`(\hat{e}_1, \hat{e}_2, \hat{n})` form a right-handed orthonormal
+basis:
 
 .. math::
 

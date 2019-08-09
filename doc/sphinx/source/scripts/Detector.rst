@@ -29,6 +29,39 @@ Summary of options
 +------------------------+------------------------------------------------------------+
 | :option:`spectrum`     | Spectral range configuration of detector                   |
 +------------------------+------------------------------------------------------------+
+| :option:`tilt`         | Angle between :math:`\hat{e}_1` and the horizontal plane.  |
++------------------------+------------------------------------------------------------+
+
+Detector plane basis
+^^^^^^^^^^^^^^^^^^^^
+The detector plane is spanned by two vectors which we refer to as
+:math:`\hat{e}_1` and :math:`\hat{e}_2`. Together with the detector viewing
+direction (or normal vector) :math:`\hat{n}` they form an orthonormal basis in
+space. The vectors :math:`\hat{e}_1` and :math:`\hat{e}_2` are used for several
+purposes, but one of the more important purposes is for spanning the camera
+images that this @RadiationOutput produces.
+
+The vector :math:`\hat{e}_1` is defined so that it always lies in the horizontal
+plane. Its mathematical definition is
+
+.. math::
+
+   \hat{e}_1 = \begin{cases} \hat{y}\cos\vartheta + \hat{z}\sin\vartheta, \quad&\text{ if } \hat{n}\cdot\hat{y} = 0,\\
+   \left[ \hat{x}\left(\hat{n}\cdot\hat{y}\right) - \hat{y}\left( \hat{n}\cdot\hat{x} \right)\right]\cos\vartheta + \hat{z}\sin\vartheta,
+   \quad&\text{ otherwise}.
+   \end{cases}
+
+where :math:`\vartheta` denotes the angle between :math:`\hat{e}_1` and the
+horizontal plane (the ":option:`tilt` angle"). From this, :math:`\hat{e}_2` is defined
+so that :math:`(\hat{e}_1, \hat{e}_2, \hat{n})` form a right-handed orthonormal
+basis:
+
+.. math::
+
+   \hat{e}_2 = \hat{n}\times\hat{e}_1.
+
+The values of both of these vectors are output on ``stdout`` by SOFT during
+execution.
 
 Example configuration
 ^^^^^^^^^^^^^^^^^^^^^
@@ -106,4 +139,20 @@ Options
    in units of meters. The bremsstrahlung models assume that the spectrum limits
    are photon energies, given in normalized units (normalized to :math:`m_e c^2`,
    the electron mass times speed-of-light squared).
+
+.. option:: tilt
+
+   | **Default value:** ``0``
+   | **Example line:** ``tilt = 0.1 cw;``
+   | **Allowed values:** Real number, optionally followed by either ``cw`` or ``ccw``
+
+   Specifies the angle in radians by which the image x axis, :math:`\hat{e}_1`
+   is rotated with respect to the horizontal plane (the x/y plane). By default,
+   this parameter is 0, so that :math:`\hat{e}_1\cdot\hat{z} = 0`. If no
+   direction is specified, a positive angle corresponds to rotation in the
+   counter-clockwise (CCW) direction.
+
+   Optionally, the direction of rotation can be explicitly specified by
+   appending either ``cw`` (positive angle in clockwise direction) or ``ccw``
+   (positive angle in counter clockwise direction) after the tilt angle.
 

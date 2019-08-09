@@ -106,11 +106,12 @@ template<class T>
 bool Test_ConeProjection::CompareToAllTables(string name, slibreal_t tol) {
     bool success = true, psuccess = true;
     unsigned int i;
+    slibreal_t tilt = 0;
 
     for (i = 0; i < Test_ConeProjection::nconespec; i++) {
         Vector<3> dir(detdir[i]), pos(detpos[i]);
         Detector *det = new Detector(
-            aperture[i], visang[i],
+            aperture[i], tilt, visang[i],
             dir, pos, 0
         );
 

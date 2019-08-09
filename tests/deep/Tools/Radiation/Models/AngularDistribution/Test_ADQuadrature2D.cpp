@@ -33,6 +33,7 @@ const slibreal_t Test_ADQuadrature2D::test_particles[NTESTPARTICLES][3] = {
 Detector *Test_ADQuadrature2D::GetDetector(unsigned int nwavelengths) {
     const slibreal_t
         aperture = DETECTOR_APERTURE,
+        tilt     = 0.0,
         visang   = 1.0,
         dir[3] = {0.0,1.0,0.0},
         pos[3] = {0.0,-1.069,0.0};
@@ -41,7 +42,7 @@ Detector *Test_ADQuadrature2D::GetDetector(unsigned int nwavelengths) {
         direction(dir),
         position(pos);
 
-    return new Detector(aperture, visang, direction, position, nwavelengths, 0.1, 0.9);
+    return new Detector(aperture, tilt, visang, direction, position, nwavelengths, 0.1, 0.9);
 }
 
 /**

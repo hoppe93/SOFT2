@@ -22,6 +22,7 @@ using namespace __Radiation;
  * Constructor.
  *
  * aperture:     Detector aperture (side length of square detector).
+ * tilt:         Angle between the vector ehat1 and the horizontal plane.
  * visang:       Detector vision angle (of field-of-view).
  * direction:    Detector viewing direction (not necessarily normalized).
  * position:     Detector position vector. Relative to tokamak point of symmetry.
@@ -31,11 +32,12 @@ using namespace __Radiation;
  * lambda1:      Upper wavelength limit in spectral range.
  */
 __Radiation::Detector::Detector(
-    slibreal_t aperture, slibreal_t visang, Vector<3>& direction,
-    Vector<3>& position, unsigned int nwavelengths,
+    slibreal_t aperture, slibreal_t tilt, slibreal_t visang,
+    Vector<3>& direction, Vector<3>& position, unsigned int nwavelengths,
     slibreal_t lambda0, slibreal_t lambda1, Optics *optics
 ) {
     this->aperture = aperture;
+    this->tilt = tilt;
     this->direction = direction;
     this->position = position;
     this->name = "<unknown>";
@@ -146,6 +148,28 @@ __Radiation::Detector::Detector(ConfigBlock *conf, ConfigBlock *root) {
         } else
             throw DetectorException("Detector '%s': Invalid format of detector spectral range. Expected 'real,real,int' or 'no'.", this->name.c_str());
     }
+
+    // tilt
+    if (conf->HasSetting("tilt")) {
+        s = conf->GetSetting("tilt");
+        if (s->GetNumberOfValues() == 1) {
+            if (!s->IsScalar())
+                throw DetectorException("Detector '%s': Invalid specfication of tilt: parameter is not a number.", this->name.c_str());
+            this->tilt = s->GetScalar();
+        } else if (s->GetNumberOfValues() == 2) {
+            slibreal_t tilt = s->GetScalar(0);
+            string dir      = s->GetString(1);
+
+            if (dir == "cw")
+                this->tilt = -tilt;
+            else if (dir == "ccw")
+                this->tilt = tilt;
+            else
+                throw DetectorException("Detector '%s': Invalid specification of tilt: unrecognized direction '%s'.", this->name.c_str(), dir.c_str());
+        } else
+            throw DetectorException("Detector '%s': Invalid specification of tilt: too many parameters.", this->name.c_str());
+    } else
+        this->tilt = 0.0;
 
     SetupBasisVectors();
 }
@@ -259,38 +283,19 @@ void __Radiation::Detector::SetVisionAngle(slibreal_t visang, int type) {
  * the detector plane.
  */
 void __Radiation::Detector::SetupBasisVectors() {
-    /*if (direction[1] == 0) {
-        ehat2[0] = ehat2[2] = 0;
-        ehat2[1] = 1.0;
-    } else {
-        ehat2[0] = direction[1];
-        ehat2[1] =-direction[0];
-
-        ehat2.Normalize();
-    }
-
-    Vector<3>::Cross(ehat2, direction, ehat1);*/
     if (direction[1] == 0) {
-        ehat1[0] = ehat1[2] = 0;
-        ehat1[1] = 1.0;
+        ehat1[0] = 0;
+        ehat1[1] = cos(tilt);
+        ehat1[2] = sin(tilt);
     } else {
-        ehat1[0] = direction[1];
-        ehat1[1] =-direction[0];
-        ehat1[2] = 0.0;
+        ehat1[0] = direction[1] * cos(tilt);
+        ehat1[1] =-direction[0] * cos(tilt);
+        ehat1[2] = sin(tilt);
 
         ehat1.Normalize();
     }
 
     // Right-handed system
     Vector<3>::Cross(direction, ehat1, ehat2);
-    /*ehat2[0] = direction[1]*ehat1[2] - direction[2]*ehat1[1];
-    ehat2[1] = direction[2]*ehat1[0] - direction[0]*ehat1[2];
-    ehat2[2] = direction[0]*ehat1[1] - direction[1]*ehat1[0];*/
-    /*
-    // Left-handed system (as in SOFTv1)
-    ehat2[0] = direction[2]*ehat1[1] - direction[1]*ehat1[2];
-    ehat2[1] = direction[0]*ehat1[2] - direction[2]*ehat1[0];
-    ehat2[2] = direction[1]*ehat1[0] - direction[0]*ehat1[1];
-    */
 }
 

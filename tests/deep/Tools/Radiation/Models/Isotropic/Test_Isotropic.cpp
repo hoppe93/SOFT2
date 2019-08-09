@@ -150,7 +150,7 @@ bool Test_Isotropic::Run(bool) {
     //Radiation *rad = new Radiation(mfa, nullptr, nullptr);
     Radiation *rad = new Radiation();
     Detector *det = new Detector(
-        0.006, 1.1, vdir, vpos, 0
+        0.006, 0.0, 1.1, vdir, vpos, 0
     );
     rad->SetDetector(det);
 

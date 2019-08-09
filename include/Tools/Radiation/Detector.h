@@ -15,6 +15,7 @@ namespace __Radiation {
     class Detector {
         private:
             slibreal_t aperture;
+            slibreal_t tilt;
             Vector<3> direction;
             Vector<3> position;
             slibreal_t vision_angle_fov,
@@ -34,7 +35,7 @@ namespace __Radiation {
             Optics *optics;
 
         public:
-            Detector(slibreal_t, slibreal_t, Vector<3>&, Vector<3>&, unsigned int, slibreal_t l0=0, slibreal_t l1=0, Optics *optics=nullptr);
+            Detector(slibreal_t, slibreal_t, slibreal_t, Vector<3>&, Vector<3>&, unsigned int, slibreal_t l0=0, slibreal_t l1=0, Optics *optics=nullptr);
             Detector(ConfigBlock*, ConfigBlock*);
 
             Vector<3> CalculateRCP(Vector<3>&);
