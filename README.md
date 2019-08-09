@@ -8,7 +8,7 @@ original code, featuring a better code structure, more efficient algorithms
 (sometimes by orders of magnitude), a slightly more user-friendly interface and
 some new physics.
 
-![Synthetic synchrotron spot in a circular tokamak](https://github.com/hoppe93/SOFT/raw/master/examples/synchrotron.png "Synthetic synchrotron spot in a circular tokamak")
+![Synthetic synchrotron spot in a circular tokamak](https://github.com/hoppe93/SOFT2/raw/master/examples/synchrotron.png "Synthetic synchrotron spot in a circular tokamak")
 
 ## Documentation
 The online documentation for SOFT2 is available at https://soft2.readthedocs.io/en/latest/.
