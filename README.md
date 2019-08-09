@@ -60,17 +60,17 @@ M. Hoppe *et al* 2018 [*Nucl. Fusion* **58** 026032](https://doi.org/10.1088/174
 BibTeX:
 ```
 @article {Hoppe2018,
-	title = {{SOFT}: a synthetic synchrotron diagnostic for runaway electrons},
-	author = {M. Hoppe and O. Embr{\'{e}}us and R. A. Tinguely and R. S. Granetz and A. Stahl and T. F{\"{u}}l{\"{o}}p},
-	year = 2018,
-	month = {jan},
-	publisher = {{IOP} Publishing},
-	volume = {58},
-	number = {2},
-	pages = {026032},
-	journal = {Nuclear Fusion},
-	doi = {10.1088/1741-4326/aa9abb},
-	url = {https://doi.org/10.1088%2F1741-4326%2Faa9abb},
+    title = {{SOFT}: a synthetic synchrotron diagnostic for runaway electrons},
+    author = {M. Hoppe and O. Embr{\'{e}}us and R. A. Tinguely and R. S. Granetz and A. Stahl and T. F{\"{u}}l{\"{o}}p},
+    year = 2018,
+    month = {jan},
+    publisher = {{IOP} Publishing},
+    volume = {58},
+    number = {2},
+    pages = {026032},
+    journal = {Nuclear Fusion},
+    doi = {10.1088/1741-4326/aa9abb},
+    url = {https://doi.org/10.1088%2F1741-4326%2Faa9abb},
     eprint = {https://arxiv.org/abs/1709.00674}
 }
 ```
