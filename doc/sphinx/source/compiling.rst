@@ -11,8 +11,8 @@ Preliminaries
 Before building SOFT2 (or `softlib`), you need to make sure that you have the
 following software installed on your system:
 
-- `CMake <https://cmake.org/>`_ version 3.8 or later
-- A C++17 compliant compiler and standard library (i.e. `gcc` >= 6 or equivalent)
+- `CMake <https://cmake.org/>`_ version 3.9 or later
+- A C++17 compliant compiler and standard library (i.e. `gcc` >= 7 or equivalent)
 - `GNU Scientific Library <https://www.gnu.org/software/gsl/>`_ version 2.0 or later
 - `HDF5 <https://www.hdfgroup.org/>`_
 
