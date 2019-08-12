@@ -85,7 +85,7 @@ bool Test_SynchrotronEmission::CheckTotalEmission(const slibreal_t tol) {
     Detector *det = GetDetector(0);
     ConeSynchrotronEmission cse(det, nullptr);
     slibreal_t pwr, corr, Delta;
-	MagneticFieldAnalytical2D *mf = GetMagneticField();
+    MagneticFieldAnalytical2D *mf = GetMagneticField();
 
     for (i = 0; i < NTESTPARTICLES; i++) {
         RadiationParticle *rp = GetRadiationParticle(i, det, mf);

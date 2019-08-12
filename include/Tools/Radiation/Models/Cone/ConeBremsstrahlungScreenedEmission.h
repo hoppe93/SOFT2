@@ -43,7 +43,7 @@ namespace __Radiation {
 
             void CalculatePolarization(RadiationParticle*);
 
-            struct func_params {slibreal_t Z; slibreal_t Nej2; slibreal_t a_bar; slibreal_t q0; slibreal_t lnq0;}; //Data-type for function parameters 
+            struct func_params {slibreal_t Z; slibreal_t Nej; slibreal_t a_bar; slibreal_t q0; slibreal_t lnq0;}; //Data-type for function parameters 
             void CalculateSpectrum(RadiationParticle*);
             slibreal_t FirstSpectrumIntegral(slibreal_t, slibreal_t, slibreal_t, slibreal_t); 
             slibreal_t SecondSpectrumIntegral(slibreal_t, slibreal_t, slibreal_t, slibreal_t);
