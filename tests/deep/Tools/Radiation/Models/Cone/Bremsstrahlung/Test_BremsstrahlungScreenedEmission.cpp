@@ -13,21 +13,20 @@
 using namespace std;
 using namespace __Radiation;
 
-const unsigned int
-    INR = 0,
-    IPOWER = 1,
+//Constants used to retrive data from tables
+const unsigned int 
     IGAMMA = 0,
     IINTSPEC = 1;
 
 const unsigned int Test_BremsstrahlungScreenedEmission::NTESTVALUES = 10;
 
-const slibreal_t Test_BremsstrahlungScreenedEmission::TEST_Z[10][6] = {
+const slibreal_t Test_BremsstrahlungScreenedEmission::TEST_Z[NTESTVALUES][6] = {
 {8}, {5}, {3, 2}, {5, 5}, {6, 2, 6, 5}, {2, 8, 5, 4}, {8, 6, 4, 7, 5}, {5, 6, 4, 3, 5}, {7, 4, 2, 4, 3, 4}, {7, 4, 4, 4, 2, 3}};
 
-const slibreal_t Test_BremsstrahlungScreenedEmission::TEST_Z0[10][6] = {
+const slibreal_t Test_BremsstrahlungScreenedEmission::TEST_Z0[NTESTVALUES][6] = {
 {1}, {2}, {1, 1}, {2, 1}, {3, 1, 1, 4}, {0, 3, 0, 1}, {0, 1, 1, 2, 1}, {1, 4, 4, 3, 1}, {3, 2, 1, 1, 0, 2}, {1, 0, 4, 2, 2, 2}};
 
-const slibreal_t Test_BremsstrahlungScreenedEmission::TEST_DENS[10][6] = {
+const slibreal_t Test_BremsstrahlungScreenedEmission::TEST_DENS[NTESTVALUES][6] = {
 {1.073500e+19}, 
 {7.800400e+19}, 
 {8.059500e+19, 7.451300e+19},
@@ -40,22 +39,23 @@ const slibreal_t Test_BremsstrahlungScreenedEmission::TEST_DENS[10][6] = {
 {1.487400e+19, 6.527300e+19, 3.748100e+19, 3.415000e+19, 3.431500e+19, 2.541600e+19}
 };
 
-const slibreal_t Test_BremsstrahlungScreenedEmission::TEST_NR_POW[10][2] = {
-{1,	6.73045973479381e-10},
-{1,	2.01662976950185e-09},
-{2,	1.13293399609858e-09},
-{2,	2.50881731824007e-09},
-{4,	7.60986501112254e-09},
-{4,	5.86883166300790e-09},
-{5,	1.57595925024440e-08},
-{5,	8.02396169262980e-09},
-{6,	4.54479515488073e-09},
-{6,	3.45373484297087e-09}
+struct TESTDATA {unsigned int nspecies; slibreal_t val;};
+const struct TESTDATA TEST_NR_POW[10] = {
+{1, 6.73045973479381e-10},
+{1, 2.01662976950185e-09},
+{2, 1.13293399609858e-09},
+{2, 2.50881731824007e-09},
+{4, 7.60986501112254e-09},
+{4, 5.86883166300790e-09},
+{5, 1.57595925024440e-08},
+{5, 8.02396169262980e-09},
+{6, 4.54479515488073e-09},
+{6, 3.45373484297087e-09}
 };
 
-const slibreal_t Test_BremsstrahlungScreenedEmission::TEST_GAMMA_INTSPEC[10][2] = {
-{1,	    0},
-{5,	    2.15962917566497e-09},
+const slibreal_t Test_BremsstrahlungScreenedEmission::TEST_GAMMA_INTSPEC[NTESTVALUES][2] = {
+{1,     0},
+{5,     2.15962917566497e-09},
 {10,	5.15999930299167e-09},
 {15,	7.54998734239249e-09},
 {25,	1.10284516497038e-08},
@@ -80,11 +80,11 @@ bool Test_BremsstrahlungScreenedEmission::CheckTotalEmission(const slibreal_t to
 	    slibreal_t Input_Z[6] = {TEST_Z[i][0], TEST_Z[i][1], TEST_Z[i][2], TEST_Z[i][3], TEST_Z[i][4], TEST_Z[i][5]};
         slibreal_t Input_DENS[6] = {TEST_DENS[i][0], TEST_DENS[i][1], TEST_DENS[i][2], TEST_DENS[i][3], TEST_DENS[i][4], TEST_DENS[i][5]};
         slibreal_t Input_Z0[6] = {TEST_Z0[i][0], TEST_Z0[i][1], TEST_Z0[i][2], TEST_Z0[i][3], TEST_Z0[i][4], TEST_Z0[i][5]};
-        ConeBremsstrahlungScreenedEmission cbse(det, nullptr, TEST_NR_POW[i][INR], Input_Z, Input_Z0, Input_DENS);
+        ConeBremsstrahlungScreenedEmission cbse(det, nullptr, TEST_NR_POW[i].nspecies, Input_Z, Input_Z0, Input_DENS);
 
         cbse.CalculateTotalEmission();
         pwr = cbse.GetTotalEmission();
-        corr = TEST_NR_POW[i][IPOWER];
+        corr = TEST_NR_POW[i].val;
         
         Delta = fabs((pwr-corr)/corr);
 
@@ -93,7 +93,6 @@ bool Test_BremsstrahlungScreenedEmission::CheckTotalEmission(const slibreal_t to
             return false;
         }
     }
-
     return true;
 }
 
@@ -107,9 +106,11 @@ bool Test_BremsstrahlungScreenedEmission::CheckSpectrumEmission(const slibreal_t
     MagneticFieldAnalytical2D *dummy_mf = GetMagneticField();
     slibreal_t pwr, corr, Delta;
 
-    const slibreal_t nspecies = TEST_NR_POW[NTESTVALUES-1][INR]; 
+    const unsigned int nspecies = TEST_NR_POW[NTESTVALUES-1].nspecies; 
 
-    slibreal_t Z[(const unsigned int) nspecies], Z0[(const unsigned int) nspecies], DENS[(const unsigned int) nspecies];
+    slibreal_t *Z = new slibreal_t[nspecies],
+    *Z0 = new slibreal_t[nspecies], 
+    *DENS = new slibreal_t[nspecies];
     for (i = 0; i < nspecies; i++){
         Z[i] = TEST_Z[NTESTVALUES-1][i];
         Z0[i] = TEST_Z0[NTESTVALUES-1][i];
@@ -126,7 +127,6 @@ bool Test_BremsstrahlungScreenedEmission::CheckSpectrumEmission(const slibreal_t
         pwr = cbse.GetTotalEmission();
         corr = TEST_GAMMA_INTSPEC[i][IINTSPEC];
         
-        
         Delta = fabs((pwr-corr)/corr);
 
         if (Delta >= tol) {
@@ -134,7 +134,6 @@ bool Test_BremsstrahlungScreenedEmission::CheckSpectrumEmission(const slibreal_t
             return false;
         }
     }
-
     return true;
 }
 
@@ -162,7 +161,6 @@ Detector *Test_BremsstrahlungScreenedEmission::GetDetector(unsigned int nwavelen
  * i: Index in table 'predef_particles' with pre-defined
  *    particle parameters to test, in this case gamma.
  */
-
 RadiationParticle *Test_BremsstrahlungScreenedEmission::GetRadiationParticle(unsigned int i, Detector *det, MagneticFieldAnalytical2D *mf) {
     if (i >= NTESTVALUES)
         throw SOFTException("Trying to access non-existant test-value.");

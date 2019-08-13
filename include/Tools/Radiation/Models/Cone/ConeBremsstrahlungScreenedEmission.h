@@ -35,9 +35,7 @@ namespace __Radiation {
 
        public:
             ConeBremsstrahlungScreenedEmission(Detector *det, MagneticField2D *mf, unsigned int nspecies, slibreal_t *Z, slibreal_t *Z0, slibreal_t *density);
-            ~ConeBremsstrahlungScreenedEmission() {delete []this->Z; delete []this->Z0; delete []this->density;
-                gsl_integration_workspace_free(qagsWS);
-}
+            ~ConeBremsstrahlungScreenedEmission();
 
             void HandleParticle(RadiationParticle*, bool);
 

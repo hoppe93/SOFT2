@@ -111,12 +111,10 @@ bool Test_SynchrotronEmission::CheckSpectrumEmission(const slibreal_t tol) {
     unsigned int i;
     slibreal_t pwr, corr, Delta, lambdac;
     Detector *dummyDet = GetDetector(0);
-
-	MagneticFieldAnalytical2D *dummy_mf = GetMagneticField();
+    MagneticFieldAnalytical2D *dummy_mf = GetMagneticField();
 
     for (i = 0; i < NTESTPARTICLES; i++) {
         RadiationParticle *rp = GetRadiationParticle(i, dummyDet, dummy_mf); 
-
         lambdac = GetLambdaC(rp);
 
         Detector *det = GetDetector(40001, lambdac/10.0, lambdac*1000.0);
@@ -194,13 +192,12 @@ RadiationParticle *Test_SynchrotronEmission::GetRadiationParticle(unsigned int i
         throw SOFTException("Trying to access non-existant test-particle.");
 
     Vector<3> x (TESTPARTICLES[i]+ICOORDINATES), 
-		rhat = x-det->GetPosition(),
-		Bvec = mf->Eval(x[0], x[1], x[2]),
-		bHat = Bvec;
+        rhat = x-det->GetPosition(),
+        Bvec = mf->Eval(x[0], x[1], x[2]),
+        bHat = Bvec;
 
-	bHat.Normalize();
-	rhat.Normalize();
-		
+    bHat.Normalize();
+    rhat.Normalize();
 
     slibreal_t
         Jdtdrho = 1.0,
