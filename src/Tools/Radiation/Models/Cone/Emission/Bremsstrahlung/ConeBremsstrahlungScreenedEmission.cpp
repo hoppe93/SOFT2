@@ -85,7 +85,7 @@ void ConeBremsstrahlungScreenedEmission::CalculateSpectrum(RadiationParticle *rp
         k_normed,
         gmkn,
         pre_fact = 4*r02*alpha;
-    
+    //printf("c");
     for(unsigned int i = 0; i < nwavelengths; i++){
        I[i] = 0;
     }

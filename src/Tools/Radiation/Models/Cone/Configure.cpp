@@ -36,20 +36,10 @@ void Cone::Configure(struct global_settings *__UNUSED__(globset), ConfigBlock *c
     } else
         this->edgeCheck = false;
 
-    // zeff (must be set before 'emission' model
-    slibreal_t Zeff = 1;
-    if (conf->HasSetting("zeff")) {
-        Setting *s = conf->GetSetting("zeff");
-        if (!s->IsScalar())
-            throw ConeException("Invalid value assigned to paramter 'zeff'. Expected real scalar.");
-
-        Zeff = s->GetScalar();
-    }
-
     // emission
     if (!conf->HasSetting("emission"))
         throw ConeException("No emission type specified.");
-    ConfigureEmission((*conf)["emission"], Zeff);
+    ConfigureEmission((*conf)["emission"], conf);
 
     // projection
     if (conf->HasSetting("projection")) {
@@ -69,17 +59,60 @@ void Cone::Configure(struct global_settings *__UNUSED__(globset), ConfigBlock *c
  *
  * emname: Name of the emission module to use.
  */
-void Cone::ConfigureEmission(const string& emname, const slibreal_t zeff) {
+void Cone::ConfigureEmission(const string& emname, ConfigBlock *conf) {
     if (emname == "bremsstrahlung") {
         if (this->parent->MeasuresPolarization())
             throw ConeBremsstrahlungException("The bremsstrahlung radiation model does not support polarization measurements.");
 
-        this->emission = new ConeBremsstrahlungEmission(this->parent->detector, this->parent->magfield, zeff);
+    	// zeff (must be set before 'emission' model
+        slibreal_t Zeff = 1;
+        if (conf->HasSetting("zeff")) {
+            Setting *s = conf->GetSetting("zeff");
+            if (!s->IsScalar())
+                throw ConeException("Invalid value assigned to paramter 'zeff'. Expected real scalar.");
+            
+            Zeff = s->GetScalar();
+        }
+        this->emission = new ConeBremsstrahlungEmission(this->parent->detector, this->parent->magfield, Zeff);
     } else if (emname == "bremsstrahlung_screened") {
-        const unsigned int nspecies = 2;
-        slibreal_t Z[nspecies] = {1., 2.};
-        slibreal_t Z0[nspecies] = {0., 1.};
-        slibreal_t density[nspecies] = {1.e19, 1.e20};
+    
+        if (!conf->HasSetting("Z"))
+            throw ConeException("No Z-value(s)");
+        if (!conf->HasSetting("Z0"))
+            throw ConeException("No Z0-value(s)");
+        if (!conf->HasSetting("n"))
+            throw ConeException("No number-density value(s)");
+        Setting *s = conf->GetSetting("Z"),
+            *s2 = conf->GetSetting("Z0"),
+            *s3 = conf->GetSetting("n");
+
+        if(!s->IsNumericVector())
+            throw ConeException("Invalid value assigned to paramer Z, expected real vector");
+        if(!s2->IsNumericVector())
+            throw ConeException("Invalid value assigned to paramer Z0, expected real vector");
+        if(!s3->IsNumericVector())
+            throw ConeException("Invalid value assigned to paramer n, expected real vector");
+
+        vector Z_vec = s->GetNumericVector(),
+            Z0_vec = s2->GetNumericVector(),
+            n_vec = s3->GetNumericVector();
+
+        const unsigned int nspecies = Z_vec.size();
+        if (Z0_vec.size() != nspecies)
+            throw ConeException("Number of Z0-values do not match number of Z-values");
+        if (n_vec.size() != nspecies)
+            throw ConeException("Number of n-values do not match number of Z-values");
+        
+        slibreal_t *Z = new slibreal_t [nspecies],
+            *Z0 = new slibreal_t [nspecies],
+            *density = new slibreal_t [nspecies];
+
+        for(unsigned int i = 0; i < nspecies; i++){ 
+            Z[i] = Z_vec[i];
+            Z0[i] = Z0_vec[i];
+            density[i] = n_vec[i];
+            printf("Z = %e \nZ0 = %e \ndens = %e \n", Z[i], Z0[i], density[i]);
+        }
         this->emission = new ConeBremsstrahlungScreenedEmission(this->parent->detector, this->parent->magfield, nspecies, Z, Z0, density);
     }
 else if (emname == "synchrotron") {

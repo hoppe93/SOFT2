@@ -43,7 +43,7 @@ wl_fin = wl;
 %% Functions
 
 
-function val = eval_4BS(Z, r0)
+function val = Get_4BS(Z, r0)
     Z2fakt = 4*Z^2*r0^2/137;
     lnfakt = log(183) - 0.5*log(Z)+1/18;
     val = Z2fakt*lnfakt;
@@ -113,7 +113,7 @@ end
 %    for jp=1:length(nspecies)
 %        while ip <= nspecies(jp) + k-1
 %            Z(ip)
-%            Ip(jp) = Ip(jp) + density(ip)*eval_4BS(Z(ip), r0);
+%            Ip(jp) = Ip(jp) + density(ip)*Get_4BS(Z(ip), r0);
 %            ip = ip +1;
 %        end
 %        k = ip;
