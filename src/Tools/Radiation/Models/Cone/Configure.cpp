@@ -111,7 +111,6 @@ void Cone::ConfigureEmission(const string& emname, ConfigBlock *conf) {
             Z[i] = Z_vec[i];
             Z0[i] = Z0_vec[i];
             density[i] = n_vec[i];
-            printf("Z = %e \nZ0 = %e \ndens = %e \n", Z[i], Z0[i], density[i]);
         }
         this->emission = new ConeBremsstrahlungScreenedEmission(this->parent->detector, this->parent->magfield, nspecies, Z, Z0, density);
     }
