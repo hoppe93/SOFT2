@@ -45,7 +45,7 @@ Cone::~Cone() {
  * rp: RadiationParticle defining the instantaneous
  *     particle properties.
  */
-void Cone::InitializeTimestep(RadiationParticle *rp) {
+void Cone::InitializeTimestep(RadiationParticle*) {
     // Since the radiation polarization state depends on
     // a particle-frame coordinate system, we can't precompute
     // it (even though it is independent of the detector, it
