@@ -93,6 +93,7 @@ set(tool_radiation
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Handle.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Emission/ConeEmission.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Emission/Bremsstrahlung/ConeBremsstrahlungEmission.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Emission/Bremsstrahlung/ConeBremsstrahlungScreenedEmission.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Emission/Bremsstrahlung/dilog_func.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Emission/Synchrotron/ConeSynchrotronEmission.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/synchrotron_func.cpp"
@@ -149,6 +150,7 @@ set(tool_radiation_tests
     "${PROJECT_SOURCE_DIR}/tests/deep/Tools/Radiation/Models/Isotropic/Test_Isotropic.cpp"
     "${PROJECT_SOURCE_DIR}/tests/deep/Tools/Radiation/Models/Cone/Test_ConeProjection.cpp"
     "${PROJECT_SOURCE_DIR}/tests/deep/Tools/Radiation/Models/Cone/Test_SynchrotronEmission.cpp"
+    "${PROJECT_SOURCE_DIR}/tests/deep/Tools/Radiation/Models/Cone/Bremsstrahlung/Test_BremsstrahlungScreenedEmission.cpp"
     "${PROJECT_SOURCE_DIR}/tests/deep/Tools/Radiation/Models/Cone/Reverse/Test_ConeProjectionReverse.cpp"
 )
 
