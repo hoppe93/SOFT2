@@ -60,9 +60,8 @@ void ConeBremsstrahlungScreenedEmission::CalculateTotalEmission() {
  * Calculate eq. 4BS (Koch & Motz) for a given species
  */
 slibreal_t ConeBremsstrahlungScreenedEmission::Calculate4BS(slibreal_t Z) {
-    slibreal_t Z2fakt = 4*Z*Z*r02Alpha;
+    slibreal_t Z2fakt = 4*Z*Z*r02/137;
     slibreal_t lnfakt = log(183) - 0.5*log(Z) + 0.0555555555555556;
-    
     return Z2fakt*lnfakt;
 }
 
