@@ -15,31 +15,30 @@ using namespace __Radiation;
 
 const unsigned int
     IGAMMA = 0,
-    ITHETAP = 1,
-    IB = 2;
+    ICOORDINATES = 1;
 
 const unsigned int Test_SynchrotronEmission::NTESTPARTICLES = 15;
-const slibreal_t Test_SynchrotronEmission::TESTPARTICLES[NTESTPARTICLES][3] = {
-    // gamma,  thetap,  B
-    { 2.0,     0.10,    5.0},
-    { 2.0,     0.40,    5.0},
-    { 2.0,     0.90,    5.0},
+const slibreal_t Test_SynchrotronEmission::TESTPARTICLES[NTESTPARTICLES][4] = {
+    // gamma,  x,  	y,	z
+    { 2.0,     0.10,    0.50,	0.00},
+    { 2.0,     0.40,    0.20,	0.10},
+    { 2.0,     0.90,    0.00,	0.00},
 
-    { 5.0,     0.15,    5.0},
-    { 5.0,     0.45,    5.0},
-    { 5.0,     0.95,    5.0},
+    { 5.0,     0.15,    0.60, 	0.20},
+    { 5.0,     0.45,    0.50,	-0.20},
+    { 5.0,     0.70,    0.30,	-0.20},
 
-    {15.0,     0.20,    5.0},
-    {15.0,     0.50,    5.0},
-    {15.0,     1.00,    5.0},
+    {15.0,     -0.20,    0.50,	0.00},
+    {15.0,     -0.50,    0.00,	0.10},
+    {15.0,     0.80,    -0.10,	-0.05},
 
-    {55.0,     0.25,    5.0},
-    {55.0,     0.55,    5.0},
-    {55.0,     1.05,    5.0},
+    {55.0,     0.40,    0.40,	0.00},
+    {55.0,     0.55,    0.10,	0.10},
+    {55.0,     -0.75,    0.00,	0.20},
 
-    {100.0,    0.30,    5.0},
-    {100.0,    0.60,    5.0},
-    {100.0,    1.10,    5.0}
+    {100.0,    -0.00,   -0.68,	0.00},
+    {100.0,    0.00,    0.50,	-0.10},
+    {100.0,    0.00,    0.85,	0.00}
 };
 
 /**
@@ -65,7 +64,7 @@ slibreal_t Test_SynchrotronEmission::Larmor(
         cosThetap = ppar / p,
         betaperp = pperp / gamma,
         B = rp->GetB();
-
+    
     slibreal_t C = e*e*e*e / (6.0*M_PI*eps0*m*m*c);
     slibreal_t Cp = B*B * gamma*gamma * gammapar*gammapar * betaperp*betaperp * (1.0 - beta*cosThetap*cosThetap);
 
@@ -86,9 +85,10 @@ bool Test_SynchrotronEmission::CheckTotalEmission(const slibreal_t tol) {
     Detector *det = GetDetector(0);
     ConeSynchrotronEmission cse(det, nullptr);
     slibreal_t pwr, corr, Delta;
+    MagneticFieldAnalytical2D *mf = GetMagneticField();
 
     for (i = 0; i < NTESTPARTICLES; i++) {
-        RadiationParticle *rp = GetRadiationParticle(i, det);
+        RadiationParticle *rp = GetRadiationParticle(i, det, mf);
         cse.CalculateTotalEmission(rp);
         pwr = cse.GetTotalEmission();
         corr = Larmor(rp);
@@ -109,26 +109,21 @@ bool Test_SynchrotronEmission::CheckTotalEmission(const slibreal_t tol) {
  */
 bool Test_SynchrotronEmission::CheckSpectrumEmission(const slibreal_t tol) {
     unsigned int i;
-    slibreal_t pwr, corr, Delta, lambdac, gamma2, pperp2, gammapar2, betaperp2;
+    slibreal_t pwr, corr, Delta, lambdac;
     Detector *dummyDet = GetDetector(0);
+    MagneticFieldAnalytical2D *dummy_mf = GetMagneticField();
 
     for (i = 0; i < NTESTPARTICLES; i++) {
-        RadiationParticle *rp = GetRadiationParticle(i, dummyDet);
-
-        gamma2 = rp->GetGamma()*rp->GetGamma();
-        pperp2 = rp->GetPperp()*rp->GetPperp();
-        gammapar2 = gamma2 / (1.0 + pperp2);
-        betaperp2 = pperp2 / gamma2;
-
+        RadiationParticle *rp = GetRadiationParticle(i, dummyDet, dummy_mf); 
         lambdac = GetLambdaC(rp);
 
         Detector *det = GetDetector(40001, lambdac/10.0, lambdac*1000.0);
-        ConeSynchrotronEmission cse(det, nullptr);
+        ConeSynchrotronEmission cse(det, dummy_mf);
 
         cse.CalculateSpectrum(rp);
         cse.IntegrateSpectrum();
-        // The following is necessary to get agreement at low energies
-        pwr = cse.GetTotalEmission() * gammapar2 * betaperp2;
+        
+        pwr = cse.GetTotalEmission();
         corr = Larmor(rp);
 
         Delta = fabs((pwr-corr)/corr);
@@ -165,13 +160,25 @@ Detector *Test_SynchrotronEmission::GetDetector(unsigned int nwavelengths, slibr
  */
 slibreal_t Test_SynchrotronEmission::GetLambdaC(RadiationParticle *rp) {
     slibreal_t
-        l = 4.0*M_PI*ELECTRON_MASS*LIGHTSPEED / (3.0*ELEMENTARY_CHARGE),
         gamma = rp->GetGamma(),
         pperp = rp->GetPperp(),
-        gammapar = gamma / sqrt(1.0 + pperp*pperp),
-        B = rp->GetB();
+        gamma2 = gamma*gamma,
+        ppar2 = rp->GetPpar() * rp->GetPpar(),
+        pperp2 = pperp*pperp,
+        betapar2 = ppar2 / gamma2,
+        betaperp2 = pperp2 / gamma2,
+        beta = sqrt(betapar2+betaperp2),
+        l = 4.0*M_PI*ELECTRON_MASS*beta*LIGHTSPEED / (3.0*gamma2*ELEMENTARY_CHARGE);
+    	
+        Vector<3>& rhat = rp->GetRCP();
+	    rhat.Normalize();
+	    Vector<3> pos = rp->GetPosition();
+        Vector<3> Bvec = rp->GetBvec();
+	    Vector<3> rh_cr_rh_cr_Bvec = Vector<3>::Cross(rhat, Vector<3>::Cross(rhat, Bvec));
 
-    return (l*gammapar / (gamma*gamma*B));
+        slibreal_t lc = l*1/rh_cr_rh_cr_Bvec.Norm();
+
+    return lc;
 }
 
 /**
@@ -181,28 +188,36 @@ slibreal_t Test_SynchrotronEmission::GetLambdaC(RadiationParticle *rp) {
  * i: Index in table 'predef_particles' with pre-defined
  *    particle parameters to test.
  */
-RadiationParticle *Test_SynchrotronEmission::GetRadiationParticle(unsigned int i, Detector *det) {
+RadiationParticle *Test_SynchrotronEmission::GetRadiationParticle(unsigned int i, Detector *det, MagneticFieldAnalytical2D *mf) {
     if (i >= NTESTPARTICLES)
         throw SOFTException("Trying to access non-existant test-particle.");
+
+    Vector<3> x (TESTPARTICLES[i]+ICOORDINATES), 
+        rhat = x-det->GetPosition(),
+        Bvec = mf->Eval(x[0], x[1], x[2]),
+        bHat = Bvec;
+
+    bHat.Normalize();
+    rhat.Normalize();
 
     slibreal_t
         Jdtdrho = 1.0,
         gamma = TESTPARTICLES[i][IGAMMA],
         p2 = gamma*gamma - 1.0,
         p  = sqrt(p2),
-        cosThetap = cos(TESTPARTICLES[i][ITHETAP]),
+        cosThetap = rhat.Dot(bHat),
         sinThetap = sqrt(1.0 - cosThetap*cosThetap),
         ppar = p * cosThetap,
         pperp = p * sinThetap,
-        B = TESTPARTICLES[i][IB],
-        m = ELECTRON_MASS, q = -ELEMENTARY_CHARGE,
-        BB[3] = {1.0,0.0,0.0},
-        Pp[3] = {p,0.0,0.0},
-        Xx[3] = {0.0,0.0,0.0};
-    Vector<3> P(Pp), X(Xx), Bvec(BB), bHat = Bvec / B;
+        B = Bvec.Norm(),
+        m = ELECTRON_MASS, q = -ELEMENTARY_CHARGE;
+		
+
+		
+    Vector<3> P = p*rhat;
 
     return new RadiationParticle(
-        X, P,
+        x, P,
         Jdtdrho, ppar, pperp,
         gamma, p2, det->GetPosition(),
         B, Bvec, bHat, m, q, 0, 0, 0

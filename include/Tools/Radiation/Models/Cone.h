@@ -30,7 +30,7 @@ namespace __Radiation {
             ~Cone();
 
             virtual void Configure(struct global_settings*, ConfigBlock*, ConfigBlock*) override;
-            void ConfigureEmission(const std::string&, const slibreal_t);
+            void ConfigureEmission(const std::string&, ConfigBlock*);
             virtual void InitializeOrbit(Orbit *__UNUSED__(o)) override {}
             virtual void InitializeTimestep(RadiationParticle*) override;
 

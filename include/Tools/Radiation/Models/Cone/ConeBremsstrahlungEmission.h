@@ -21,7 +21,7 @@ namespace __Radiation {
             static constexpr slibreal_t alpha =
                 _e*_e / (4.0*M_PI*EPS0*_c*HBAR);
             static constexpr slibreal_t r02Alpha = 
-                _e2*alpha / (16.0*M_PI*M_PI*EPS0*EPS0*_m2*_c2);
+                _e2*_e2*alpha / (16.0*M_PI*M_PI*EPS0*EPS0*_m2*_c2*_c2);
 
             slibreal_t Z2;      // Square of effective plasma charge
         public:

@@ -7,6 +7,7 @@
 #include "Tools/Radiation/Models/Cone/ConeSynchrotronEmission.h"
 #include "Tools/Radiation/RadiationParticle.h"
 #include "Tools/Radiation/Optics/Optics.h"
+#include "softlib/Vector.h"
 
 using namespace __Radiation;
 using namespace std;
@@ -94,13 +95,19 @@ void ConeSynchrotronEmission::CalculateSpectrum(RadiationParticle *rp) {
         betapar2 = ppar2 / gamma2,
         betaperp2 = pperp2 / gamma2,
         beta = sqrt(betapar2+betaperp2),
-        gammapar2 = gamma2 / (1.0 + pperp2),
-        gammapar = sqrt(gammapar2);
+        gammapar2 = gamma2 / (1.0 + pperp2);
+
+	Vector<3>& rhat = rp->GetRCP();
+	rhat.Normalize();
+	Vector<3> pos = rp->GetPosition();
+    	Vector<3> Bvec = this->magfield->Eval(rp->GetPosition());
+	Vector<3> rh_cr_rh_cr_Bvec = Vector<3>::Cross(rhat, Vector<3>::Cross(rhat, Bvec));
 
     slibreal_t c = LIGHTSPEED, e = fabs(rp->GetCharge()), l, lcl,
-        m = rp->GetMass(), B = rp->GetB(),
-        pf = c*e*e / (sqrt(3.0)*EPS0*gamma2) * gammapar2 * (1.0 - betapar2/beta),
-        lc = 4.0*M_PI*m*c*gammapar / (3*gamma2*e*B), ikf;
+    	m = rp->GetMass(),
+    	pf = c*e*e / (sqrt(3.0)*EPS0*gamma2) * gammapar2 * (1.0 - betapar2/beta), 
+	ikf,
+	lc = 4.0*M_PI*c*m/(3*e*gamma2*beta*rh_cr_rh_cr_Bvec.Norm());
 
     // Evaluate spectrum at each wavelength
     for (unsigned int i = 0; i < nwavelengths; i++) {

@@ -51,8 +51,8 @@ void Cone::InitializeTimestep(RadiationParticle *rp) {
     // it (even though it is independent of the detector, it
     // is fixed in space and would have to be rotated, something
     // which is not easy/useful to implement)
-    if (!this->parent->MeasuresPolarization())
-        this->emission->HandleParticle(rp, false);
+    //if (!this->parent->MeasuresPolarization())
+    //    this->emission->HandleParticle(rp, false);
 }
 
 /**
@@ -74,8 +74,8 @@ void Cone::HandleParticle(RadiationParticle *rp, const slibreal_t sinphi, const 
     } else {
         this->nonzero = true;
 
-        if (this->parent->MeasuresPolarization())
-            this->emission->HandleParticle(rp, true);
+        //if (this->parent->MeasuresPolarization())
+            this->emission->HandleParticle(rp, this->parent->MeasuresPolarization());
     }
 
     // Multiply quantities by fraction
