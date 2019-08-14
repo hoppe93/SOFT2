@@ -15,7 +15,7 @@ namespace __Radiation {
     class Detector {
         private:
             slibreal_t aperture;
-            slibreal_t tilt;
+            slibreal_t roll;
             Vector<3> direction;
             Vector<3> position;
             slibreal_t vision_angle_fov,

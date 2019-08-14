@@ -227,7 +227,7 @@ bool Test_ADSynchrotronEmission::CheckAngularSpectralDistribution(
 Detector *Test_ADSynchrotronEmission::GetDetector(unsigned int nwavelengths, slibreal_t l0, slibreal_t l1) {
     const slibreal_t
         aperture = 0.006,
-        tilt     = 0.0,
+        roll     = 0.0,
         visang   = 1.0,
         dir[3] = {0.0,1.0,0.0},
         pos[3] = {0.0,-1.069,0.0};
@@ -236,7 +236,7 @@ Detector *Test_ADSynchrotronEmission::GetDetector(unsigned int nwavelengths, sli
         direction(dir),
         position(pos);
 
-    return new Detector(aperture, tilt, visang, direction, position, nwavelengths, l0, l1);
+    return new Detector(aperture, roll, visang, direction, position, nwavelengths, l0, l1);
 }
 
 /**

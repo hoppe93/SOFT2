@@ -22,7 +22,7 @@ using namespace __Radiation;
  * Constructor.
  *
  * aperture:     Detector aperture (side length of square detector).
- * tilt:         Angle between the vector ehat1 and the horizontal plane.
+ * roll:         Angle between the vector ehat1 and the horizontal plane.
  * visang:       Detector vision angle (of field-of-view).
  * direction:    Detector viewing direction (not necessarily normalized).
  * position:     Detector position vector. Relative to tokamak point of symmetry.
@@ -32,12 +32,12 @@ using namespace __Radiation;
  * lambda1:      Upper wavelength limit in spectral range.
  */
 __Radiation::Detector::Detector(
-    slibreal_t aperture, slibreal_t tilt, slibreal_t visang,
+    slibreal_t aperture, slibreal_t roll, slibreal_t visang,
     Vector<3>& direction, Vector<3>& position, unsigned int nwavelengths,
     slibreal_t lambda0, slibreal_t lambda1, Optics *optics
 ) {
     this->aperture = aperture;
-    this->tilt = tilt;
+    this->roll = roll;
     this->direction = direction;
     this->position = position;
     this->name = "<unknown>";
@@ -149,27 +149,27 @@ __Radiation::Detector::Detector(ConfigBlock *conf, ConfigBlock *root) {
             throw DetectorException("Detector '%s': Invalid format of detector spectral range. Expected 'real,real,int' or 'no'.", this->name.c_str());
     }
 
-    // tilt
-    if (conf->HasSetting("tilt")) {
-        s = conf->GetSetting("tilt");
+    // roll
+    if (conf->HasSetting("roll")) {
+        s = conf->GetSetting("roll");
         if (s->GetNumberOfValues() == 1) {
             if (!s->IsScalar())
-                throw DetectorException("Detector '%s': Invalid specfication of tilt: parameter is not a number.", this->name.c_str());
-            this->tilt = s->GetScalar();
+                throw DetectorException("Detector '%s': Invalid specfication of roll: parameter is not a number.", this->name.c_str());
+            this->roll = s->GetScalar();
         } else if (s->GetNumberOfValues() == 2) {
-            slibreal_t tilt = s->GetScalar(0);
+            slibreal_t roll = s->GetScalar(0);
             string dir      = s->GetString(1);
 
             if (dir == "cw")
-                this->tilt = -tilt;
+                this->roll = -roll;
             else if (dir == "ccw")
-                this->tilt = tilt;
+                this->roll = roll;
             else
-                throw DetectorException("Detector '%s': Invalid specification of tilt: unrecognized direction '%s'.", this->name.c_str(), dir.c_str());
+                throw DetectorException("Detector '%s': Invalid specification of roll: unrecognized direction '%s'.", this->name.c_str(), dir.c_str());
         } else
-            throw DetectorException("Detector '%s': Invalid specification of tilt: too many parameters.", this->name.c_str());
+            throw DetectorException("Detector '%s': Invalid specification of roll: too many parameters.", this->name.c_str());
     } else
-        this->tilt = 0.0;
+        this->roll = 0.0;
 
     SetupBasisVectors();
 }
@@ -285,12 +285,12 @@ void __Radiation::Detector::SetVisionAngle(slibreal_t visang, int type) {
 void __Radiation::Detector::SetupBasisVectors() {
     if (direction[1] == 0) {
         ehat1[0] = 0;
-        ehat1[1] = cos(tilt);
-        ehat1[2] = sin(tilt);
+        ehat1[1] = cos(roll);
+        ehat1[2] = sin(roll);
     } else {
-        ehat1[0] = direction[1] * cos(tilt);
-        ehat1[1] =-direction[0] * cos(tilt);
-        ehat1[2] = sin(tilt);
+        ehat1[0] = direction[1] * cos(roll);
+        ehat1[1] =-direction[0] * cos(roll);
+        ehat1[2] = sin(roll);
 
         ehat1.Normalize();
     }

@@ -29,7 +29,7 @@ Summary of options
 +------------------------+------------------------------------------------------------+
 | :option:`spectrum`     | Spectral range configuration of detector                   |
 +------------------------+------------------------------------------------------------+
-| :option:`tilt`         | Angle between :math:`\hat{e}_1` and the horizontal plane.  |
+| :option:`roll`         | Angle between :math:`\hat{e}_1` and the horizontal plane.  |
 +------------------------+------------------------------------------------------------+
 
 Detector plane basis
@@ -52,7 +52,7 @@ plane. Its mathematical definition is
    \end{cases}
 
 where :math:`\vartheta` denotes the angle between :math:`\hat{e}_1` and the
-horizontal plane (the ":option:`tilt` angle"). From this, :math:`\hat{e}_2` is defined
+horizontal plane (the ":option:`roll` angle"). From this, :math:`\hat{e}_2` is defined
 so that :math:`(\hat{e}_1, \hat{e}_2, \hat{n})` form a right-handed orthonormal
 basis:
 
@@ -140,10 +140,10 @@ Options
    are photon energies, given in normalized units (normalized to :math:`m_e c^2`,
    the electron mass times speed-of-light squared).
 
-.. option:: tilt
+.. option:: roll
 
    | **Default value:** ``0``
-   | **Example line:** ``tilt = 0.1 cw;``
+   | **Example line:** ``roll = 0.1 cw;``
    | **Allowed values:** Real number, optionally followed by either ``cw`` or ``ccw``
 
    Specifies the angle in radians by which the image x axis, :math:`\hat{e}_1`
@@ -154,5 +154,5 @@ Options
 
    Optionally, the direction of rotation can be explicitly specified by
    appending either ``cw`` (positive angle in clockwise direction) or ``ccw``
-   (positive angle in counter clockwise direction) after the tilt angle.
+   (positive angle in counter clockwise direction) after the roll angle.
 

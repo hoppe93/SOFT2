@@ -43,8 +43,8 @@ def loadGreen(filename):
 
     with h5py.File(filename, 'r') as f:
         func = f['func'][:]
-        par1 = f['param1'][:,:]
-        par2 = f['param2'][:,:]
+        par1 = f['param1'][:]
+        par2 = f['param2'][:]
 
         frmt = tos(f['type'])
         par1n = tos(f['param1name'])

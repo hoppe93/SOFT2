@@ -43,7 +43,7 @@ plane. Its mathematical definition is
    \end{cases}
 
 where :math:`\vartheta` denotes the angle between :math:`\hat{e}_1` and the
-horizontal plane (the "tilt angle"). From this, :math:`\hat{e}_2` is defined
+horizontal plane (the "roll angle"). From this, :math:`\hat{e}_2` is defined
 so that :math:`(\hat{e}_1, \hat{e}_2, \hat{n})` form a right-handed orthonormal
 basis:
 
