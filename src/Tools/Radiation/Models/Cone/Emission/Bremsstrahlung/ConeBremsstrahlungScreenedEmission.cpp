@@ -19,7 +19,6 @@ ConeBremsstrahlungScreenedEmission::ConeBremsstrahlungScreenedEmission(Detector 
         this->density[i] =  density[i];
     }
     qagsWS = gsl_integration_workspace_alloc(qagsLimit); //GSL workspace
-    this->r02 = ELECTRON_CHARGE*ELECTRON_CHARGE*ELECTRON_CHARGE*ELECTRON_CHARGE/(16*M_PI*M_PI*EPS0*EPS0*LIGHTSPEED*LIGHTSPEED*LIGHTSPEED*LIGHTSPEED*ELECTRON_MASS*ELECTRON_MASS);
 }
 
 ConeBremsstrahlungScreenedEmission::~ConeBremsstrahlungScreenedEmission() {
@@ -61,7 +60,7 @@ void ConeBremsstrahlungScreenedEmission::CalculateTotalEmission() {
  * Calculate eq. 4BS (Koch & Motz) for a given species
  */
 slibreal_t ConeBremsstrahlungScreenedEmission::Calculate4BS(slibreal_t Z) {
-    slibreal_t Z2fakt = 4*Z*Z*r02/137;
+    slibreal_t Z2fakt = 4*Z*Z*r02Alpha;
     slibreal_t lnfakt = log(183) - 0.5*log(Z) + 0.0555555555555556;
     
     return Z2fakt*lnfakt;
@@ -86,29 +85,28 @@ void ConeBremsstrahlungScreenedEmission::CalculateSpectrum(RadiationParticle *rp
     slibreal_t q0,
         k_normed,
         gmkn,
-        pre_fact = 4*r02*alpha;
+        pre_fact = 4*r02Alpha;
     for(unsigned int i = 0; i < nwavelengths; i++){
        I[i] = 0;
     }
     for (unsigned int j = 0; j < nspecies; j++){
-            Nej = (Z[j] - Z0[j]);
-            a_bar = pow(9*M_PI*Nej*Nej, 0.3333333333333333333333333)/(2*alpha*Z[j]);
-    
-		for (unsigned int i = 0; i < nwavelengths; i++){
-		    k_normed = wavelengths[i]; 
-		    if (k_normed > gamma - 1) {
-		        continue;
-		    }
-
-		    gmkn = gamma-k_normed;
-		    q0 = p - sqrt(gmkn*gmkn-1)-k_normed;
-
-		    Spec_Int1 = FirstSpectrumIntegral(Z[j], Nej, a_bar, q0); 
-		    Spec_Int2 = SecondSpectrumIntegral(Z[j], Nej, a_bar, q0); 
-		    spec_cont = density[j]*((1+gmkn*gmkn/gamma2)*(Z[j]*Z[j] + Spec_Int1) - 2*gmkn/(3*gamma)*(5*Z[j]*Z[j]/6 + Spec_Int2));
+        Nej = (Z[j] - Z0[j]);
+        a_bar = pow(9*M_PI*Nej*Nej, 0.3333333333333333333333333)/(2*alpha*Z[j]);
+ 
+        for (unsigned int i = 0; i < nwavelengths; i++){
+            k_normed = wavelengths[i]; 
+            if (k_normed > gamma - 1) {
+                continue;
+            }
+            gmkn = gamma-k_normed;
+            q0 = p - sqrt(gmkn*gmkn-1)-k_normed;
+            
+            Spec_Int1 = FirstSpectrumIntegral(Z[j], Nej, a_bar, q0); 
+            Spec_Int2 = SecondSpectrumIntegral(Z[j], Nej, a_bar, q0); 
+            spec_cont = density[j]*((1+gmkn*gmkn/gamma2)*(Z[j]*Z[j] + Spec_Int1) - 2*gmkn/(3*gamma)*(5*Z[j]*Z[j]/6 + Spec_Int2));
 		    
-		    I[i] = I[i] + pre_fact*spec_cont/wavelengths[i];
-		} 
+            I[i] = I[i] + pre_fact*spec_cont/wavelengths[i];
+        } 
     }
 }
 
