@@ -21,7 +21,8 @@
 #include "Tools/Radiation/Models/AngularDistribution/Test_AngularDistributionDrifts.h"
 #include "Tools/Radiation/Models/Cone/Test_ConeProjection.h"
 #include "Tools/Radiation/Models/Cone/Test_SynchrotronEmission.h"
-#include "Tools/Radiation/Models/Cone/Bremsstrahlung/Test_BremsstrahlungScreenedEmission.h" // new bremsstrahlung test
+#include "Tools/Radiation/Models/Cone/Bremsstrahlung/Test_BremsstrahlungScreenedEmission.h"
+#include "Tools/Radiation/Models/Cone/Bremsstrahlung/Test_BremsstrahlungEmission.h"
 #include "Tools/Radiation/Models/Cone/Reverse/Test_ConeProjectionReverse.h"
 #include "Tools/Radiation/Models/Isotropic/Test_Isotropic.h"
 
@@ -44,8 +45,9 @@ void init() {
     add_test(new Test_ConeProjection("radiation_model_cone_projection"));
     add_test(new Test_ConeProjectionReverse("radiation_model_cone_projection_reverse"));
     add_test(new Test_SynchrotronEmission("radiation_model_cone_synchrotron"));
-    add_test(new Test_BremsstrahlungScreenedEmission("radiation_model_cone_bremsstrahlung_screened")); //new bremsstrahlung test
+    add_test(new Test_BremsstrahlungScreenedEmission("radiation_model_cone_bremsstrahlung_screened")); 
     add_test(new Test_Isotropic("radiation_model_isotropic"));
+    add_test(new Test_BremsstrahlungEmission("radiation_model_cone_bremsstrahlung"));
 }
 
 /**

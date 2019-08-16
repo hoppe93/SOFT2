@@ -83,7 +83,7 @@ void ConeBremsstrahlungEmission::CalculateSpectrum(RadiationParticle *rp) {
         p = sqrt(p2);
 
         eps  = 2.0*log(E+p);
-        eps0 = 2.0*log(gamma+p);
+        eps0 = 2.0*log(gamma+p0);
 
         TT2 =-2.0*gamma*E*(p2 + p02)/(p2*p02);
         TT3 = eps0*E/(p02*p0);
