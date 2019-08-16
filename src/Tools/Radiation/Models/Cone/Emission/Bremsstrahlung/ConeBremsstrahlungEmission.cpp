@@ -59,7 +59,7 @@ void ConeBremsstrahlungEmission::CalculateTotalEmission(RadiationParticle *rp) {
         T3 =-4.0/3.0,
         T4 = 2.0 / gp0 * dilog_func(2.0*(gp0 + p02));
     for(unsigned int j = 0; j < nspecies; j++){
-        pf = pf + density[j]*Z[j]*Z[j]*this->r02Alpha;
+        pf += density[j]*Z[j]*Z[j]*this->r02Alpha;
     }
 
     this->power = pf * (T1 + T2 + T3 + T4);
@@ -85,7 +85,7 @@ void ConeBremsstrahlungEmission::CalculateSpectrum(RadiationParticle *rp) {
         E, E2, p, p2, k, eps, eps0;
     
     for (unsigned int j = 0; j < nspecies; j++)
-        pf = pf + density[j]*Z[j]*Z[j] * this->r02Alpha;
+        pf += density[j]*Z[j]*Z[j] * this->r02Alpha;
 
     for (unsigned int i = 0; i < nwavelengths; i++) {
         k = wavelengths[i];

@@ -59,7 +59,7 @@ Final_table_3BN = [Z; dens; gamma; Integrated_spectrum]';
 %% Functions
 
 function val = Get_4BS(Z, r0)
-    Z2fakt = 4*Z^2*r0^2/137;
+    Z2fakt = 4*Z^2*r0^2*alpha;
     lnfakt = log(183) - 0.5*log(Z)+1/18;
     val = Z2fakt*lnfakt;
 end

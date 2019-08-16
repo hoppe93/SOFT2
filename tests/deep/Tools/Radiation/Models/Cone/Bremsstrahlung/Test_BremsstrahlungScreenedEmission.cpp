@@ -40,7 +40,7 @@ const slibreal_t Test_BremsstrahlungScreenedEmission::TEST_DENS[NTESTVALUES][6] 
 };
 
 struct TESTDATA {unsigned int nspecies; slibreal_t val;};
-const struct TESTDATA TEST_NR_POW[10] = {
+/*const struct TESTDATA TEST_NR_POW[10] = {
 {1, 6.73045973479381e-10},
 {1, 2.01662976950185e-09},
 {2, 1.13293399609858e-09},
@@ -51,6 +51,18 @@ const struct TESTDATA TEST_NR_POW[10] = {
 {5, 8.02396169262980e-09},
 {6, 4.54479515488073e-09},
 {6, 3.45373484297087e-09}
+};*/
+const struct TESTDATA TEST_NR_POW[10] = {
+{1,	6.72869164594994e-10},
+{1,	2.01610000173885e-09},
+{2,	1.13263637483075e-09},
+{2,	2.50815825302217e-09},
+{4,	7.60786590289521e-09},
+{4,	5.86728992348359e-09},
+{5,	1.57554524643507e-08},
+{5,	8.02185380138442e-09},
+{6,	4.54360123917101e-09},
+{6,	3.45282754833036e-09}
 };
 
 const slibreal_t Test_BremsstrahlungScreenedEmission::TEST_GAMMA_INTSPEC[NTESTVALUES][2] = {

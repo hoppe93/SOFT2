@@ -66,9 +66,9 @@ void Cone::ConfigureEmission(const string& emname, ConfigBlock *conf) {
 
         //default values
         slibreal_t *Z = new slibreal_t[1];
-        Z[1] = 1.0;
+        Z[0] = 1.0;
         slibreal_t *density = new slibreal_t[1];
-        density[1] = 1.0;
+        density[0] = 1.0;
         unsigned int nspecies = 1;
       
     	// Reading Z's and number-desities from pi-file
@@ -77,7 +77,8 @@ void Cone::ConfigureEmission(const string& emname, ConfigBlock *conf) {
             if (!s->IsNumericVector())
                 throw ConeException("Invalid value assigned to paramter 'Z'. Expected real vector. If no Z-values are given, Z=1 by defualt.");
             vector Z_vec = s->GetNumericVector();
-            nspecies = Z_vec.size(); 
+            nspecies = Z_vec.size();
+            delete []Z;
             Z = new slibreal_t [nspecies];
             
             for(unsigned int i = 0; i < nspecies; i++)
@@ -91,6 +92,7 @@ void Cone::ConfigureEmission(const string& emname, ConfigBlock *conf) {
             vector n_vec = s2->GetNumericVector();
             if(n_vec.size() != nspecies)
                 throw ConeException("Number of n-values do not match number of Z-values. If no n-values are given, n=1 by defualt.");
+            delete []density;
             density = new slibreal_t [nspecies];
 
             for(unsigned int i = 0; i < nspecies; i++)
