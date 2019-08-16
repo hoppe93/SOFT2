@@ -42,19 +42,19 @@ Final_table_spec = [gamma; Integrated_spectrum]';
 wl_fin = wl;
 %% Table for 3BN
 clc; format long;
-Zeff = [2 7 10 15];
+Z = [2 7 10 15];
+dens = [1.649e19 11.467e19 7.3903e19 9.1003e19];
 gamma = [5 13 38 67];
-Integrated_spectrum = zeros(numel(Zeff), numel(gamma));
+Integrated_spectrum = zeros(1, numel(gamma));
 wl = linspace(1, 50, 50);
 
-for j=1:numel(Zeff)
+
 for i=1:length(gamma)
-    spectrum = spec_3BN(Zeff(j), wl, gamma(i), r0, alpha);
-    Integrated_spectrum(j,i) = Integrate_spectrum(spectrum, wl);
-end
+    spectrum = spec_3BN(Z, dens, wl, gamma(i), r0, alpha);
+    Integrated_spectrum(i) = Integrate_spectrum(spectrum, wl);
 end
 
-Final_table_3BN = [Zeff; gamma]';
+Final_table_3BN = [Z; dens; gamma; Integrated_spectrum]';
 
 %% Functions
 
@@ -119,11 +119,8 @@ function Int_spec = Integrate_spectrum(spec, wl)
     Int_spec = Int*(wl(2)-wl(1));
 end
 
-function spec= spec_3BN(Zeff, wl, gamma_in, r0, alpha)
+function spec= spec_3BN(Z, dens, wl, gamma_in, r0, alpha)
     nr_wl = numel(wl);
-    %if length(gamma_in) == 1
-    %gamma_in = gamma_in*ones(1, nr_wl);
-    %end
     d1sigma = zeros(1,nr_wl);
     for i=1:nr_wl
         k = wl(i);
@@ -156,7 +153,7 @@ function spec= spec_3BN(Zeff, wl, gamma_in, r0, alpha)
 
         d1sigma(i) = PreFactor .* ( Term1 + Term2 + Term3 ); %.*(k<(E0-1));
     end
-        spec =  Zeff^2*d1sigma;
+        spec =  (dens*(Z.^2)')*d1sigma;
 end
 
 %function pow = power(nspecies, Z, density, r0) %Needed for testung 4BS,

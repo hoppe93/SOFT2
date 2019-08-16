@@ -1,5 +1,5 @@
 /**
- * Module for evaluating synchrotron emission in
+ * Module for evaluating unscreened bremsstrahlung emission in
  * the cone model.
  */
 
@@ -8,12 +8,26 @@
 
 using namespace __Radiation;
 
+ConeBremsstrahlungEmission::ConeBremsstrahlungEmission(Detector *det, MagneticField2D *mf, unsigned int nspecies, slibreal_t *Z, slibreal_t *density)
+                : ConeEmission(det, mf), nspecies(nspecies)
+{
+    this->Z = new slibreal_t[nspecies]; 
+    this->density = new slibreal_t[nspecies];
+    for(unsigned int i = 0; i < nspecies; i++){
+        this->Z[i] = Z[i];
+        this->density[i] =  density[i];
+    }
+}
+
+ConeBremsstrahlungEmission::~ConeBremsstrahlungEmission() {
+    delete []this->Z; delete []this->density;
+}
+
+
 /**
- * Calculates the total emission and/or spectrum and/or
- * Stokes parameters of synchrotron radiation.
+ * Calculates the total emission and/or spectrum
  *
- * rp:           Object representing particle emitting state.
- * polarization: If true, calculate polarization components.
+ * rp: Object representing particle emitting state.
  */
 void ConeBremsstrahlungEmission::HandleParticle(RadiationParticle *rp, bool) {
     if (nwavelengths == 0)
@@ -25,8 +39,7 @@ void ConeBremsstrahlungEmission::HandleParticle(RadiationParticle *rp, bool) {
 }
 
 /**
- * Calculate total emission of synchrotron radiation.
- * This is equation (16) in the SOFT paper.
+ * Calculate total emission of bremsstrahlung radiation.
  * 
  * rp: Object representing the particle emitting state.
  */
@@ -40,18 +53,20 @@ void ConeBremsstrahlungEmission::CalculateTotalEmission(RadiationParticle *rp) {
         gp0 = gamma*p0;
 
     slibreal_t
-        pf = this->Z2 * this->r02Alpha,
+        pf = 0,
         T1 = (12.0*gamma2 + 4.0) / (3.0*gp0) * logGp0,
         T2 =-(8.0*gamma + 6.0*p0) / (3.0*gp0*p0) * logGp0*logGp0,
         T3 =-4.0/3.0,
         T4 = 2.0 / gp0 * dilog_func(2.0*(gp0 + p02));
+    for(unsigned int j = 0; j < nspecies; j++){
+        pf = pf + density[j]*Z[j]*Z[j]*this->r02Alpha;
+    }
 
-    // Eq. (16) in [Hoppe et al., NF 58 026032 (2018)]
     this->power = pf * (T1 + T2 + T3 + T4);
 }
 
 /**
- * Calculate the synchrotron spectrum.
+ * Calculate the bremsstrahlung spectrum.
  *
  * rp: Object representing the particle emitting state.
  */
@@ -63,11 +78,14 @@ void ConeBremsstrahlungEmission::CalculateSpectrum(RadiationParticle *rp) {
         p0 = sqrt(rp->GetP2());
     
     slibreal_t
-        pf = this->Z2 * this->r02Alpha,
+        pf = 0, 
         TT1 = 4.0 / 3.0,
         TT2, TT3, TT4, TT5,
         L, LT1, LT2, LT3, LT4, LT5, LTF,
         E, E2, p, p2, k, eps, eps0;
+    
+    for (unsigned int j = 0; j < nspecies; j++)
+        pf = pf + density[j]*Z[j]*Z[j] * this->r02Alpha;
 
     for (unsigned int i = 0; i < nwavelengths; i++) {
         k = wavelengths[i];
@@ -99,7 +117,7 @@ void ConeBremsstrahlungEmission::CalculateSpectrum(RadiationParticle *rp) {
         LT3 = eps0 * (gamma*E + p02)/(p02*p0);
         LT4 =-eps  * (gamma*E + p2 )/(p2 *p );
         LT5 = 2.0*k*gamma*E / (p2*p02);
-        
+            
         I[i] = pf * p/(k*p0) *
             (TT1 + TT2 + TT3 + TT4 + TT5 +
              L*(LT1 + LT2 + LTF*(LT3 + LT4 + LT5)));
@@ -107,7 +125,7 @@ void ConeBremsstrahlungEmission::CalculateSpectrum(RadiationParticle *rp) {
 }
 
 /**
- * Integrates the synchrotron spectrum to produce a
+ * Integrates the bremsstrahlung spectrum to produce a
  * total emitted power in a given spectral range.
  */
 void ConeBremsstrahlungEmission::IntegrateSpectrum() {

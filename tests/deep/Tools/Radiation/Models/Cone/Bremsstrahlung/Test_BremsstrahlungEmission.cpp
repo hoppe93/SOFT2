@@ -14,55 +14,27 @@ using namespace std;
 using namespace __Radiation;
 
 //Constants used to retrive data from tables
-const unsigned int 
-    IGAMMA = 1,
-    IZEFF = 0;
+const unsigned int IZ = 0,
+    IDENS = 1,
+    IGAMMA = 2,
+    IINTVAL = 3;
 
 const unsigned int Test_BremsstrahlungEmission::NTESTVALUES = 4;
 
-const slibreal_t Test_BremsstrahlungEmission::TEST_ZEFF_GAMMA[4][2] = {
-{2,	    5},
-{7,     13},
-{10,    38},
-{15,	67}
+const slibreal_t Test_BremsstrahlungEmission::TEST_VALUES[NTESTVALUES][NTESTVALUES]{
+{2,	    1.64900000000000e+19,	5,	    2.41757274275679e-08},
+{7,	    1.14670000000000e+20,	13,	    7.88246674899129e-08},
+{10,	7.39030000000000e+19,	38,	    1.76395160635127e-07},
+{15,	9.10030000000000e+19,	67,	    2.38390488962464e-07}
 };
-
-const slibreal_t Test_BremsstrahlungEmission::TEST_VAL[NTESTVALUES][NTESTVALUES] = {
-{2.88228628200495e-30,	9.39765963487424e-30,	2.10302400717392e-29,	2.84214668681879e-29},
-{3.53080069545606e-29,	1.15121330527209e-28,	2.57620440878806e-28,	3.48162969135301e-28},
-{7.20571570501237e-29,	2.34941490871856e-28,	5.25756001793481e-28,	7.10536671704696e-28},
-{1.62128603362778e-28,	5.28618354461676e-28,	1.18295100403533e-27,	1.59870751133557e-27}
-};
-
 
 /**
  * Check that the formula for total emission
  * of synchrotron radiation has been implemented
  * correctly. Tests vs values obtained from same formulas implemented in matlab
  */
-/*bool Test_BremsstrahlungEmission::CheckTotalEmission(const slibreal_t tol) {
-    unsigned int i;
-    Detector *det = GetDetector(0);
-    slibreal_t pwr, corr, Delta;
-
-    for (i = 0; i < NTESTVALUES; i++) {
-	    slibreal_t Input_Z[6] = {TEST_Z[i][0], TEST_Z[i][1], TEST_Z[i][2], TEST_Z[i][3], TEST_Z[i][4], TEST_Z[i][5]};
-        slibreal_t Input_DENS[6] = {TEST_DENS[i][0], TEST_DENS[i][1], TEST_DENS[i][2], TEST_DENS[i][3], TEST_DENS[i][4], TEST_DENS[i][5]};
-        slibreal_t Input_Z0[6] = {TEST_Z0[i][0], TEST_Z0[i][1], TEST_Z0[i][2], TEST_Z0[i][3], TEST_Z0[i][4], TEST_Z0[i][5]};
-        ConeBremsstrahlungEmission cbse(det, nullptr, TEST_NR_POW[i].nspecies, Input_Z, Input_Z0, Input_DENS);
-
-        cbse.CalculateTotalEmission();
-        pwr = cbse.GetTotalEmission();
-        corr = TEST_NR_POW[i].val;
-        
-        Delta = fabs((pwr-corr)/corr);
-
-        if (Delta >= tol) {
-            this->PrintError("Total bremsstrahlung  emission was not calculated correctly. Delta = %e", Delta);
-            return false;
-        }
-    }
-    return true;
+/*bool Test_BremsstrahlungEmission::CheckTotalEmission(const slibreal_t tol) { //Needs to be implemented
+   
 }*/
 
 /* 
@@ -70,37 +42,34 @@ const slibreal_t Test_BremsstrahlungEmission::TEST_VAL[NTESTVALUES][NTESTVALUES]
  */
 bool Test_BremsstrahlungEmission::CheckSpectrumEmission(const slibreal_t tol) {
     
-    unsigned int i, j;
     Detector *det = GetDetector(50, 1, 50); //Gives detector and defines which photon momenta to look at
     MagneticFieldAnalytical2D *dummy_mf = GetMagneticField();
     slibreal_t pwr, corr, Delta;
 
-    /*slibreal_t *Z = new slibreal_t[nspecies],
-    *Z0 = new slibreal_t[nspecies], 
-    *DENS = new slibreal_t[nspecies];
-    for (i = 0; i < nspecies; i++){
-        Z[i] = TEST_Z[NTESTVALUES-1][i];
-        Z0[i] = TEST_Z0[NTESTVALUES-1][i];
-        DENS[i] = TEST_DENS[NTESTVALUES-1][i];
-    }*/
-    for (j = 0; j < NTESTVALUES; j++) {
-        ConeBremsstrahlungEmission cbe(det, nullptr, TEST_ZEFF_GAMMA[j][IZEFF]);
-        for (i = 0; i < NTESTVALUES; i++) {
-            
-            RadiationParticle *rp = GetRadiationParticle(i, det, dummy_mf);
-            
-            cbe.CalculateSpectrum(rp);
-            cbe.IntegrateSpectrum();
-            pwr = cbe.GetTotalEmission();
-            corr = TEST_VAL[j][i];
+    unsigned int nspecies = NTESTVALUES;
+    slibreal_t *Z = new slibreal_t[nspecies], 
+        *dens = new slibreal_t[nspecies];
 
-            
-            Delta = fabs((pwr-corr)/corr);
+    for (unsigned int i = 0; i < nspecies; i++){
+        Z[i] = TEST_VALUES[i][IZ];
+        dens[i] = TEST_VALUES[i][IDENS];
+    }
 
-            if (Delta >= tol) {
-                this->PrintError("Total bremsstrahlung emission was not calculated correctly. Delta = %e", Delta);
-                return false;
-            }
+    ConeBremsstrahlungEmission cbe(det, nullptr, nspecies, Z, dens);
+    for (unsigned int i = 0; i < NTESTVALUES; i++) {
+            
+        RadiationParticle *rp = GetRadiationParticle(i, det, dummy_mf);
+            
+        cbe.CalculateSpectrum(rp);
+        cbe.IntegrateSpectrum();
+        pwr = cbe.GetTotalEmission();
+        corr = TEST_VALUES[i][IINTVAL];
+            
+        Delta = fabs((pwr-corr)/corr);
+
+        if (Delta >= tol) {
+            this->PrintError("Total bremsstrahlung emission was not calculated correctly. Delta = %e", Delta);
+            return false;
         }
     }
     return true;
@@ -145,7 +114,7 @@ RadiationParticle *Test_BremsstrahlungEmission::GetRadiationParticle(unsigned in
 
     slibreal_t
         Jdtdrho = 1.0,
-        gamma = TEST_ZEFF_GAMMA[i][IGAMMA],
+        gamma = TEST_VALUES[i][IGAMMA],
         p2 = gamma*gamma - 1.0,
         p  = sqrt(p2),
         cosThetap = rhat.Dot(bHat),
@@ -174,7 +143,7 @@ bool Test_BremsstrahlungEmission::Run(bool) {
     slibreal_t SPECT_TOL=1e-3;
 
     /*if (CheckTotalEmission(TOTEM_TOL))
-        this->PrintOK("Total emission is implemented correctly.");
+        this->PrintOK("Total emission is implemented correctly."); //For test of total emission
     else
         success = false;*/
 

@@ -29,10 +29,9 @@ ConeBremsstrahlungScreenedEmission::~ConeBremsstrahlungScreenedEmission() {
 
 
 /**
- * Calculates the total emission and/or spectrum and/or
- * Stokes parameters of synchrotron radiation.
+ * Calculates the total emission and/or spectrum
  *
- * rp:           Object representing particle emitting state.
+ * rp: Object representing particle emitting state.
  * 
  */
 void ConeBremsstrahlungScreenedEmission::HandleParticle(RadiationParticle *rp, bool) {

@@ -8,9 +8,7 @@
 class Test_BremsstrahlungEmission : public UnitTest {
     private:
         static const unsigned int NTESTVALUES;
-        static const slibreal_t TEST_ZEFF_GAMMA[][2];
-        
-        static const slibreal_t TEST_VAL[][4];
+        static const slibreal_t TEST_VALUES[][4];
     public:
         Test_BremsstrahlungEmission(const string& msg) : UnitTest(msg) { }
 
