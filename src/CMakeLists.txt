@@ -151,6 +151,7 @@ set(tool_radiation_tests
     "${PROJECT_SOURCE_DIR}/tests/deep/Tools/Radiation/Models/Cone/Test_ConeProjection.cpp"
     "${PROJECT_SOURCE_DIR}/tests/deep/Tools/Radiation/Models/Cone/Test_SynchrotronEmission.cpp"
     "${PROJECT_SOURCE_DIR}/tests/deep/Tools/Radiation/Models/Cone/Bremsstrahlung/Test_BremsstrahlungScreenedEmission.cpp"
+    "${PROJECT_SOURCE_DIR}/tests/deep/Tools/Radiation/Models/Cone/Bremsstrahlung/Test_BremsstrahlungEmission.cpp"
     "${PROJECT_SOURCE_DIR}/tests/deep/Tools/Radiation/Models/Cone/Reverse/Test_ConeProjectionReverse.cpp"
 )
 

@@ -53,13 +53,9 @@ tools              = rad;
 }
 
 @RadiationModel cone {
-    # !!!!!!!!!!!!!!!!!!!!!!!!!!!
-    # This is the only setting
-    # specific to bremsstrahlung
-    # !!!!!!!!!!!!!!!!!!!!!!!!!!!
     emission = bremsstrahlung;
-    # !!!!!!!!!!!!!!!!!!!!!!!!!!!
-    # !!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #Different elements and their number-densities can be speciefied as Z and n respectively. Defeault is Z = 1, n =1
+
 }
 @RadiationOutput image {
     pixels = 600;

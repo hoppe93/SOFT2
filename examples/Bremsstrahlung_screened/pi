@@ -53,15 +53,11 @@ tools              = rad;
 }
 
 @RadiationModel cone {
-    # !!!!!!!!!!!!!!!!!!!!!!!!!!!
-    # This is the only setting
-    # specific to bremsstrahlung
-    # !!!!!!!!!!!!!!!!!!!!!!!!!!!
     emission = bremsstrahlung_screened;
     #Input if bremsstrahlung_screened is used, can be ignored otherwise
     Z = 10, 18;
     Z0 = 2, 2;
-    n = 1e19, 2e19;
+    n = 1e19, 1e19;
     
 }
 @RadiationOutput image {

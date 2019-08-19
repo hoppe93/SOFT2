@@ -40,11 +40,26 @@ end
 
 Final_table_spec = [gamma; Integrated_spectrum]';
 wl_fin = wl;
+%% Table for 3BN
+clc; format long;
+Z = [2 7 10 15];
+dens = [1.649e19 11.467e19 7.3903e19 9.1003e19];
+gamma = [5 13 38 67];
+Integrated_spectrum = zeros(1, numel(gamma));
+wl = linspace(1, 50, 50);
+
+
+for i=1:length(gamma)
+    spectrum = spec_3BN(Z, dens, wl, gamma(i), r0, alpha);
+    Integrated_spectrum(i) = Integrate_spectrum(spectrum, wl);
+end
+
+Final_table_3BN = [Z; dens; gamma; Integrated_spectrum]';
+
 %% Functions
 
-
 function val = Get_4BS(Z, r0)
-    Z2fakt = 4*Z^2*r0^2/137;
+    Z2fakt = 4*Z^2*r0^2*alpha;
     lnfakt = log(183) - 0.5*log(Z)+1/18;
     val = Z2fakt*lnfakt;
 end
@@ -104,6 +119,42 @@ function Int_spec = Integrate_spectrum(spec, wl)
     Int_spec = Int*(wl(2)-wl(1));
 end
 
+function spec= spec_3BN(Z, dens, wl, gamma_in, r0, alpha)
+    nr_wl = numel(wl);
+    d1sigma = zeros(1,nr_wl);
+    for i=1:nr_wl
+        k = wl(i);
+        if k >= gamma_in-1
+            continue;
+        end
+        
+        p0 = sqrt(gamma_in.^2 -1);
+        E0 = sqrt(1+p0.^2);
+        E = E0-k;
+        p = sqrt(E.^2-1);
+
+        PreFactor = r0^2*alpha*p./(p0.*k);
+
+        E0E = E0.*E;
+        p0p = p0.*p;
+
+        Eps  = 2*log(E+p);
+        Eps0 = 2*log(E0+p0);
+
+        L = 2*log( (E0E + p0p - 1)./k );
+
+        Term1 = 4/3 - 2*E0E.* (p.^2 + p0.^2)./(p0p.^2) ...
+            + Eps0.*E./p0.^3 + Eps.*E0./p.^3 - Eps.*Eps0./(p0p);
+
+        Term2 = L.*( 8*E0E./(3*p0p) + k.^2./(p0p.^3) .*( E0E.^2 + p0p.^2 ) );
+
+        Term3 = L.* k./(2*p0p) .*( (E0E + p0.^2).*Eps0./p0.^3 ...
+            - (E0E+p.^2).*Eps./p.^3 + 2*k.*E0E./p0p.^2 );
+
+        d1sigma(i) = PreFactor .* ( Term1 + Term2 + Term3 ); %.*(k<(E0-1));
+    end
+        spec =  (dens*(Z.^2)')*d1sigma;
+end
 
 %function pow = power(nspecies, Z, density, r0) %Needed for testung 4BS,
 %however for some unknown reason, does not work, and causes other functions

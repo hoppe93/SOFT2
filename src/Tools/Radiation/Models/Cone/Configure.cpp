@@ -64,16 +64,42 @@ void Cone::ConfigureEmission(const string& emname, ConfigBlock *conf) {
         if (this->parent->MeasuresPolarization())
             throw ConeBremsstrahlungException("The bremsstrahlung radiation model does not support polarization measurements.");
 
-    	// zeff (must be set before 'emission' model
-        slibreal_t Zeff = 1;
-        if (conf->HasSetting("zeff")) {
-            Setting *s = conf->GetSetting("zeff");
-            if (!s->IsScalar())
-                throw ConeException("Invalid value assigned to paramter 'zeff'. Expected real scalar.");
+        //default values
+        slibreal_t *Z = new slibreal_t[1];
+        Z[0] = 1.0;
+        slibreal_t *density = new slibreal_t[1];
+        density[0] = 1.0;
+        unsigned int nspecies = 1;
+      
+    	// Reading Z's and number-desities from pi-file
+        if (conf->HasSetting("Z")) {
+            Setting *s = conf->GetSetting("Z");
+            if (!s->IsNumericVector())
+                throw ConeException("Invalid value assigned to paramter 'Z'. Expected real vector. If no Z-values are given, Z=1 by defualt.");
+            vector Z_vec = s->GetNumericVector();
+            nspecies = Z_vec.size();
+            delete []Z;
+            Z = new slibreal_t [nspecies];
             
-            Zeff = s->GetScalar();
+            for(unsigned int i = 0; i < nspecies; i++)
+                Z[i] = Z_vec[i];
         }
-        this->emission = new ConeBremsstrahlungEmission(this->parent->detector, this->parent->magfield, Zeff);
+
+        if (conf->HasSetting("n")) {
+            Setting *s2 = conf->GetSetting("n");
+            if (!s2->IsNumericVector())
+                throw ConeException("Invalid value assigned to paramter 'n'. Expected real vector. If no n-values are given, n=1 by default.");
+            vector n_vec = s2->GetNumericVector();
+            if(n_vec.size() != nspecies)
+                throw ConeException("Number of n-values do not match number of Z-values. If no n-values are given, n=1 by defualt.");
+            delete []density;
+            density = new slibreal_t [nspecies];
+
+            for(unsigned int i = 0; i < nspecies; i++)
+                density[i] = n_vec[i];
+        }
+
+        this->emission = new ConeBremsstrahlungEmission(this->parent->detector, this->parent->magfield, nspecies, Z, density); //New arguments
     } else if (emname == "bremsstrahlung_screened") {
     
         if (!conf->HasSetting("Z"))

@@ -23,13 +23,12 @@ namespace __Radiation {
             static constexpr slibreal_t r02Alpha = 
                 _e2*_e2*alpha / (16.0*M_PI*M_PI*EPS0*EPS0*_m2*_c2*_c2);
 
-            slibreal_t Z2;      // Square of effective plasma charge
+            unsigned int nspecies;
+            slibreal_t *Z;
+            slibreal_t *density;
         public:
-            ConeBremsstrahlungEmission(Detector *det, MagneticField2D *mf, const slibreal_t Zeff)
-                : ConeEmission(det, mf) {
-                this->Z2 = Zeff*Zeff;
-            };
-            ~ConeBremsstrahlungEmission() {}
+            ConeBremsstrahlungEmission(Detector *det, MagneticField2D *mf, unsigned int nspecies, slibreal_t *Z, slibreal_t *density);
+            ~ConeBremsstrahlungEmission();
 
             void HandleParticle(RadiationParticle*, bool);
 

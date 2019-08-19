@@ -12,7 +12,6 @@ class Test_BremsstrahlungScreenedEmission : public UnitTest {
         static const slibreal_t TEST_Z0[][6];
         static const slibreal_t TEST_DENS[][6];
         static const slibreal_t TEST_GAMMA_INTSPEC[][2];
-        const slibreal_t ANGDIST_TOL = 10.0*SQRT_REAL_EPSILON;
     public:
         Test_BremsstrahlungScreenedEmission(const string& msg) : UnitTest(msg) { }
 
