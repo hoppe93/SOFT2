@@ -52,11 +52,11 @@ def plotImage(wl, Pow):
     
     ax = fig.add_subplot(111)
     ax.plot(wl, wl*Pow, color='C0')
-    ax.set_title("Bremsstrahlung cross section, no screening, formula 3BN")
+    ax.set_title("Title")
     
     
-    ax.set_xlabel("$k$ normalized to $m_ec$")
-    ax.set_ylabel("$k \cdot \partial \sigma/\partial k$")
+    ax.set_xlabel("$x-axis$")
+    ax.set_ylabel("$y-axis$")
 
     return ax, fig
 

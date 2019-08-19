@@ -58,6 +58,7 @@ tools              = rad;
     Z = 10, 18;
     Z0 = 2, 2;
     n = 1e19, 1e19;
+    QAGS_EpsRel = 1e-3; #Rel error tolerance for QAGS, defualt is 1e-3
     
 }
 @RadiationOutput image {

@@ -7,7 +7,7 @@
 #include "Tools/Radiation/RadiationParticle.h"
 
 using namespace __Radiation;
-ConeBremsstrahlungScreenedEmission::ConeBremsstrahlungScreenedEmission(Detector *det, MagneticField2D *mf, unsigned int nspecies, slibreal_t *Z, slibreal_t *Z0, slibreal_t *density)
+ConeBremsstrahlungScreenedEmission::ConeBremsstrahlungScreenedEmission(Detector *det, MagneticField2D *mf, unsigned int nspecies, slibreal_t *Z, slibreal_t *Z0, slibreal_t *density, slibreal_t QAGSEpsRel)
                 : ConeEmission(det, mf), nspecies(nspecies)
 {
     this->Z = new slibreal_t[nspecies]; 
@@ -18,6 +18,7 @@ ConeBremsstrahlungScreenedEmission::ConeBremsstrahlungScreenedEmission(Detector 
         this->Z0[i] = Z0[i];
         this->density[i] =  density[i];
     }
+    this->qagsEpsRel = QAGSEpsRel;
     qagsWS = gsl_integration_workspace_alloc(qagsLimit); //GSL workspace
 }
 

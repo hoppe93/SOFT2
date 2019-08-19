@@ -75,7 +75,7 @@ void Cone::ConfigureEmission(const string& emname, ConfigBlock *conf) {
         if (conf->HasSetting("Z")) {
             Setting *s = conf->GetSetting("Z");
             if (!s->IsNumericVector())
-                throw ConeException("Invalid value assigned to paramter 'Z'. Expected real vector. If no Z-values are given, Z=1 by defualt.");
+                throw ConeException("Invalid value assigned to parameter 'Z'. Expected real vector. If no Z-values are given, Z=1 by defualt.");
             vector Z_vec = s->GetNumericVector();
             nspecies = Z_vec.size();
             delete []Z;
@@ -88,7 +88,7 @@ void Cone::ConfigureEmission(const string& emname, ConfigBlock *conf) {
         if (conf->HasSetting("n")) {
             Setting *s2 = conf->GetSetting("n");
             if (!s2->IsNumericVector())
-                throw ConeException("Invalid value assigned to paramter 'n'. Expected real vector. If no n-values are given, n=1 by default.");
+                throw ConeException("Invalid value assigned to parameter 'n'. Expected real vector. If no n-values are given, n=1 by default.");
             vector n_vec = s2->GetNumericVector();
             if(n_vec.size() != nspecies)
                 throw ConeException("Number of n-values do not match number of Z-values. If no n-values are given, n=1 by defualt.");
@@ -113,11 +113,11 @@ void Cone::ConfigureEmission(const string& emname, ConfigBlock *conf) {
             *s3 = conf->GetSetting("n");
 
         if(!s->IsNumericVector())
-            throw ConeException("Invalid value assigned to paramer Z, expected real vector");
+            throw ConeException("Invalid value assigned to parameter Z, expected real vector");
         if(!s2->IsNumericVector())
-            throw ConeException("Invalid value assigned to paramer Z0, expected real vector");
+            throw ConeException("Invalid value assigned to parameter Z0, expected real vector");
         if(!s3->IsNumericVector())
-            throw ConeException("Invalid value assigned to paramer n, expected real vector");
+            throw ConeException("Invalid value assigned to parameter n, expected real vector");
 
         vector Z_vec = s->GetNumericVector(),
             Z0_vec = s2->GetNumericVector(),
@@ -138,20 +138,27 @@ void Cone::ConfigureEmission(const string& emname, ConfigBlock *conf) {
             Z0[i] = Z0_vec[i];
             density[i] = n_vec[i];
         }
-        this->emission = new ConeBremsstrahlungScreenedEmission(this->parent->detector, this->parent->magfield, nspecies, Z, Z0, density);
+        slibreal_t qagsEpsRel = 1e-3;
+        if (conf->HasSetting("QAGS_EpsRel")){
+            Setting *s =conf->GetSetting("QAGS_EpsRel");
+            if (!s->IsScalar())
+                throw ConeException("Invalid value assigned to parameter QAGS_EpsRel, expected real scalar");
+            qagsEpsRel = s->GetScalar();
+        }
+        this->emission = new ConeBremsstrahlungScreenedEmission(this->parent->detector, this->parent->magfield, nspecies, Z, Z0, density, qagsEpsRel);
     }
-else if (emname == "synchrotron") {
-        this->emission = new ConeSynchrotronEmission(this->parent->detector, this->parent->magfield, this->parent->MeasuresPolarization());
-    } else if (emname == "unit") {
-        if (this->parent->MeasuresPolarization())
-            throw ConeUnitException("The 'Unit' emission model does not support polarization measurements.");
+    else if (emname == "synchrotron") {
+            this->emission = new ConeSynchrotronEmission(this->parent->detector, this->parent->magfield, this->parent->MeasuresPolarization());
+        } else if (emname == "unit") {
+            if (this->parent->MeasuresPolarization())
+                throw ConeUnitException("The 'Unit' emission model does not support polarization measurements.");
 
-        this->emission = new ConeUnitEmission(this->parent->detector, this->parent->magfield);
-    } else
-        throw ConeException("Unrecognized emission model requested: '%s'.", emname.c_str());
+            this->emission = new ConeUnitEmission(this->parent->detector, this->parent->magfield);
+        } else
+            throw ConeException("Unrecognized emission model requested: '%s'.", emname.c_str());
 
-    this->emissionName = emname;
-}
+        this->emissionName = emname;
+    }
 
 /**
  * Returns a string describing this model.
