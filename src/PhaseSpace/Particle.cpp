@@ -55,11 +55,10 @@ void Particle::Nudge(const slibreal_t dr, enum nudge_direction nd) {
  * properties of this particle.
  *
  * bhat: Magnetic-field unit vector.
- *
- * TODO: Use the specified gyrophase.
+ * zeta: Gyro-phase.
  */
 Vector<3> Particle::Get3Momentum(Vector<3>& bhat) {
-    Vector<3> p, bhato;
+    /*Vector<3> p, bhato;
 
     if (fabs(bhat[0]) > fabs(bhat[1]) && fabs(bhat[2]) > fabs(bhat[0])) {
         bhato[0] = 1.0;
@@ -77,6 +76,18 @@ Vector<3> Particle::Get3Momentum(Vector<3>& bhat) {
 
     bhato.Normalize();
     p = ppar*bhat + pperp*bhato;
+    return p;*/
+
+    Vector<3> a, c, p, z;
+
+    z[0] = 0; z[1] = 0; z[2] = 1;
+
+    a = Vector<3>::Cross(bhat, z);
+    a.Normalize();
+
+    c = Vector<3>::Cross(a, bhat);
+    p = ppar*bhat + pperp * (c * cos(zeta) - a * sin(zeta));
+
     return p;
 }
 

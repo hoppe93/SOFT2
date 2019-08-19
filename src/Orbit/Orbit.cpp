@@ -15,7 +15,7 @@
  * nt: Number of time points to allocate.
  */
 Orbit::Orbit(orbit_type_t otype, unsigned int nt, bool calcBDerivatives)
-    : orbitType(otype), ntau(nt), hasBDerivatives(calcBDerivatives) {
+    : orbitType(otype), hasBDerivatives(calcBDerivatives), ntau(nt) {
 
     this->tau        = new slibreal_t[nt];
     this->x          = new slibreal_t[nt*3];

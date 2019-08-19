@@ -30,9 +30,9 @@ class Orbit {
 		// Whether orbit was completed (false if particle collided with wall)
 		bool completed = false;
         // True if magnetic field derivatives have been evaluated along this orbit
-        bool hasBDerivatives = false;
+        bool hasBDerivatives;
 
-		unsigned int ntau = 0;
+		unsigned int ntau;
         // Phase space indices
         unsigned int ir, ip1, ip2;
         slibreal_t m, q;       // Particle mass and charge

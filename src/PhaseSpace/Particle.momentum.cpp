@@ -38,12 +38,14 @@ const char* Particle::GetCoordinateName(const int t) {
  * 
  * t1, t2:   Coordinate types (Particle::COORDINATE_???).
  * p1, p2:   Coordinate values.
+ * zeta:     Gyro phase.
  * dp1, dp2: Change in p1/p2 direction relative to previous particle.
  */
-void Particle::InitializeMomentum(const int t1, const int t2, const slibreal_t p1, const slibreal_t p2, const slibreal_t dp1, const slibreal_t dp2) {
+void Particle::InitializeMomentum(const int t1, const int t2, const slibreal_t p1, const slibreal_t p2, const slibreal_t zeta, const slibreal_t dp1, const slibreal_t dp2, const slibreal_t dzeta) {
 	this->momentum1 = t1;
 	this->momentum2 = t2;
-    this->zeta = 0;
+    this->zeta = zeta;
+    this->SetDZeta(dzeta);
 
 	switch (t1) {
 		case Particle::COORDINATE_GAMMA:
