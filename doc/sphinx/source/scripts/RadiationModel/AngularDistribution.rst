@@ -56,6 +56,20 @@ All options
    The total number of points on the detector surface is therefore
    ``nsamples^2``.
 
+.. option:: qagslimit
+
+   :Default value: 100
+   :Allowed values: Any positive integer
+
+   Number of points in QAGS (quadrature) workspace.
+
+.. option:: qagstol
+
+   :Default value: ``1e-3``
+   :Allowed values: Any positive real number
+
+   Relative tolerance for the QAGS integration.
+
 .. option:: qrule2d
 
    :Default value: ``simpson``
