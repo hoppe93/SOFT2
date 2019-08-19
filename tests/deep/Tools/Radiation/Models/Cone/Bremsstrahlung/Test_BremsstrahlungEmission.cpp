@@ -81,15 +81,17 @@ bool Test_BremsstrahlungEmission::CheckSpectrumEmission(const slibreal_t tol) {
 Detector *Test_BremsstrahlungEmission::GetDetector(unsigned int nwavelengths, slibreal_t l0, slibreal_t l1) {
     const slibreal_t
         aperture = 0.006,
+        roll     = 0,
         visang   = 1.0,
-        dir[3] = {0.0,1.0,0.0},
-        pos[3] = {0.0,-1.069,0.0};
+        dir[3]   = {0.0,1.0,0.0},
+        pos[3]   = {0.0,-1.069,0.0};
+
         
     Vector<3>
         direction(dir),
         position(pos);
 
-    return new Detector(aperture, visang, direction, position, nwavelengths, l0, l1);
+    return new Detector(aperture, roll, visang, direction, position, nwavelengths, l0, l1);
 }
 
 /**

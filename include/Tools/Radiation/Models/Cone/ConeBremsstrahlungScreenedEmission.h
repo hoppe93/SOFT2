@@ -35,7 +35,7 @@ namespace __Radiation {
             gsl_integration_workspace *qagsWS = nullptr;
 
        public:
-            ConeBremsstrahlungScreenedEmission(Detector *det, MagneticField2D *mf, unsigned int nspecies, slibreal_t *Z, slibreal_t *Z0, slibreal_t *density, slibreal_t QAGSEpsRel);
+            ConeBremsstrahlungScreenedEmission(Detector *det, MagneticField2D *mf, unsigned int nspecies, slibreal_t *Z, slibreal_t *Z0, slibreal_t *density, slibreal_t QAGSEpsRel = 1e-3);
             ~ConeBremsstrahlungScreenedEmission();
 
             void HandleParticle(RadiationParticle*, bool);
