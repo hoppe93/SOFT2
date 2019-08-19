@@ -38,6 +38,8 @@ class SOFTEquation : public IntegratorEquation<6> {
         slibreal_t GetPositionZ(const slibreal_t*);
         slibreal_t GetPositionZ(const Vector<6>&);
 
+        virtual const orbit_type_t GetOrbitType() const = 0;
+
         virtual Vector<6>& InitializeParticle(Particle*, Vector<6>&) = 0;
         virtual void ToOrbitQuantities(slibreal_t*, slibreal_t*, Orbit*, slibreal_t, orbit_class_t, bool) = 0;
 };

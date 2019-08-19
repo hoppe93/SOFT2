@@ -127,8 +127,7 @@ ParticlePusher::ParticlePusher(
 
     // Number of time steps
     this->ntimesteps = init_get_uint32(settings, "nt", "ParticlePusher");
-    this->retorbit = new Orbit(this->ntimesteps, globset->include_drifts);
-    //this->retorbit = new Orbit(this->ntimesteps, true);
+    this->retorbit = new Orbit(this->equation->GetOrbitType(), this->ntimesteps, globset->include_drifts);
     this->solution = new slibreal_t[this->ntimesteps];
 }
 
