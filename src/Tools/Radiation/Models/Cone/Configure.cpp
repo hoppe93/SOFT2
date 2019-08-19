@@ -138,26 +138,26 @@ void Cone::ConfigureEmission(const string& emname, ConfigBlock *conf) {
             Z0[i] = Z0_vec[i];
             density[i] = n_vec[i];
         }
-        slibreal_t qagsEpsRel = 1e-3;
-        if (conf->HasSetting("QAGS_EpsRel")){
-            Setting *s =conf->GetSetting("QAGS_EpsRel");
+        slibreal_t qagstol = 1e-3;
+        if (conf->HasSetting("qagstol")){
+            Setting *s =conf->GetSetting("qagstol");
             if (!s->IsScalar())
-                throw ConeException("Invalid value assigned to parameter QAGS_EpsRel, expected real scalar");
-            qagsEpsRel = s->GetScalar();
+                throw ConeException("Invalid value assigned to parameter qagstol, expected real scalar");
+            qagstol = s->GetScalar();
         }
-        this->emission = new ConeBremsstrahlungScreenedEmission(this->parent->detector, this->parent->magfield, nspecies, Z, Z0, density, qagsEpsRel);
+        this->emission = new ConeBremsstrahlungScreenedEmission(this->parent->detector, this->parent->magfield, nspecies, Z, Z0, density, qagstol);
     }
     else if (emname == "synchrotron") {
-            this->emission = new ConeSynchrotronEmission(this->parent->detector, this->parent->magfield, this->parent->MeasuresPolarization());
-        } else if (emname == "unit") {
-            if (this->parent->MeasuresPolarization())
-                throw ConeUnitException("The 'Unit' emission model does not support polarization measurements.");
+        this->emission = new ConeSynchrotronEmission(this->parent->detector, this->parent->magfield, this->parent->MeasuresPolarization());
+    } else if (emname == "unit") {
+        if (this->parent->MeasuresPolarization())
+            throw ConeUnitException("The 'Unit' emission model does not support polarization measurements.");
 
-            this->emission = new ConeUnitEmission(this->parent->detector, this->parent->magfield);
-        } else
-            throw ConeException("Unrecognized emission model requested: '%s'.", emname.c_str());
+        this->emission = new ConeUnitEmission(this->parent->detector, this->parent->magfield);
+    } else
+        throw ConeException("Unrecognized emission model requested: '%s'.", emname.c_str());
 
-        this->emissionName = emname;
+    this->emissionName = emname;
     }
 
 /**
