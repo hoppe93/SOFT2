@@ -30,12 +30,12 @@ namespace __Radiation {
             slibreal_t *density;
 
             double qagsEpsAbs=0.0,
-                   qagsEpsRel=1e-3;
+                   qagsEpsRel;
             std::size_t qagsLimit = 100;
             gsl_integration_workspace *qagsWS = nullptr;
 
        public:
-            ConeBremsstrahlungScreenedEmission(Detector *det, MagneticField2D *mf, unsigned int nspecies, slibreal_t *Z, slibreal_t *Z0, slibreal_t *density);
+            ConeBremsstrahlungScreenedEmission(Detector *det, MagneticField2D *mf, unsigned int nspecies, slibreal_t *Z, slibreal_t *Z0, slibreal_t *density, slibreal_t QAGSEpsRel);
             ~ConeBremsstrahlungScreenedEmission();
 
             void HandleParticle(RadiationParticle*, bool);
