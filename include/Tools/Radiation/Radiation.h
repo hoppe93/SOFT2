@@ -93,6 +93,22 @@ namespace __Radiation {
             RadiationOutput *SetupRadiationOutput(ConfigBlock*, ConfigBlock*);
             virtual void Welcome(const std::string &prefix="  ") override;
 
+            void HandleTimeIntegral(
+                Orbit*, Particle*, void (Radiation::*)(
+                    RadiationParticle&, orbit_type_t, slibreal_t,
+                    slibreal_t, slibreal_t, slibreal_t, slibreal_t
+                )
+            );
+            void EvaluateToroidalTrapz(
+                RadiationParticle&, orbit_type_t,
+                slibreal_t, slibreal_t, slibreal_t,
+                slibreal_t, slibreal_t
+            );
+            void EvaluateToroidalTrapzImproved(
+                RadiationParticle&, orbit_type_t,
+                slibreal_t, slibreal_t, slibreal_t,
+                slibreal_t, slibreal_t
+            );
             // Regular trapezoidal rule
             void HandleTrapz(Orbit*, Particle*);
             // Improved trapezoidal rule

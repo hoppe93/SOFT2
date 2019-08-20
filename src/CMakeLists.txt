@@ -73,10 +73,6 @@ set(tool_orbits
 set(tool_radiation
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Configure.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Detector.cpp"
-    "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/ToroidalIntegral/LocateSurfaceOfVisibility.cpp"
-    "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/ToroidalIntegral/sov_helpers.cpp"
-    "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/ToroidalIntegral/Trapz.cpp"
-    "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/ToroidalIntegral/TrapzImproved.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/AngularDistribution/Configure.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/AngularDistribution/Handle.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/AngularDistribution/Emission/ADEmission.cpp"
@@ -137,6 +133,11 @@ set(tool_radiation
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Output/Topview/Welcome.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Radiation.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/RadiationParticle.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/TimeIntegral.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/ToroidalIntegral/LocateSurfaceOfVisibility.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/ToroidalIntegral/sov_helpers.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/ToroidalIntegral/Trapz.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/ToroidalIntegral/TrapzImproved.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Welcome.cpp"
 )
 set(tool_radiation_tests

@@ -57,6 +57,33 @@ void Radiation::HandleTrapzImproved(Orbit *o, Particle *p) {
     }
 }
 
+void Radiation::EvaluateToroidalTrapzImproved(
+    RadiationParticle &rp, orbit_type_t otype,
+    slibreal_t x0, slibreal_t y0, slibreal_t z,
+    slibreal_t px0, slibreal_t py0
+) {
+    memset(this->torflags, 0, ntoroidal);
+
+    if (otype == ORBIT_TYPE_GUIDING_CENTER) {
+        unsigned int phi1, phi2;
+
+        LocateSurfaceOfVisibility(&rp, &phi1, &phi2);
+
+        slibreal_t mx = 0;
+        IntegrateToroidalImproved(rp, x0, y0, z, px0, py0, phi1, -1, mx);
+        IntegrateToroidalImproved(rp, x0, y0, z, px0, py0, phi1+1, +1, mx);
+
+        if (phi2 != phi1) {
+            IntegrateToroidalImproved(rp, x0, y0, z, px0, py0, phi2, -1, mx);
+            IntegrateToroidalImproved(rp, x0, y0, z, px0, py0, phi2+1, +1, mx);
+        }
+    } else if (otype == ORBIT_TYPE_PARTICLE) {
+        // TODO: Implement toroidal integration for
+        // particle orbits
+        //LocatePointOfVisibility(...)
+    }
+}
+
 unsigned int Radiation::IntegrateToroidalImproved(
     RadiationParticle &rp, slibreal_t x0, slibreal_t y0, slibreal_t z,
     slibreal_t px0, slibreal_t py0, int startj, int sgn, slibreal_t &mx
