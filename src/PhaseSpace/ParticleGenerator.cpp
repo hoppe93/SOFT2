@@ -133,17 +133,18 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
         throw ParticleGeneratorException("Invalid specification of coordinate '%s'. Expected numeric vector with one (1) or three (3) elements.", pg_coordinate_names[i].c_str());
 
     // Check for gyro angle
-    if (conf->HasSetting("zeta")) {
-        s = conf->GetSetting("zeta");
+    if (conf->HasSetting("nzeta")) {
+        s = conf->GetSetting("nzeta");
         if (!s->IsScalar())
             throw ParticleGeneratorException(
-                "Invalid specification of coordinate 'zeta'. Expected number of values to generate."
+                "Invalid specification of coordinate 'nzeta'. Expected number of values to generate."
             );
 
         this->nzeta = s->GetScalar();
     } else
         this->nzeta = 1;
 
+    // Verify ranges of momentum parameters
     if (this->n1 > 1)
         this->dp1 = (this->p11-this->p10) / ((slibreal_t)(this->n1-1));
     else if (this->n1 < 1)
@@ -580,9 +581,9 @@ void ParticleGenerator::InitializeParticle(
     const unsigned int ir, const unsigned int i1,
     const unsigned int i2, const unsigned int izeta
 ) {
-	slibreal_t d=0.0, _dp1=(dp1==0?1:dp1), _dp2=(dp2==0?1:dp2), _dzeta=(dzeta==0?1:dzeta), z0;
+	slibreal_t d=0.0, _dp1=(dp1==0?1:dp1), _dp2=(dp2==0?1:dp2), z0;
     part->SetIndices(ir, i1, i2, izeta);
-	part->InitializeMomentum(mom1type, mom2type, p1, p2, zeta, _dp1, _dp2, _dzeta);
+	part->InitializeMomentum(mom1type, mom2type, p1, p2, zeta, _dp1, _dp2, dzeta);
 
 	if (include_drifts)
         d = this->rhoeff[i1][i2] - this->rhomin;
