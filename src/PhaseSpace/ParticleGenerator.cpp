@@ -60,7 +60,7 @@ using namespace std;
  */
 const int pg_ncoordinates=7;
 const string pg_coordinate_names[pg_ncoordinates] = { "gamma", "p", "ppar", "pperp", "thetap", "ithetap", "xi" };
-const int pg_coordinate_types[pg_ncoordinates] = {
+const enum Particle::coordinate pg_coordinate_types[pg_ncoordinates] = {
 	Particle::COORDINATE_GAMMA,
 	Particle::COORDINATE_P,
 	Particle::COORDINATE_PPAR,
@@ -71,7 +71,8 @@ const int pg_coordinate_types[pg_ncoordinates] = {
 };
 ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, struct global_settings *glob) {
 #	define PG_MAX_COORDINATES 2
-	int coordinates[PG_MAX_COORDINATES], ncoords=0, i;
+	enum Particle::coordinate coordinates[PG_MAX_COORDINATES];
+    int ncoords=0;
 	vector<slibreal_t> coordvals[2], radius;
 	Setting *s;
 
@@ -81,7 +82,7 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
 	this->include_drifts = glob->include_drifts;
 
 	// Gather momentum-space coordinates
-	for (i = 0; i < pg_ncoordinates; i++) {
+	for (int i = 0; i < pg_ncoordinates; i++) {
 		if (conf->HasSetting(pg_coordinate_names[i])) {
 			if (ncoords == PG_MAX_COORDINATES)
 				throw ParticleGeneratorException("Too many momentum-space coordinates provided to particle generator. Give exactly two coordinates.");
@@ -99,7 +100,7 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
 		throw ParticleGeneratorException("Too few momentum-space coordinates provided to particle generator. Give exactly two coordinates.");
 	
 	// Make sure valid syntax was used for coordinate vectors
-	for (i = 0; i < 2; i++) {
+	for (int i = 0; i < 2; i++) {
 		if (coordvals[i].size() != 3 && coordvals[i].size() != 1)
 			throw ParticleGeneratorException(
 				"Coordinate %s: Expected exactly arguments to the coordinate. Syntax: %s=start[,end,number-of-points].",
@@ -119,7 +120,7 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
         this->p11 = this->p10;
         this->n1 = 1;
     } else
-        throw ParticleGeneratorException("Invalid specification of coordinate '%s'. Expected numeric vector with one (1) or three (3) elements.", pg_coordinate_names[i].c_str());
+        throw ParticleGeneratorException("Invalid specification of coordinate '%s'. Expected numeric vector with one (1) or three (3) elements.", pg_coordinate_names[0].c_str());
 
     if (coordvals[1].size() == 3) {
         this->p20 = coordvals[1][0];
@@ -130,7 +131,7 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
         this->p21 = this->p20;
         this->n2  = 1;
     } else
-        throw ParticleGeneratorException("Invalid specification of coordinate '%s'. Expected numeric vector with one (1) or three (3) elements.", pg_coordinate_names[i].c_str());
+        throw ParticleGeneratorException("Invalid specification of coordinate '%s'. Expected numeric vector with one (1) or three (3) elements.", pg_coordinate_names[1].c_str());
 
     // Check for gyro angle
     if (conf->HasSetting("nzeta")) {

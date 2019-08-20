@@ -23,7 +23,10 @@ Particle::Particle() { }
  * rho:           Particle radial position.
  * drift_shift:   Orbit drift shift.
  */
-void Particle::InitializePosition(const int position_type, const slibreal_t rho, const slibreal_t z0, const slibreal_t drho, const slibreal_t drift_shift) {
+void Particle::InitializePosition(
+    const enum position position_type, const slibreal_t rho,
+    const slibreal_t z0, const slibreal_t drho, const slibreal_t drift_shift
+) {
 	this->position_type = position_type;
 	this->rho = rho;
     this->z0  = z0;

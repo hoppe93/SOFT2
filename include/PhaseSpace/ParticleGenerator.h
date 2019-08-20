@@ -31,9 +31,9 @@ class ParticleGenerator {
 					 nr, n1, n2, nzeta,
                      start_ir, start_i1, start_i2, start_izeta,
                      end_ir, end_i1, end_i2, end_izeta;
-		int mom1type, mom2type;				// Momentum types
+		enum Particle::coordinate mom1type, mom2type;				// Momentum types
 
-		int specified_position=Particle::POSITION_PARTICLE;
+		enum Particle::position specified_position=Particle::POSITION_PARTICLE;
 
 		slibreal_t drift_shift_tolerance=1e-4;	// Desired tolerance when computing orbit drift shift
 
