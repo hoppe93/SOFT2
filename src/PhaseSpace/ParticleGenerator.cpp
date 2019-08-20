@@ -60,7 +60,7 @@ using namespace std;
  */
 const int pg_ncoordinates=7;
 const string pg_coordinate_names[pg_ncoordinates] = { "gamma", "p", "ppar", "pperp", "thetap", "ithetap", "xi" };
-const int pg_coordinate_types[pg_ncoordinates] = {
+const enum Particle::coordinate pg_coordinate_types[pg_ncoordinates] = {
 	Particle::COORDINATE_GAMMA,
 	Particle::COORDINATE_P,
 	Particle::COORDINATE_PPAR,
@@ -71,7 +71,8 @@ const int pg_coordinate_types[pg_ncoordinates] = {
 };
 ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, struct global_settings *glob) {
 #	define PG_MAX_COORDINATES 2
-	int coordinates[PG_MAX_COORDINATES], ncoords=0, i;
+	enum Particle::coordinate coordinates[PG_MAX_COORDINATES];
+    int ncoords=0;
 	vector<slibreal_t> coordvals[2], radius;
 	Setting *s;
 
@@ -81,14 +82,14 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
 	this->include_drifts = glob->include_drifts;
 
 	// Gather momentum-space coordinates
-	for (i = 0; i < pg_ncoordinates; i++) {
+	for (int i = 0; i < pg_ncoordinates; i++) {
 		if (conf->HasSetting(pg_coordinate_names[i])) {
 			if (ncoords == PG_MAX_COORDINATES)
 				throw ParticleGeneratorException("Too many momentum-space coordinates provided to particle generator. Give exactly two coordinates.");
 
 			s = conf->GetSetting(pg_coordinate_names[i]);
 			if (!s->IsNumericVector())
-				throw ParticleGeneratorException("Invalid specification of coordinate '%s'. Expected numeric vector with three (3) elements.", pg_coordinate_names[i].c_str());
+				throw ParticleGeneratorException("Invalid specification of coordinate '%s'. Expected numeric vector with one (1) or three (3) elements.", pg_coordinate_names[i].c_str());
 
 			coordinates[ncoords] = pg_coordinate_types[i];
 			coordvals[ncoords++] = s->GetNumericVector();
@@ -99,10 +100,10 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
 		throw ParticleGeneratorException("Too few momentum-space coordinates provided to particle generator. Give exactly two coordinates.");
 	
 	// Make sure valid syntax was used for coordinate vectors
-	for (i = 0; i < 2; i++) {
-		if (coordvals[i].size() != 3)
+	for (int i = 0; i < 2; i++) {
+		if (coordvals[i].size() != 3 && coordvals[i].size() != 1)
 			throw ParticleGeneratorException(
-				"Coordinate %s: Expected exactly arguments to the coordinate. Syntax: %s=[start],[end],[number of points].",
+				"Coordinate %s: Expected exactly arguments to the coordinate. Syntax: %s=start[,end,number-of-points].",
 				pg_coordinate_names[coordinates[i]].c_str(), pg_coordinate_names[coordinates[i]].c_str()
 			);
 	}
@@ -110,13 +111,41 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
 	// Set momentum coordinates
 	this->mom1type = coordinates[0];
 	this->mom2type = coordinates[1];
-	this->p10 = coordvals[0][0];
-	this->p11 = coordvals[0][1];
-	this->n1  = (unsigned int)coordvals[0][2];
-	this->p20 = coordvals[1][0];
-	this->p21 = coordvals[1][1];
-	this->n2  = (unsigned int)coordvals[1][2];
+    if (coordvals[0].size() == 3) {
+        this->p10 = coordvals[0][0];
+        this->p11 = coordvals[0][1];
+        this->n1  = (unsigned int)coordvals[0][2];
+    } else if (coordvals[0].size() == 1) {
+        this->p10 = coordvals[0][0];
+        this->p11 = this->p10;
+        this->n1 = 1;
+    } else
+        throw ParticleGeneratorException("Invalid specification of coordinate '%s'. Expected numeric vector with one (1) or three (3) elements.", pg_coordinate_names[0].c_str());
 
+    if (coordvals[1].size() == 3) {
+        this->p20 = coordvals[1][0];
+        this->p21 = coordvals[1][1];
+        this->n2  = (unsigned int)coordvals[1][2];
+    } else if (coordvals[1].size() == 1) {
+        this->p20 = coordvals[1][0];
+        this->p21 = this->p20;
+        this->n2  = 1;
+    } else
+        throw ParticleGeneratorException("Invalid specification of coordinate '%s'. Expected numeric vector with one (1) or three (3) elements.", pg_coordinate_names[1].c_str());
+
+    // Check for gyro angle
+    if (conf->HasSetting("nzeta")) {
+        s = conf->GetSetting("nzeta");
+        if (!s->IsScalar())
+            throw ParticleGeneratorException(
+                "Invalid specification of coordinate 'nzeta'. Expected number of values to generate."
+            );
+
+        this->nzeta = s->GetScalar();
+    } else
+        this->nzeta = 1;
+
+    // Verify ranges of momentum parameters
     if (this->n1 > 1)
         this->dp1 = (this->p11-this->p10) / ((slibreal_t)(this->n1-1));
     else if (this->n1 < 1)
@@ -137,11 +166,16 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
     else
         this->dp2 = 0.0;
 
+    if (this->nzeta < 1)
+        throw ParticleGeneratorException("Invalid number of points specified for velocity parameter 'zeta': %u.\n", this->nzeta);
+    else
+        this->dzeta = 2*M_PI / ((slibreal_t)this->nzeta);
+
     // Verify that coordinates are given valid values.
     // (these trow exceptions if not).
     Particle::VerifyCoordinateSpecification(this->p10, this->p11, this->n1, this->mom1type);
     Particle::VerifyCoordinateSpecification(this->p20, this->p21, this->n2, this->mom2type);
-	
+
 	// Get radial coordinate
     SetRadialCoordinate(mf, conf);
 
@@ -328,10 +362,12 @@ void ParticleGenerator::GenerateCoordinateGrids(
     this->start_ir = 0;
     this->start_i1 = 0;
     this->start_i2 = 0;
+    this->start_izeta = 0;
 
     this->end_ir = this->nr;
     this->end_i1 = this->n1;
     this->end_i2 = this->n2;
+    this->end_izeta = this->nzeta;
 
 #ifdef WITH_MPI
     unsigned int nprocesses, mpi_rank;
@@ -371,6 +407,7 @@ void ParticleGenerator::GenerateCoordinateGrids(
     rgrid  = new slibreal_t[this->nr];
     p1grid = new slibreal_t[this->n1];
     p2grid = new slibreal_t[this->n2];
+    zetagrid = new slibreal_t[this->nzeta];
 
     for (i = 0; i < this->nr; i++)
         rgrid[i]  = this->r0  + i * this->dr;
@@ -378,6 +415,8 @@ void ParticleGenerator::GenerateCoordinateGrids(
         p1grid[i] = this->p10 + i * this->dp1;
     for (i = 0; i < this->n2; i++)
         p2grid[i] = this->p20 + i * this->dp2;
+    for (i = 0; i < this->nzeta; i++)
+        zetagrid[i] = i * this->dzeta;
 }
 
 /**
@@ -539,12 +578,13 @@ void ParticleGenerator::InitializeParticle(
 	Particle *part, DistributionFunction *f,
     MagneticField2D *mf,
     const slibreal_t rho, const slibreal_t p1,
-    const slibreal_t p2, const unsigned int ir,
-    const unsigned int i1, const unsigned int i2
+    const slibreal_t p2, const slibreal_t zeta,
+    const unsigned int ir, const unsigned int i1,
+    const unsigned int i2, const unsigned int izeta
 ) {
 	slibreal_t d=0.0, _dp1=(dp1==0?1:dp1), _dp2=(dp2==0?1:dp2), z0;
-    part->SetIndices(ir, i1, i2);
-	part->InitializeMomentum(mom1type, mom2type, p1, p2, _dp1, _dp2);
+    part->SetIndices(ir, i1, i2, izeta);
+	part->InitializeMomentum(mom1type, mom2type, p1, p2, zeta, _dp1, _dp2, dzeta);
 
 	if (include_drifts)
         d = this->rhoeff[i1][i2] - this->rhomin;
@@ -581,9 +621,9 @@ void ParticleGenerator::InitializeParticle(
  *    with any new data.
  */
 bool ParticleGenerator::Generate(Particle *part, MagneticField2D *mf, DistributionFunction *f) {
-	slibreal_t r, p1, p2;
+	slibreal_t r, p1, p2, zeta;
 	bool success = true;
-    unsigned int lir=ir, li1=i1, li2=i2;
+    unsigned int lir=ir, li1=i1, li2=i2, lizeta=izeta;
 
 	#pragma omp critical (ParticleGenerator_Generate)
 	{
@@ -592,38 +632,49 @@ bool ParticleGenerator::Generate(Particle *part, MagneticField2D *mf, Distributi
             r  = this->rgrid[ir];
             p1 = this->p1grid[i1];
             p2 = this->p2grid[i2];
+            zeta = this->zetagrid[izeta];
 
             lir = ir;
             li1 = i1;
             li2 = i2;
+            lizeta = izeta;
 
-			ir++;
+            izeta++;
+            if (izeta >= end_izeta) {
+                izeta = this->start_izeta;
+                ir++;
 
-			if (ir >= end_ir) {
-				ir = this->start_ir;
-				i1++;
-				
-				if (i1 >= end_i1) {
-					i1 = this->start_i1;
-					i2++;
+                if (ir >= end_ir) {
+                    ir = this->start_ir;
+                    i1++;
+                    
+                    if (i1 >= end_i1) {
+                        i1 = this->start_i1;
+                        i2++;
 
-					if (i2 >= end_i2) {
-						this->finished = true;
-						i2 = this->start_i2;
-					}
-				}
-			}
+                        if (i2 >= end_i2) {
+                            this->finished = true;
+                            i2 = this->start_i2;
+                        }
+                    }
+                }
+            }
 		}
 	}
 
     if (print_progress) {
-        size_t indx = ((size_t)lir) + ((size_t)nr)*(((size_t)li1) + ((size_t)n1)*((size_t)li2));
+        size_t indx =
+            ((size_t)lizeta) + ((size_t)nzeta)*(
+                ((size_t)lir) + ((size_t)nr)*(
+                    ((size_t)li1) + ((size_t)n1)*((size_t)li2)
+                )
+            );
         progress->PrintProgress(indx+1);
     }
 
 	if (success) {
         if (!include_drifts || r >= this->rhoeff[li1][li2])
-            this->InitializeParticle(part, f, mf, r, p1, p2, lir, li1, li2);
+            this->InitializeParticle(part, f, mf, r, p1, p2, zeta, lir, li1, li2, lizeta);
         else
             return Generate(part, mf, f);
     }

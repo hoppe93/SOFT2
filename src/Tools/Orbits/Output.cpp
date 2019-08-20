@@ -18,11 +18,18 @@ void Orbits::Output() {
     sf->WriteArray("solution", this->solution, this->norbits, 6*this->ntau);
 
     // Write classification
-    slibreal_t *cl = new slibreal_t[this->norbits];
+    int32_t *cl = new int32_t[this->norbits];
+    for (unsigned int i = 0; i < this->norbits; i++)
+        cl[i] = (int32_t)this->classification[i];
+
+    sf->WriteInt32List("classification", cl, this->norbits);
+    delete [] cl;
+
+    /*slibreal_t *cl = new slibreal_t[this->norbits];
     for (unsigned int i = 0; i < this->norbits; i++)
         cl[i] = (slibreal_t)this->classification[i];
 
-    sf->WriteList("classification", cl, this->norbits);
+    sf->WriteList("classification", cl, this->norbits);*/
 
     if (this->computeJacobian) {
         sf->WriteArray("Jdtdrho", this->Jdtdrho, this->norbits, this->ntau);

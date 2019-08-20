@@ -23,7 +23,10 @@ Particle::Particle() { }
  * rho:           Particle radial position.
  * drift_shift:   Orbit drift shift.
  */
-void Particle::InitializePosition(const int position_type, const slibreal_t rho, const slibreal_t z0, const slibreal_t drho, const slibreal_t drift_shift) {
+void Particle::InitializePosition(
+    const enum position position_type, const slibreal_t rho,
+    const slibreal_t z0, const slibreal_t drho, const slibreal_t drift_shift
+) {
 	this->position_type = position_type;
 	this->rho = rho;
     this->z0  = z0;
@@ -55,11 +58,10 @@ void Particle::Nudge(const slibreal_t dr, enum nudge_direction nd) {
  * properties of this particle.
  *
  * bhat: Magnetic-field unit vector.
- *
- * TODO: Use the specified gyrophase.
+ * zeta: Gyro-phase.
  */
 Vector<3> Particle::Get3Momentum(Vector<3>& bhat) {
-    Vector<3> p, bhato;
+    /*Vector<3> p, bhato;
 
     if (fabs(bhat[0]) > fabs(bhat[1]) && fabs(bhat[2]) > fabs(bhat[0])) {
         bhato[0] = 1.0;
@@ -77,6 +79,18 @@ Vector<3> Particle::Get3Momentum(Vector<3>& bhat) {
 
     bhato.Normalize();
     p = ppar*bhat + pperp*bhato;
+    return p;*/
+
+    Vector<3> a, c, p, z;
+
+    z[0] = 0; z[1] = 0; z[2] = 1;
+
+    a = Vector<3>::Cross(bhat, z);
+    a.Normalize();
+
+    c = Vector<3>::Cross(a, bhat);
+    p = ppar*bhat + pperp * (c * cos(zeta) - a * sin(zeta));
+
     return p;
 }
 

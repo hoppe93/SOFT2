@@ -11,7 +11,7 @@ namespace __Radiation {
             slibreal_t B, R, diffel;
             slibreal_t ppar, pperp, gamma, p2;
             slibreal_t dphi, Rdphi, Jdtdrho, drho;
-            slibreal_t dp1, dp2;
+            slibreal_t dp1, dp2, dzeta;
 
             slibreal_t rcp2, rcplen;
             slibreal_t m, q;            // Particle mass and charge
@@ -53,6 +53,7 @@ namespace __Radiation {
 
             slibreal_t GetDP1()                 const { return dp1; }
             slibreal_t GetDP2()                 const { return dp2; }
+            slibreal_t GetDZeta()               const { return dzeta; }
 
             slibreal_t GetCharge()              const { return q; }
             slibreal_t GetMass()                const { return m; }
@@ -67,7 +68,7 @@ namespace __Radiation {
             unsigned int GetIndexP2()           const { return ip2; }
 
             void SetDistributionValue(const slibreal_t f) { this->f = f; }
-            void SetDifferentialElements(slibreal_t, slibreal_t, slibreal_t, slibreal_t);
+            void SetDifferentialElements(slibreal_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t);
             void UpdateXY(slibreal_t, slibreal_t, slibreal_t, slibreal_t, Vector<3>&);
     };
 }

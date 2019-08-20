@@ -28,7 +28,8 @@ void Radiation::HandleTrapz(Orbit *o, Particle *p) {
         RadiationParticle rp(o, i, detector->GetPosition());
         rp.SetDifferentialElements(
             this->dphi, p->GetDRho(),
-            p->GetJMomentum1(), p->GetJMomentum2()
+            p->GetJMomentum1(), p->GetJMomentum2(),
+            p->GetJZeta()
         );
         rp.SetDistributionValue(p->GetF());
 

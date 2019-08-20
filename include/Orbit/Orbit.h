@@ -4,6 +4,11 @@
 class Orbit;
 
 typedef enum {
+    ORBIT_TYPE_GUIDING_CENTER,
+    ORBIT_TYPE_PARTICLE
+} orbit_type_t;
+
+typedef enum {
 	ORBIT_CLASS_UNKNOWN=0,
     ORBIT_CLASS_COLLIDED=1,       // Collided with wall
     ORBIT_CLASS_STAGNATION=2,     // Stagnation orbit
@@ -18,14 +23,16 @@ typedef enum {
 
 class Orbit {
 	protected:
+        // Type of orbit (particle or guiding-center)
+        orbit_type_t orbitType;
 		// Classification of orbit topology
 		orbit_class_t orbitClass = ORBIT_CLASS_UNKNOWN;
 		// Whether orbit was completed (false if particle collided with wall)
 		bool completed = false;
         // True if magnetic field derivatives have been evaluated along this orbit
-        bool hasBDerivatives = false;
+        bool hasBDerivatives;
 
-		unsigned int ntau = 0;
+		unsigned int ntau;
         // Phase space indices
         unsigned int ir, ip1, ip2;
         slibreal_t m, q;       // Particle mass and charge
@@ -58,7 +65,7 @@ class Orbit {
             *curlB,         /* Curl of magnetic field vector */
             **jacobianB;    /* Magnetic field jacobian */
 	public:
-        Orbit(unsigned int, bool calcBDerivatives=false);
+        Orbit(orbit_type_t, unsigned int, bool calcBDerivatives=false);
         ~Orbit();
         void CopyTo(Orbit*);
 		Orbit *Create(slibreal_t, Integrator<6>*, Integrator<6>*, SOFTEquation*, Particle*, slibreal_t, orbit_class_t, bool);

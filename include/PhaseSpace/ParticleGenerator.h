@@ -23,16 +23,17 @@ class ParticleGenerator {
 		slibreal_t r0, r1, dr,
 				   p10, p11, dp1,
 				   p20, p21, dp2,
+                   dzeta,
                    **rhoeff, rhomax, rhomin;
-        slibreal_t *rgrid=nullptr, *p1grid=nullptr, *p2grid=nullptr;
+        slibreal_t *rgrid=nullptr, *p1grid=nullptr, *p2grid=nullptr, *zetagrid=nullptr;
 		slibreal_t charge, mass;
-		unsigned int ir, i1, i2,
-					 nr, n1, n2,
-                     start_ir, start_i1, start_i2,
-                     end_ir, end_i1, end_i2;
-		int mom1type, mom2type;				// Momentum types
+		unsigned int ir, i1, i2, izeta,
+					 nr, n1, n2, nzeta,
+                     start_ir, start_i1, start_i2, start_izeta,
+                     end_ir, end_i1, end_i2, end_izeta;
+		enum Particle::coordinate mom1type, mom2type;				// Momentum types
 
-		int specified_position=Particle::POSITION_PARTICLE;
+		enum Particle::position specified_position=Particle::POSITION_PARTICLE;
 
 		slibreal_t drift_shift_tolerance=1e-4;	// Desired tolerance when computing orbit drift shift
 
@@ -62,8 +63,8 @@ class ParticleGenerator {
         void GetRadialCoordinate(ConfigBlock*, const std::string&, slibreal_t, slibreal_t);
 		void InitializeParticle(
             Particle*, DistributionFunction*, MagneticField2D*,
-            const slibreal_t, const slibreal_t, const slibreal_t,
-            const unsigned int, const unsigned int, const unsigned int
+            const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t,
+            const unsigned int, const unsigned int, const unsigned int, const unsigned int
         );
 		bool IsFinished();
         void SetRadialCoordinate(MagneticField2D*, ConfigBlock*);

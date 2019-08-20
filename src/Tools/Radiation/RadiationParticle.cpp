@@ -98,15 +98,16 @@ RadiationParticle::~RadiationParticle() {
  */
 void RadiationParticle::SetDifferentialElements(
     slibreal_t dphi, slibreal_t drho,
-    slibreal_t dp1, slibreal_t dp2
+    slibreal_t dp1, slibreal_t dp2, slibreal_t dzeta
 ) {
     this->dphi = dphi;
     this->Rdphi = this->R*dphi;
     this->drho = drho;
     this->dp1 = dp1;
     this->dp2 = dp2;
+    this->dzeta = dzeta;
 
-    this->diffel = Jdtdrho*dphi * dp1*dp2;
+    this->diffel = Jdtdrho*dphi * dp1*dp2*dzeta;
 }
 
 /**
