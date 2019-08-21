@@ -69,3 +69,47 @@ void Radiation::HandleTrapz(Orbit *o, Particle *p) {
     }
 }
 
+/**
+ * Evaluate only the toroidal integral.
+ *
+ * rp:        Radiation particle object
+ *            representing the particle state.
+ * otype:     Type of orbit passed to this function
+ *            (particle or guiding-center).
+ * x0, y0, z: Position of the particle at the
+ *            initial toroidal angle.
+ * px0, py0:  Momentum of the particle at the
+ *            initial toroidal angle.
+ */
+void Radiation::EvaluateToroidalTrapz(
+    RadiationParticle &rp, orbit_type_t,
+    slibreal_t x0, slibreal_t y0, slibreal_t z,
+    slibreal_t px0, slibreal_t py0
+) {
+    Vector<3> detx = detector->GetPosition(), rcp;
+    bool has_outer_wall = (wall_opacity!=WALL_OPACITY_SEMI_TRANSPARENT);
+
+    for (unsigned int j = 0; j < ntoroidal; j++) {
+        slibreal_t x = x0*cosphi[j] + y0*sinphi[j];
+        slibreal_t y =-x0*sinphi[j] + y0*cosphi[j];
+
+        slibreal_t px = px0*cosphi[j] + py0*sinphi[j];
+        slibreal_t py =-px0*sinphi[j] + py0*cosphi[j];
+
+        // Check if within FOV
+        if (!IsWithinFieldOfView(x, y, z, rcp))
+            continue;
+
+        rp.UpdateXY(x, y, px, py, rcp);
+
+        model->HandleParticle(&rp, sinphi[j], cosphi[j]);
+
+        if (!model->IsNonZero()) continue;
+        else if (wall_opacity == WALL_OPACITY_TRANSPARENT ||
+            !magfield->IntersectsDomain3D(
+            x, y, z, detx[0], detx[1], detx[2], has_outer_wall)
+        ) {
+            RegisterOutput(&rp);
+        }
+    }
+}

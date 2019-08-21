@@ -44,9 +44,11 @@ void Radiation::Handle(Orbit *o, Particle *p) {
         case ORBIT_CLASS_TRAPPED:
         case ORBIT_CLASS_PASSING:
             if (this->quadrature == QUADRATURE_FINDSOV)
-                HandleTrapzImproved(o, p);
+                //HandleTrapzImproved(o, p);
+                HandleTimeIntegral(o, p, &Radiation::EvaluateToroidalTrapzImproved);
             else
-                HandleTrapz(o, p);
+                //HandleTrapz(o, p);
+                HandleTimeIntegral(o, p, &Radiation::EvaluateToroidalTrapz);
             break;
 
         // Ignore these types of orbits

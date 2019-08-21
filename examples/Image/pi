@@ -16,12 +16,12 @@ tools              = rad;
     qa1    = 2;
     qa2    = 1;
 
-    sigmaB = ccw;
+    sigmaB = cw;
 }
 
 # Phase space grid
 @ParticleGenerator PGen {
-    a      = 0.0, 0.95, 600; # Normalized minor radius
+    a      = 0.0, 0.95, 1200; # Normalized minor radius
     p      = 60, 60, 1;
     thetap = 0.2, 0.2, 1;
 }
