@@ -20,7 +20,7 @@ class ParticleEquation : public SOFTEquation {
         slibreal_t GetPositionR(slibreal_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t);
         slibreal_t GetPositionZ(slibreal_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t);
 		Vector<6>& InitializeParticle(Particle*, Vector<6>&);
-        void ToOrbitQuantities(slibreal_t*, slibreal_t*, Orbit*, slibreal_t, orbit_class_t, bool);
+        void ToOrbitQuantities(slibreal_t*, slibreal_t*, slibreal_t*, Orbit*, slibreal_t, orbit_class_t, bool);
 };
 
 #endif/*_PARTICLE_EQUATION_H*/

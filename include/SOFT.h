@@ -57,6 +57,7 @@ class SOFT {
             WARNING_PG_INEFFICIENT_PARALLELIZATION,
             // Orbit/ParticlePusher
             WARNING_OPP_UNRECOGNIZED_SETTING,
+            WARNING_OPP_PARTICLE_EQUATION_WO_DRIFTS,
             // Tools/Radiation
             WARNING_TR_NO_OUTPUT,
             // Tools/Radiation/Models/AngularDistribution

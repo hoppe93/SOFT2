@@ -36,7 +36,7 @@ class GuidingCenterEquation : public SOFTEquation {
         slibreal_t GetPositionZ(slibreal_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t);
         bool IncludesDrifts() { return this->include_drifts; }
         Vector<6>& InitializeParticle(Particle*, Vector<6>&);
-        void ToOrbitQuantities(slibreal_t*, slibreal_t*, Orbit*, slibreal_t, orbit_class_t, bool);
+        void ToOrbitQuantities(slibreal_t*, slibreal_t*, slibreal_t*, Orbit*, slibreal_t, orbit_class_t, bool);
 		void ToggleDrifts(bool);
 };
 

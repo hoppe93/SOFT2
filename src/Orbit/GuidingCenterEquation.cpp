@@ -208,6 +208,8 @@ Vector<6>& GuidingCenterEquation::InitializeParticle(Particle *part, Vector<6>& 
  * solution:       6D solution to this equation (1-by-(6*ntimesteps) dimensional).
  * solution2:      Secondary 6D solution to use to calculate Jacobian determinant
  *                 (set to nullptr if spatial Jacobian determinant shouldn't be calculated).
+ * timingSolution: Solution used for finding the poloidal transit time when solving a
+ *                 particle equation motion. Hence not used here.
  * o:              Orbit object to store converted result in.
  * nudge:          Nudge value used to calculate 'solution2'.
  * cl:             Orbit classification (trapped, passing or unknown). If 'unknown', this
@@ -215,8 +217,8 @@ Vector<6>& GuidingCenterEquation::InitializeParticle(Particle *part, Vector<6>& 
  * forceNumerical: Force the guiding-center Jacobian to be computed numerically.
  */
 void GuidingCenterEquation::ToOrbitQuantities(
-	slibreal_t *solution, slibreal_t *solution2, Orbit *o,
-	slibreal_t nudge, orbit_class_t cl, bool forceNumerical
+	slibreal_t *solution, slibreal_t *solution2, slibreal_t*,
+    Orbit *o, slibreal_t nudge, orbit_class_t cl, bool forceNumerical
 ) {
     Vector<6> dzdt;
     slibreal_t X,Y,Z;

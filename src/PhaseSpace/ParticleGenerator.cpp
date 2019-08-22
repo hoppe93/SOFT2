@@ -288,7 +288,7 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
             throw ParticleGeneratorException("Too many values assigned to 'progress'. Expected one (1) or two (2) values.");
 
         if (print_progress) {
-            size_t total = ((size_t)nr) * ((size_t)n1) * ((size_t)n2);
+            size_t total = ((size_t)nr) * ((size_t)n1) * ((size_t)n2) * ((size_t)nzeta);
 
 #ifdef COLOR_TERMINAL
             progress = new ProgressTracker(total, nprint_progress, ptype, true, ESTIMATE_PROGRESS);

@@ -33,6 +33,7 @@ namespace __Radiation {
 			ParticleGenerator *particlegenerator;
 
 			static const char
+                DATETIME[],
 				DETECTOR_APERTURE[],
 				DETECTOR_DIRECTION[],
 				DETECTOR_EHAT1[],
@@ -46,7 +47,9 @@ namespace __Radiation {
 				RO_DOMAIN[],
 				RO_WALL[],
 				R[],
-				TP_BOUNDARY[];
+				TP_BOUNDARY[],
+                VERSION_SOFT[];
+                //VERSION_SOFTLIB[];
         public:
             RadiationOutput(Detector *d, MagneticField2D *m, ParticleGenerator *pgen) {
                 this->detector = d;

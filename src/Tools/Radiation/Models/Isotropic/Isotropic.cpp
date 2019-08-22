@@ -17,7 +17,7 @@ using namespace __Radiation;
  *
  * rp: Particle state to calculate radiation for.
  */
-void Isotropic::HandleParticle(RadiationParticle *rp, orbit_type_t otype, const slibreal_t, const slibreal_t) {
+void Isotropic::HandleParticle(RadiationParticle *rp, orbit_type_t, const slibreal_t, const slibreal_t) {
     Vector<3> &rcp = rp->GetRCP(),
               &nhat = parent->detector->GetDirection(),
               &ehat1 = parent->detector->GetEHat1(),

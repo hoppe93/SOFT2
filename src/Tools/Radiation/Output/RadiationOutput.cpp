@@ -14,6 +14,7 @@ using namespace __Radiation;
 using namespace std;
 
 const char
+    RadiationOutput::DATETIME[]           = "datetime",
 	RadiationOutput::DETECTOR_APERTURE[]  = "detectorAperture",
 	RadiationOutput::DETECTOR_DIRECTION[] = "detectorDirection",
 	RadiationOutput::DETECTOR_EHAT1[]     = "detectorEhat1",
@@ -27,7 +28,9 @@ const char
 	RadiationOutput::PARAM2NAME[]         = "param2name",
 	RadiationOutput::R[]                  = "r",
 	RadiationOutput::RO_WALL[]            = "wall",
-	RadiationOutput::TP_BOUNDARY[]		  = "tpBoundary";
+	RadiationOutput::TP_BOUNDARY[]		  = "tpBoundary",
+    RadiationOutput::VERSION_SOFT[]       = "versionSOFT";
+    //RadiationOutput::VERSION_SOFTLIB[]    = "versionSOFTLib";
 
 /**
  * Initialize the map containing all possible common
@@ -35,6 +38,24 @@ const char
  */
 void RadiationOutput::InitializeCommonQuantities() {
 	#define PAIR std::pair<string, qfunc>
+
+    // datetime
+    all_quantities.insert(
+        PAIR(DATETIME, [this](SFile *sf) {
+            struct tm *timeinfo;
+            time_t rawtime;
+
+            time(&rawtime);
+            timeinfo = localtime(&rawtime);
+
+            const int buffer_size = 200;
+            char buffer[buffer_size];
+            strftime(buffer, buffer_size, "%Y-%m-%d %H:%M:%S", timeinfo);
+
+            sf->WriteString(this->DATETIME, buffer);
+        })
+    );
+
 	// detectorAperture
 	all_quantities.insert(
 		PAIR(DETECTOR_APERTURE, [this](SFile *sf) {
@@ -140,6 +161,10 @@ void RadiationOutput::InitializeCommonQuantities() {
 	// domain & wall
 	all_quantities.insert(PAIR(RO_DOMAIN, [this](SFile *sf) { this->write_domain(sf, this->RO_DOMAIN); }));
 	all_quantities.insert(PAIR(RO_WALL,   [this](SFile *sf) { this->write_domain(sf, this->RO_WALL); }));
+
+    // version
+    all_quantities.insert(PAIR(VERSION_SOFT, [this](SFile *sf) { sf->WriteString(this->VERSION_SOFT, SOFT_GIT_SHA1); }));
+    //all_quantities.insert(PAIR(VERSION_SOFTLIB, [this](SFile *sf) { sf->WriteString(this->VERSION_SOFTLIB, SOFTLIB_GIT_SHA1); }));
 }
 
 /**

@@ -115,7 +115,6 @@ ParticlePusher::ParticlePusher(
     if ((*settings)["timeunit"] == "poloidal") {
         if (this->equation->GetOrbitType() != ORBIT_TYPE_GUIDING_CENTER) {
             // Set up "timing equation"
-            //throw ParticlePusherException("Only the guiding-center equations of motion support the 'poloidal' time unit.");
             SetupTimingIntegrator();
             this->timeunit = ORBITTIMEUNIT_SECONDS;
         } else
@@ -178,6 +177,16 @@ void ParticlePusher::InitEquation(const string& equation, ConfigBlock& eqnconf) 
 		this->InitGeneralIntegrator(*conf, eq);
     } else
         throw ParticlePusherException("Unrecognized equation type '%s'.", conf->GetSecondaryType().c_str());
+
+    // Emit a warning if the particle equations of motion are solved,
+    // while 'include_drifts = false'. Since drifts cannot be turned off
+    // in the particle equations of motion, SOFT must be run with
+    // 'include_drifts = true'.
+    if (this->equation->GetOrbitType() == ORBIT_TYPE_PARTICLE && !this->globset->include_drifts)
+        SOFT::PrintWarning(
+            SOFT::WARNING_OPP_PARTICLE_EQUATION_WO_DRIFTS,
+            "Solving the particle equations of motion, but 'include_drifts = false'. This is will lead an inconsistent calculation."
+        );
 }
 
 /**
@@ -469,12 +478,12 @@ Orbit *ParticlePusher::Push(Particle *p) {
         orbit_class_t cl = ORBIT_CLASS_STAGNATION;
         slibreal_t time = this->integrator1->LastTime();
 
-        return retorbit->Create(time, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl, this->forceNumericalJacobian);
+        return retorbit->Create(time, this->integrator1, nullptr, this->timingIntegrator, this->equation, p, this->nudge_value, cl, this->forceNumericalJacobian);
     } else if (outside_domain_flag) {
         orbit_class_t cl = ORBIT_CLASS_COLLIDED;
         slibreal_t time = this->integrator1->LastTime();
 
-        return retorbit->Create(time, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl, this->forceNumericalJacobian);
+        return retorbit->Create(time, this->integrator1, nullptr, this->timingIntegrator, this->equation, p, this->nudge_value, cl, this->forceNumericalJacobian);
     }
 
     if (this->timeunit == ORBITTIMEUNIT_POLOIDAL) {
@@ -502,14 +511,14 @@ Orbit *ParticlePusher::Push(Particle *p) {
     switch (this->timeunit) {
         case ORBITTIMEUNIT_SECONDS:
             if (this->calculateJacobianOrbit && (!this->magfield->HasMagneticFlux() || this->forceNumericalJacobian))
-                return retorbit->Create(this->maxtime, this->integrator1, this->integrator2, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
+                return retorbit->Create(this->maxtime, this->integrator1, this->integrator2, this->timingIntegrator, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
             else
-                return retorbit->Create(this->maxtime, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
+                return retorbit->Create(this->maxtime, this->integrator1, nullptr, this->timingIntegrator, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
         default:
             if (this->calculateJacobianOrbit && (!this->magfield->HasMagneticFlux() || this->forceNumericalJacobian))
-                return retorbit->Create(poltime, this->integrator1, this->integrator2, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
+                return retorbit->Create(poltime, this->integrator1, this->integrator2, this->timingIntegrator, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
             else
-                return retorbit->Create(poltime, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
+                return retorbit->Create(poltime, this->integrator1, nullptr, this->timingIntegrator, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
     }
 }
 

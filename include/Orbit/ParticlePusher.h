@@ -24,7 +24,7 @@ class ParticlePusher {
 	private:
         bool calculateJacobianOrbit = true;
 		ConfigBlock *settings;
-		Integrator<6> *integrator1, *integrator2, *timingIntegrator;
+		Integrator<6> *integrator1, *integrator2, *timingIntegrator=nullptr;
         MagneticField2D *magfield;
         struct global_settings* globset;
         SOFTEquation
