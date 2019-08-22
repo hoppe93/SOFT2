@@ -19,7 +19,7 @@ namespace __Radiation {
             virtual void InitializeOrbit(Orbit *__UNUSED__(o)) override {};
             virtual void InitializeTimestep(RadiationParticle *__UNUSED__(rp)) override {};
 
-            virtual void HandleParticle(RadiationParticle*, const slibreal_t, const slibreal_t) override;
+            virtual void HandleParticle(RadiationParticle*, orbit_type_t, const slibreal_t, const slibreal_t) override;
 
             virtual const std::string GetDescription() const override;
 

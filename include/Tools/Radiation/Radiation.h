@@ -113,8 +113,9 @@ namespace __Radiation {
             void HandleTrapz(Orbit*, Particle*);
             // Improved trapezoidal rule
             void HandleTrapzImproved(Orbit*, Particle*);
-            unsigned int IntegrateToroidalImproved(RadiationParticle&, slibreal_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t, int, int, slibreal_t&);
+            unsigned int IntegrateToroidalImproved(RadiationParticle&, orbit_type_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t, int, int, slibreal_t&);
             void LocateSurfaceOfVisibility(RadiationParticle*, unsigned int*, unsigned int*);
+            unsigned int LocatePointOfVisibility(RadiationParticle*);
             void ResetToroidalFlags();
 
             void SetDetector(Detector *det) { this->detector = det; }

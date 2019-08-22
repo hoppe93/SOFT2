@@ -63,7 +63,16 @@ void Cone::InitializeTimestep(RadiationParticle*) {
  * rp: RadiationParticle defining the instantaneous
  *     particle properties.
  */
-void Cone::HandleParticle(RadiationParticle *rp, const slibreal_t sinphi, const slibreal_t cosphi) {
+void Cone::HandleParticle(RadiationParticle *rp, orbit_type_t otype, const slibreal_t sinphi, const slibreal_t cosphi) {
+    if (otype == ORBIT_TYPE_GUIDING_CENTER)
+        ComputeOverlappingRadiationGC(rp, sinphi, cosphi);
+    else if (otype == ORBIT_TYPE_PARTICLE)
+        ComputeOverlappingRadiationParticle(rp); 
+    else
+        throw ConeException("Non-existent orbit type: %d", otype);
+}
+
+void Cone::ComputeOverlappingRadiationGC(RadiationParticle *rp, const slibreal_t sinphi, const slibreal_t cosphi){
     if (this->edgeCheck && !EdgeCheck(rp, sinphi, cosphi))
         overlapFraction = 0;
     else
@@ -100,4 +109,35 @@ void Cone::HandleParticle(RadiationParticle *rp, const slibreal_t sinphi, const 
         // V is identically zero in the cone model!
     }
 }
+
+//Kollar om strålningen hamnar på detektorplanet
+void Cone::ComputeOverlappingRadiationParticle(RadiationParticle *rp){ 
+    Vector<3> Rdp = rp->GetRCP(),
+        vhat = rp->GetPHat(),
+        ehat1 = this->parent->detector->GetEHat1(),
+        ehat2 = this->parent->detector->GetEHat2(),
+        n = this->parent->detector->GetDirection();
+    printf("vx = %.16e, vy = %.16e, vz = %.16e \n", Rdp[0], Rdp[1], Rdp[2]);
+    slibreal_t HalfAp = this->parent->detector->GetAperture()/2;
+
+    slibreal_t Rdp1 = Rdp.Dot(ehat1), Rdp2 = Rdp.Dot(ehat2), Rdpn = Rdp.Dot(n),
+        vhat1 = vhat.Dot(ehat1), vhat2 =  vhat.Dot(ehat2), vhatn = vhat.Dot(n),
+        a = -Rdpn/vhatn;
+
+    if (fabs(Rdp1+a*vhat1) <= HalfAp && fabs(Rdp2+a*vhat2) <= HalfAp){
+        this->nonzero = true;
+        this->emission->HandleParticle(rp, this->parent->MeasuresPolarization());
+        this->totEmission = this->emission->GetTotalEmission();
+        unsigned int n = this->emission->GetNWavelengths(), i;
+        slibreal_t *s = this->emission->GetSpectrum();
+        for (i = 0; i < n; i++)
+            this->I[i] = s[i];
+    }
+    else{
+        //this->totEmission = 0;
+        this->nonzero = false;
+    }
+    
+}
+
 

@@ -20,6 +20,7 @@ void Radiation::HandleTrapzImproved(Orbit *o, Particle *p) {
     P = o->GetP();
 
     model->InitializeOrbit(o);
+    orbit_type_t otype = o->GetOrbitType(); //gissning
 
     // tau integral
     // (ntau-1, since the first and last points are the same)
@@ -47,12 +48,12 @@ void Radiation::HandleTrapzImproved(Orbit *o, Particle *p) {
         LocateSurfaceOfVisibility(&rp, &phi1, &phi2);
 
         slibreal_t mx = 0;
-        IntegrateToroidalImproved(rp, x0, y0, z, px0, py0, phi1, -1, mx);
-        IntegrateToroidalImproved(rp, x0, y0, z, px0, py0, phi1+1, +1, mx);
+        IntegrateToroidalImproved(rp, otype, x0, y0, z, px0, py0, phi1, -1, mx);
+        IntegrateToroidalImproved(rp, otype, x0, y0, z, px0, py0, phi1+1, +1, mx);
 
         if (phi2 != phi1) {
-            IntegrateToroidalImproved(rp, x0, y0, z, px0, py0, phi2, -1, mx);
-            IntegrateToroidalImproved(rp, x0, y0, z, px0, py0, phi2+1, +1, mx);
+            IntegrateToroidalImproved(rp, otype, x0, y0, z, px0, py0, phi2, -1, mx);
+            IntegrateToroidalImproved(rp, otype, x0, y0, z, px0, py0, phi2+1, +1, mx);
         }
     }
 }
@@ -70,22 +71,28 @@ void Radiation::EvaluateToroidalTrapzImproved(
         LocateSurfaceOfVisibility(&rp, &phi1, &phi2);
 
         slibreal_t mx = 0;
-        IntegrateToroidalImproved(rp, x0, y0, z, px0, py0, phi1, -1, mx);
-        IntegrateToroidalImproved(rp, x0, y0, z, px0, py0, phi1+1, +1, mx);
+        IntegrateToroidalImproved(rp, otype, x0, y0, z, px0, py0, phi1, -1, mx);
+        IntegrateToroidalImproved(rp, otype, x0, y0, z, px0, py0, phi1+1, +1, mx);
 
         if (phi2 != phi1) {
-            IntegrateToroidalImproved(rp, x0, y0, z, px0, py0, phi2, -1, mx);
-            IntegrateToroidalImproved(rp, x0, y0, z, px0, py0, phi2+1, +1, mx);
+            IntegrateToroidalImproved(rp, otype, x0, y0, z, px0, py0, phi2, -1, mx);
+            IntegrateToroidalImproved(rp, otype, x0, y0, z, px0, py0, phi2+1, +1, mx);
         }
     } else if (otype == ORBIT_TYPE_PARTICLE) {
         // TODO: Implement toroidal integration for
         // particle orbits
-        //LocatePointOfVisibility(...)
+        //LocatePointOfVisibility(...
+        unsigned int phi1 = LocatePointOfVisibility(&rp);
+        slibreal_t mx = 0;
+        
+        IntegrateToroidalImproved(rp, otype, x0, y0, z, px0, py0, phi1, -1, mx);
+        IntegrateToroidalImproved(rp, otype, x0, y0, z, px0, py0, phi1+1, +1, mx);
+        
     }
 }
 
 unsigned int Radiation::IntegrateToroidalImproved(
-    RadiationParticle &rp, slibreal_t x0, slibreal_t y0, slibreal_t z,
+    RadiationParticle &rp, orbit_type_t otype, slibreal_t x0, slibreal_t y0, slibreal_t z,
     slibreal_t px0, slibreal_t py0, int startj, int sgn, slibreal_t &mx
 ) {
     slibreal_t x, y, px, py;
@@ -121,7 +128,7 @@ unsigned int Radiation::IntegrateToroidalImproved(
 
         rp.UpdateXY(x, y, px, py, rcp);
 
-        model->HandleParticle(&rp, sinphi[j], cosphi[j]);
+        model->HandleParticle(&rp, otype, sinphi[j], cosphi[j]);
 
         if (!model->IsNonZero() || model->GetPower() < mx*this->torthreshold) {
             break;

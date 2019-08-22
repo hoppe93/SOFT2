@@ -95,3 +95,33 @@ void Radiation::LocateSurfaceOfVisibility(RadiationParticle *rp, unsigned int *p
     *phi2 = (i >  j ? i : j);
 }
 
+unsigned int Radiation::LocatePointOfVisibility(RadiationParticle *rp) {
+    Vector<3> v = rp->GetPHat(), x = rp->GetPosition(), d = this->detector->GetPosition();
+    slibreal_t
+        vx = v[0], vy = v[1],
+        xp = x[0], yp = x[1],
+        x0 = d[0], y0 = d[1];
+
+        
+    slibreal_t par1 = vx*y0-vy*x0, 
+        par2 = vy*y0 + vx*x0,
+        par3 = vy*xp - vx*yp;
+    slibreal_t A = par1*par1 + par2*par2,
+        B = par1*par3,
+        C = par3*par3 - par2*par2;
+
+    slibreal_t cosphi_p = (-B + sqrt(B*B-A*C))/A,
+        cosphi_m = (-B - sqrt(B*B-A*C))/A,
+        sinphi_p = sqrt(1-cosphi_p*cosphi_p),
+        a = (y0 + xp*sinphi_p-yp*cosphi_p)/(vy*cosphi_p - vx*sinphi_p),
+        phi1;
+    
+    if (a > 0)
+        phi1 = acos(cosphi_p);
+    else 
+        phi1 = acos(cosphi_m);
+
+    return (unsigned int)round((ntoroidal-1)*phi1/(2.0*M_PI));
+
+}
+

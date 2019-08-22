@@ -21,6 +21,7 @@ void Radiation::HandleTrapz(Orbit *o, Particle *p) {
     detx = detector->GetPosition();
 
     model->InitializeOrbit(o);
+    orbit_type_t otype = o->GetOrbitType(); //gissning
 
     // tau integral
     // (ntau-1, since the first and last points are the same)
@@ -56,7 +57,7 @@ void Radiation::HandleTrapz(Orbit *o, Particle *p) {
 
             rp.UpdateXY(x, y, px, py, rcp);
 
-            model->HandleParticle(&rp, sinphi[j], cosphi[j]);
+            model->HandleParticle(&rp, otype, sinphi[j], cosphi[j]);
 
             if (!model->IsNonZero()) continue;
             else if (wall_opacity == WALL_OPACITY_TRANSPARENT ||
@@ -82,7 +83,7 @@ void Radiation::HandleTrapz(Orbit *o, Particle *p) {
  *            initial toroidal angle.
  */
 void Radiation::EvaluateToroidalTrapz(
-    RadiationParticle &rp, orbit_type_t,
+    RadiationParticle &rp, orbit_type_t otype,
     slibreal_t x0, slibreal_t y0, slibreal_t z,
     slibreal_t px0, slibreal_t py0
 ) {
@@ -102,7 +103,7 @@ void Radiation::EvaluateToroidalTrapz(
 
         rp.UpdateXY(x, y, px, py, rcp);
 
-        model->HandleParticle(&rp, sinphi[j], cosphi[j]);
+        model->HandleParticle(&rp, otype, sinphi[j], cosphi[j]);
 
         if (!model->IsNonZero()) continue;
         else if (wall_opacity == WALL_OPACITY_TRANSPARENT ||

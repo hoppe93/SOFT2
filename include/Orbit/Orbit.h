@@ -87,6 +87,7 @@ class Orbit {
         slibreal_t GetJdtdrho(unsigned int ti) const { return this->Jdtdrho[ti]; }
 
         orbit_class_t GetClassification() const { return this->orbitClass; }
+        orbit_type_t GetOrbitType() const { return this->orbitType; }
         void SetClassification(const orbit_class_t v) { this->orbitClass = v; }
 
         slibreal_t *GetInternalSolution() const { return this->_solution; }

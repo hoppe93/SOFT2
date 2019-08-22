@@ -27,7 +27,7 @@ namespace __Radiation {
             virtual void InitializeOrbit(Orbit*) = 0;
             virtual void InitializeTimestep(RadiationParticle*) = 0;
 
-            virtual void HandleParticle(RadiationParticle*, const slibreal_t, const slibreal_t) = 0;
+            virtual void HandleParticle(RadiationParticle*, orbit_type_t, const slibreal_t, const slibreal_t) = 0;
 
             virtual const std::string GetDescription() const = 0;
 
