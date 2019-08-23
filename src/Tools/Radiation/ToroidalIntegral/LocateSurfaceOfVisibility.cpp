@@ -110,6 +110,59 @@ unsigned int Radiation::LocatePointOfVisibility(RadiationParticle *rp) {
         B = par1*par3,
         C = par3*par3 - par2*par2;
 
+    slibreal_t cosphi = (-B + sqrt(B*B-A*C))/A,
+        sinphi = sqrt(1-cosphi*cosphi),
+        a = (y0 + xp*sinphi-yp*cosphi)/(vy*cosphi - vx*sinphi),
+        tol = 1e-7,
+        phi1,
+        eq_1 = (xp+a*vx)*cosphi + (yp+a*vy)*sinphi - x0,
+        eq_2 = -(xp+a*vx)*sinphi + (yp+a*vy)*cosphi - y0;
+
+    //phi1 = acos(cosphi);
+    //return (unsigned int)round((ntoroidal-1)*phi1/(2.0*M_PI));
+    
+    if (fabs(eq_1) < tol && fabs(eq_2) < tol){
+        phi1 = acos(cosphi);
+        return (unsigned int)round((ntoroidal-1)*phi1/(2.0*M_PI));
+    }
+    
+    sinphi = -sinphi;
+    a = (y0 + xp*sinphi-yp*cosphi)/(vy*cosphi - vx*sinphi);
+    eq_1 = (xp+a*vx)*cosphi + (yp+a*vy)*sinphi - x0;
+    eq_2 = -(xp+a*vx)*sinphi + (yp+a*vy)*cosphi - y0;
+    //printf("Second, abs eq1 = %e, abs eq2 = %e \n", fabs(eq_1), fabs(eq_2));
+    if (fabs(eq_1) < tol && fabs(eq_2) < tol){
+        phi1 = acos(cosphi) + M_PI;
+        return (unsigned int)round((ntoroidal-1)*phi1/(2.0*M_PI));
+    }
+    
+    cosphi = (-B - sqrt(B*B-A*C))/A;
+    sinphi = sqrt(1-cosphi*cosphi);
+    a = (y0 + xp*sinphi-yp*cosphi)/(vy*cosphi - vx*sinphi);
+    eq_1 = (xp+a*vx)*cosphi + (yp+a*vy)*sinphi - x0;
+    eq_2 = -(xp+a*vx)*sinphi + (yp+a*vy)*cosphi - y0;
+    //printf("Third, abs eq1 = %e, abs eq2 = %e \n", fabs(eq_1), fabs(eq_2));
+    if (fabs(eq_1) < tol && fabs(eq_2) < tol){
+        phi1 = acos(cosphi);
+        return (unsigned int)round((ntoroidal-1)*phi1/(2.0*M_PI));
+    } 
+    
+    sinphi = -sinphi;
+    a = (y0 + xp*sinphi-yp*cosphi)/(vy*cosphi - vx*sinphi);
+    eq_1 = (xp+a*vx)*cosphi + (yp+a*vy)*sinphi - x0;
+    eq_2 = -(xp+a*vx)*sinphi + (yp+a*vy)*cosphi - y0;
+    //printf("Last, abs eq1 = %e, abs eq2 = %e \n", fabs(eq_1), fabs(eq_2));
+    if (fabs(eq_1) < tol && fabs(eq_2) < tol){
+        phi1 = acos(cosphi) + M_PI;
+        return (unsigned int)round((ntoroidal-1)*phi1/(2.0*M_PI));
+    }    
+    
+    printf("No solution \n");
+    return 0;
+
+        
+
+/*
     slibreal_t cosphi_p = (-B + sqrt(B*B-A*C))/A,
         cosphi_m = (-B - sqrt(B*B-A*C))/A,
         sinphi_p = sqrt(1-cosphi_p*cosphi_p),
@@ -118,10 +171,11 @@ unsigned int Radiation::LocatePointOfVisibility(RadiationParticle *rp) {
     
     if (a > 0)
         phi1 = acos(cosphi_p);
-    else 
+    else
         phi1 = acos(cosphi_m);
 
     return (unsigned int)round((ntoroidal-1)*phi1/(2.0*M_PI));
+*/
 
 }
 
