@@ -101,8 +101,12 @@ unsigned int Radiation::LocatePointOfVisibility(RadiationParticle *rp) {
         vx = v[0], vy = v[1],
         xp = x[0], yp = x[1],
         x0 = d[0], y0 = d[1];
+    Vector<3> rcp = rp->GetRCP();
 
-        
+    //printf("x-d_1 = %e, x-d_2 = %e, x-d_3 = %e\n", x[0]-d[0], x[1]-d[1], x[2]-d[2]);
+    //printf("rcp_1 = %e, rcp_2 = %e, rcp_3 = %e\n", rcp[0], rcp[1], rcp[2]);
+    
+         
     slibreal_t par1 = vx*y0-vy*x0, 
         par2 = vy*y0 + vx*x0,
         par3 = vy*xp - vx*yp;
@@ -118,10 +122,7 @@ unsigned int Radiation::LocatePointOfVisibility(RadiationParticle *rp) {
         eq_1 = (xp+a*vx)*cosphi + (yp+a*vy)*sinphi - x0,
         eq_2 = -(xp+a*vx)*sinphi + (yp+a*vy)*cosphi - y0;
 
-    //phi1 = acos(cosphi);
-    //return (unsigned int)round((ntoroidal-1)*phi1/(2.0*M_PI));
-    
-    if (fabs(eq_1) < tol && fabs(eq_2) < tol){
+    if (fabs(eq_1) < tol && fabs(eq_2) < tol && a > 0){
         phi1 = acos(cosphi);
         return (unsigned int)round((ntoroidal-1)*phi1/(2.0*M_PI));
     }
@@ -130,9 +131,8 @@ unsigned int Radiation::LocatePointOfVisibility(RadiationParticle *rp) {
     a = (y0 + xp*sinphi-yp*cosphi)/(vy*cosphi - vx*sinphi);
     eq_1 = (xp+a*vx)*cosphi + (yp+a*vy)*sinphi - x0;
     eq_2 = -(xp+a*vx)*sinphi + (yp+a*vy)*cosphi - y0;
-    //printf("Second, abs eq1 = %e, abs eq2 = %e \n", fabs(eq_1), fabs(eq_2));
-    if (fabs(eq_1) < tol && fabs(eq_2) < tol){
-        phi1 = acos(cosphi) + M_PI;
+    if (fabs(eq_1) < tol && fabs(eq_2) < tol && a > 0){
+        phi1 = 2*M_PI - acos(cosphi);
         return (unsigned int)round((ntoroidal-1)*phi1/(2.0*M_PI));
     }
     
@@ -141,8 +141,7 @@ unsigned int Radiation::LocatePointOfVisibility(RadiationParticle *rp) {
     a = (y0 + xp*sinphi-yp*cosphi)/(vy*cosphi - vx*sinphi);
     eq_1 = (xp+a*vx)*cosphi + (yp+a*vy)*sinphi - x0;
     eq_2 = -(xp+a*vx)*sinphi + (yp+a*vy)*cosphi - y0;
-    //printf("Third, abs eq1 = %e, abs eq2 = %e \n", fabs(eq_1), fabs(eq_2));
-    if (fabs(eq_1) < tol && fabs(eq_2) < tol){
+    if (fabs(eq_1) < tol && fabs(eq_2) < tol && a > 0){
         phi1 = acos(cosphi);
         return (unsigned int)round((ntoroidal-1)*phi1/(2.0*M_PI));
     } 
@@ -151,12 +150,11 @@ unsigned int Radiation::LocatePointOfVisibility(RadiationParticle *rp) {
     a = (y0 + xp*sinphi-yp*cosphi)/(vy*cosphi - vx*sinphi);
     eq_1 = (xp+a*vx)*cosphi + (yp+a*vy)*sinphi - x0;
     eq_2 = -(xp+a*vx)*sinphi + (yp+a*vy)*cosphi - y0;
-    //printf("Last, abs eq1 = %e, abs eq2 = %e \n", fabs(eq_1), fabs(eq_2));
-    if (fabs(eq_1) < tol && fabs(eq_2) < tol){
-        phi1 = acos(cosphi) + M_PI;
+    
+    if (fabs(eq_1) < tol && fabs(eq_2) < tol && a > 0){
+        phi1 = 2*M_PI - acos(cosphi);
         return (unsigned int)round((ntoroidal-1)*phi1/(2.0*M_PI));
     }    
-    
     printf("No solution \n");
     return 0;
 

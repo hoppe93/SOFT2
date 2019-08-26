@@ -110,21 +110,21 @@ void Cone::ComputeOverlappingRadiationGC(RadiationParticle *rp, const slibreal_t
     }
 }
 
-//Kollar om strålningen hamnar på detektorplanet
+//Check if the radiation hit the detector plane
 void Cone::ComputeOverlappingRadiationParticle(RadiationParticle *rp){ 
     Vector<3> Rdp = rp->GetRCP(),
         vhat = rp->GetPHat(),
         ehat1 = this->parent->detector->GetEHat1(),
         ehat2 = this->parent->detector->GetEHat2(),
         n = this->parent->detector->GetDirection();
-    printf("vx = %.16e, vy = %.16e, vz = %.16e \n", Rdp[0], Rdp[1], Rdp[2]);
+    //printf("vx = %.16e, vy = %.16e, vz = %.16e \n", Rdp[0], Rdp[1], Rdp[2]);
     slibreal_t HalfAp = this->parent->detector->GetAperture()/2;
 
     slibreal_t Rdp1 = Rdp.Dot(ehat1), Rdp2 = Rdp.Dot(ehat2), Rdpn = Rdp.Dot(n),
         vhat1 = vhat.Dot(ehat1), vhat2 =  vhat.Dot(ehat2), vhatn = vhat.Dot(n),
         a = -Rdpn/vhatn;
-
-    if (fabs(Rdp1+a*vhat1) <= HalfAp && fabs(Rdp2+a*vhat2) <= HalfAp){
+    //printf("a = %e \n", a);
+    if (fabs(Rdp1+a*vhat1) <= HalfAp && fabs(Rdp2+a*vhat2) <= HalfAp && a > 0){
         this->nonzero = true;
         this->emission->HandleParticle(rp, this->parent->MeasuresPolarization());
         this->totEmission = this->emission->GetTotalEmission();
@@ -136,6 +136,7 @@ void Cone::ComputeOverlappingRadiationParticle(RadiationParticle *rp){
     else{
         //this->totEmission = 0;
         this->nonzero = false;
+        //printf(" a = %e, Ap/2 = %e, D1 = %e, D2 = %e\n", a, HalfAp, fabs(Rdp1+a*vhat1), fabs(Rdp2+a*vhat2));
     }
     
 }

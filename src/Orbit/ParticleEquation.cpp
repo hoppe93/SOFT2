@@ -239,9 +239,10 @@ void ParticleEquation::ToOrbitQuantities(
         bhat[i*3+1] = _B[1] / Babs[i];
         bhat[i*3+2] = _B[2] / Babs[i];
 
-        ppar[i] = p[0]*bhat[i*3+0] + p[1]*bhat[i*3+1] + p[2]*bhat[i*3+2];
+        ppar[i] = p[i*3+0]*bhat[i*3+0] + p[i*3+1]*bhat[i*3+1] + p[i*3+2]*bhat[i*3+2];
+	//printf("%e\n", ppar[i]);
 
-        p2[i] = p[0]*p[0] + p[1]*p[1] + p[2]*p[2];
+        p2[i] = p[i*3+0]*p[i*3+0] + p[i*3+1]*p[i*3+1] + p[i*3+2]*p[i*3+2];
         ppar2[i] = ppar[i]*ppar[i];
         pperp2[i] = p2[i] - ppar2[i];
         pperp[i] = sqrt(pperp2[i]);
