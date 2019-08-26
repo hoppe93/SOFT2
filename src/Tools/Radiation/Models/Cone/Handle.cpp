@@ -151,4 +151,3 @@ void Cone::ComputeOverlappingRadiationParticle(RadiationParticle *rp){
         this->nonzero = false;
 }
 
-

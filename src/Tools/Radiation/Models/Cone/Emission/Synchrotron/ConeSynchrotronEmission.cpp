@@ -77,10 +77,12 @@ void ConeSynchrotronEmission::CalculateTotalEmission(RadiationParticle *rp) {
                      c = LIGHTSPEED,
                      m = rp->GetMass();
 
-    slibreal_t pf = q*q*q*q * B*B / (6.0*M_PI*EPS0*m*m*c);
+    slibreal_t pf = q*q*q*q *B*B / (6.0*M_PI*EPS0*m*m*c);
+    
 
     // Eq. (16) in [Hoppe et al., NF 58 026032 (2018)]
-    this->power = pf * gamma2 * gammapar2 * betaperp2 * (1.0 - betapar2/beta);
+    //printf("power = %e \n", pf * gamma2 * gammapar2 * betaperp2 * (1.0 - betapar2/beta));
+    this->power = 1*pf * gamma2 * gammapar2 * betaperp2 * (1.0 - betapar2/beta);
 }
 
 /**

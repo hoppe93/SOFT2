@@ -20,8 +20,8 @@ void Radiation::HandleTrapzImproved(Orbit *o, Particle *p) {
     P = o->GetP();
 
     model->InitializeOrbit(o);
-    orbit_type_t otype = o->GetOrbitType(); //gissning
-
+    orbit_type_t otype = o->GetOrbitType();
+    
     // tau integral
     // (ntau-1, since the first and last points are the same)
     for (i = tindex = 0; i < ntau-1; i++, tindex += 3) {
@@ -64,6 +64,7 @@ void Radiation::EvaluateToroidalTrapzImproved(
     slibreal_t px0, slibreal_t py0
 ) {
     memset(this->torflags, 0, ntoroidal);
+    
 
     if (otype == ORBIT_TYPE_GUIDING_CENTER) {
         unsigned int phi1, phi2;
@@ -82,8 +83,11 @@ void Radiation::EvaluateToroidalTrapzImproved(
         // TODO: Implement toroidal integration for
         // particle orbits
         //LocatePointOfVisibility(...
+        //printf("Hi!\n");
+
         unsigned int phi1 = LocatePointOfVisibility(&rp);
         slibreal_t mx = 0;
+        //printf("phi = %u \n", phi1); 
         
         IntegrateToroidalImproved(rp, otype, x0, y0, z, px0, py0, phi1, -1, mx);
         IntegrateToroidalImproved(rp, otype, x0, y0, z, px0, py0, phi1+1, +1, mx);
