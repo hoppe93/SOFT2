@@ -110,34 +110,45 @@ void Cone::ComputeOverlappingRadiationGC(RadiationParticle *rp, const slibreal_t
     }
 }
 
-//Kollar om strålningen hamnar på detektorplanet
+/**
+ * Checks whether or not the ray emitted by the particle hits
+ * the detector. If it does, the corresponding radiation is
+ * calculated and 'Cone::nonzero' is set to 'true'. Otherwise,
+ * 'Cone::nonzero' is set to 'false'.
+ *
+ * rp: Particle state to compute the radiation for.
+ */
 void Cone::ComputeOverlappingRadiationParticle(RadiationParticle *rp){ 
-    Vector<3> Rdp = rp->GetRCP(),
-        vhat = rp->GetPHat(),
+    Vector<3>
+        Rdp   = rp->GetRCP(),
+        vhat  = rp->GetPHat(),
         ehat1 = this->parent->detector->GetEHat1(),
         ehat2 = this->parent->detector->GetEHat2(),
-        n = this->parent->detector->GetDirection();
-    printf("vx = %.16e, vy = %.16e, vz = %.16e \n", Rdp[0], Rdp[1], Rdp[2]);
-    slibreal_t HalfAp = this->parent->detector->GetAperture()/2;
+        n     = this->parent->detector->GetDirection();
 
-    slibreal_t Rdp1 = Rdp.Dot(ehat1), Rdp2 = Rdp.Dot(ehat2), Rdpn = Rdp.Dot(n),
-        vhat1 = vhat.Dot(ehat1), vhat2 =  vhat.Dot(ehat2), vhatn = vhat.Dot(n),
-        a = -Rdpn/vhatn;
+    slibreal_t
+        HalfAp = this->parent->detector->GetAperture()/2,
+        Rdp1   = Rdp.Dot(ehat1),
+        Rdp2   = Rdp.Dot(ehat2),
+        Rdpn   = Rdp.Dot(n),
+        vhat1  = vhat.Dot(ehat1),
+        vhat2  = vhat.Dot(ehat2),
+        vhatn  = vhat.Dot(n),
+        a      = -Rdpn/vhatn;
 
-    if (fabs(Rdp1+a*vhat1) <= HalfAp && fabs(Rdp2+a*vhat2) <= HalfAp){
+    if (fabs(Rdp1+a*vhat1) <= HalfAp && fabs(Rdp2+a*vhat2) <= HalfAp) {
         this->nonzero = true;
+
         this->emission->HandleParticle(rp, this->parent->MeasuresPolarization());
         this->totEmission = this->emission->GetTotalEmission();
-        unsigned int n = this->emission->GetNWavelengths(), i;
+
+        unsigned int n = this->emission->GetNWavelengths();
         slibreal_t *s = this->emission->GetSpectrum();
-        for (i = 0; i < n; i++)
+
+        for (unsigned int i = 0; i < n; i++)
             this->I[i] = s[i];
-    }
-    else{
-        //this->totEmission = 0;
+    } else
         this->nonzero = false;
-    }
-    
 }
 
 
