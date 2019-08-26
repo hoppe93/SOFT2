@@ -76,7 +76,7 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
 	vector<slibreal_t> coordvals[2], radius;
 	Setting *s;
 
-    ir = i1 = i2 = 0;
+    ir = i1 = i2 = izeta = 0;
 
 	// Copy interesting global settings
 	this->include_drifts = glob->include_drifts;

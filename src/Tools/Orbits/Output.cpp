@@ -18,6 +18,11 @@ void Orbits::Output() {
     sf->WriteArray("solution", this->solution, this->norbits, 6*this->ntau);
     sf->WriteArray("ppar", this->ppar, this->norbits, this->ntau);
     sf->WriteArray("pperp", this->pperp, this->norbits, this->ntau);
+    sf->WriteArray("B", this->B, this->norbits, 3*this->ntau);
+    sf->WriteArray("bhat", this->bhat, this->norbits, 3*this->ntau);
+    sf->WriteArray("p2", this->p2, this->norbits, this->ntau);
+    sf->WriteArray("Babs", this->Babs, this->norbits, this->ntau);
+    sf->WriteArray("gamma", this->gamma, this->norbits, this->ntau);
 
     // Write classification
     int32_t *cl = new int32_t[this->norbits];
