@@ -174,8 +174,12 @@ Vector<6>& GuidingCenterEquation::InitializeParticle(Particle *part, Vector<6>& 
     Babs = B.Norm();
     Vector<3> bhat = B / Babs;
 
+    slibreal_t
+        m = part->GetMass(),
+        c = LIGHTSPEED;
+
     pp = part->GetPperp();
-    mu = pp*pp*part->GetMass()*LIGHTSPEED*LIGHTSPEED / (2.0*Babs);
+    mu = pp*pp*m*c*c / (2.0*Babs);
 
     if (particle->GetPositionType() == Particle::POSITION_PARTICLE) {
         Vector<3> rho, pperp;
@@ -186,7 +190,7 @@ Vector<6>& GuidingCenterEquation::InitializeParticle(Particle *part, Vector<6>& 
         rho[1] = bhat[0]*pperp[2] - bhat[2]*pperp[0];
         rho[2] = bhat[1]*pperp[0] - bhat[0]*pperp[1];
 
-        rho /= part->GetCharge()*Babs;
+        rho /= part->GetCharge()*Babs / (m*c);
 
         x += rho;
     }
