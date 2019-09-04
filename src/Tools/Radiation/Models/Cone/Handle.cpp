@@ -63,7 +63,16 @@ void Cone::InitializeTimestep(RadiationParticle*) {
  * rp: RadiationParticle defining the instantaneous
  *     particle properties.
  */
-void Cone::HandleParticle(RadiationParticle *rp, const slibreal_t sinphi, const slibreal_t cosphi) {
+void Cone::HandleParticle(RadiationParticle *rp, orbit_type_t otype, const slibreal_t sinphi, const slibreal_t cosphi) {
+    if (otype == ORBIT_TYPE_GUIDING_CENTER)
+        ComputeOverlappingRadiationGC(rp, sinphi, cosphi);
+    else if (otype == ORBIT_TYPE_PARTICLE)
+        ComputeOverlappingRadiationParticle(rp); 
+    else
+        throw ConeException("Non-existent orbit type: %d", otype);
+}
+
+void Cone::ComputeOverlappingRadiationGC(RadiationParticle *rp, const slibreal_t sinphi, const slibreal_t cosphi){
     if (this->edgeCheck && !EdgeCheck(rp, sinphi, cosphi))
         overlapFraction = 0;
     else
@@ -99,5 +108,46 @@ void Cone::HandleParticle(RadiationParticle *rp, const slibreal_t sinphi, const 
 
         // V is identically zero in the cone model!
     }
+}
+
+/**
+ * Checks whether or not the ray emitted by the particle hits
+ * the detector. If it does, the corresponding radiation is
+ * calculated and 'Cone::nonzero' is set to 'true'. Otherwise,
+ * 'Cone::nonzero' is set to 'false'.
+ *
+ * rp: Particle state to compute the radiation for.
+ */
+void Cone::ComputeOverlappingRadiationParticle(RadiationParticle *rp){ 
+    Vector<3>
+        Rdp   = rp->GetRCP(),
+        vhat  = rp->GetPHat(),
+        ehat1 = this->parent->detector->GetEHat1(),
+        ehat2 = this->parent->detector->GetEHat2(),
+        n     = this->parent->detector->GetDirection();
+
+    slibreal_t
+        HalfAp = this->parent->detector->GetAperture()/2,
+        Rdp1   = Rdp.Dot(ehat1),
+        Rdp2   = Rdp.Dot(ehat2),
+        Rdpn   = Rdp.Dot(n),
+        vhat1  = vhat.Dot(ehat1),
+        vhat2  = vhat.Dot(ehat2),
+        vhatn  = vhat.Dot(n),
+        a      = -Rdpn/vhatn;
+
+    if (fabs(Rdp1+a*vhat1) <= HalfAp && fabs(Rdp2+a*vhat2) <= HalfAp) {
+        this->nonzero = true;
+
+        this->emission->HandleParticle(rp, this->parent->MeasuresPolarization());
+        this->totEmission = this->emission->GetTotalEmission();
+
+        unsigned int n = this->emission->GetNWavelengths();
+        slibreal_t *s = this->emission->GetSpectrum();
+
+        for (unsigned int i = 0; i < n; i++)
+            this->I[i] = s[i];
+    } else
+        this->nonzero = false;
 }
 

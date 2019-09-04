@@ -174,8 +174,12 @@ Vector<6>& GuidingCenterEquation::InitializeParticle(Particle *part, Vector<6>& 
     Babs = B.Norm();
     Vector<3> bhat = B / Babs;
 
+    slibreal_t
+        m = part->GetMass(),
+        c = LIGHTSPEED;
+
     pp = part->GetPperp();
-    mu = pp*pp*part->GetMass()*LIGHTSPEED*LIGHTSPEED / (2.0*Babs);
+    mu = pp*pp*m*c*c / (2.0*Babs);
 
     if (particle->GetPositionType() == Particle::POSITION_PARTICLE) {
         Vector<3> rho, pperp;
@@ -186,7 +190,7 @@ Vector<6>& GuidingCenterEquation::InitializeParticle(Particle *part, Vector<6>& 
         rho[1] = bhat[0]*pperp[2] - bhat[2]*pperp[0];
         rho[2] = bhat[1]*pperp[0] - bhat[0]*pperp[1];
 
-        rho /= part->GetCharge()*Babs;
+        rho /= part->GetCharge()*Babs / (m*c);
 
         x += rho;
     }
@@ -208,6 +212,8 @@ Vector<6>& GuidingCenterEquation::InitializeParticle(Particle *part, Vector<6>& 
  * solution:       6D solution to this equation (1-by-(6*ntimesteps) dimensional).
  * solution2:      Secondary 6D solution to use to calculate Jacobian determinant
  *                 (set to nullptr if spatial Jacobian determinant shouldn't be calculated).
+ * timingSolution: Solution used for finding the poloidal transit time when solving a
+ *                 particle equation motion. Hence not used here.
  * o:              Orbit object to store converted result in.
  * nudge:          Nudge value used to calculate 'solution2'.
  * cl:             Orbit classification (trapped, passing or unknown). If 'unknown', this
@@ -215,8 +221,8 @@ Vector<6>& GuidingCenterEquation::InitializeParticle(Particle *part, Vector<6>& 
  * forceNumerical: Force the guiding-center Jacobian to be computed numerically.
  */
 void GuidingCenterEquation::ToOrbitQuantities(
-	slibreal_t *solution, slibreal_t *solution2, Orbit *o,
-	slibreal_t nudge, orbit_class_t cl, bool forceNumerical
+	slibreal_t *solution, slibreal_t *solution2, slibreal_t*,
+    Orbit *o, slibreal_t nudge, orbit_class_t cl, bool forceNumerical
 ) {
     Vector<6> dzdt;
     slibreal_t X,Y,Z;

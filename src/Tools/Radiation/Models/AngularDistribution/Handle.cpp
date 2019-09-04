@@ -57,7 +57,7 @@ void AngularDistribution::InitializeTimestep(RadiationParticle *rp) {
  *                 particle properties.
  * sinphi, cosphi: Sine/cosine of current toroidal angle.
  */
-void AngularDistribution::HandleParticle(RadiationParticle *rp, const slibreal_t sinphi, const slibreal_t cosphi) {
+void AngularDistribution::HandleParticle(RadiationParticle *rp, orbit_type_t, const slibreal_t sinphi, const slibreal_t cosphi) {
     this->emission->InitializeToroidalStep(sinphi, cosphi);
 
     this->quadrature2d->Integrate(

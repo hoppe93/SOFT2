@@ -95,3 +95,55 @@ void Radiation::LocateSurfaceOfVisibility(RadiationParticle *rp, unsigned int *p
     *phi2 = (i >  j ? i : j);
 }
 
+unsigned int Radiation::LocatePointOfVisibility(RadiationParticle *rp) {
+    Vector<3> v = rp->GetPHat(), x = rp->GetPosition(), d = this->detector->GetPosition();
+    slibreal_t
+        vx = v[0], vy = v[1],
+        xp = x[0], yp = x[1],
+        x0 = d[0], y0 = d[1];
+    Vector<3> rcp = rp->GetRCP();
+
+    slibreal_t
+        par1 = vx*y0-vy*x0, 
+        par2 = vy*y0 + vx*x0,
+        par3 = vy*xp - vx*yp;
+    slibreal_t
+        A = par1*par1 + par2*par2,
+        B = par1*par3,
+        C = par3*par3 - par2*par2,
+        tol = max(fabs(xp-x0), fabs(yp-y0))*0.5*this->detector->GetAperture(),
+        B2 = B*B,
+        AC = A*C;
+
+    // Imaginary solution?
+    if (B2 < AC)
+        return 0;
+
+    slibreal_t cosphi;
+    for (int i = -1; i <= 1; i += 2) {
+        cosphi = (-B + i*sqrt(B2 - AC))/A;
+
+        if (cosphi > 1) cosphi = 1;
+        else if (cosphi < -1) cosphi = -1;
+
+        slibreal_t s = sqrt(1-cosphi*cosphi);
+        for (int j = -1; j <= 1; j += 2) {
+            slibreal_t sinphi = j*s;
+            slibreal_t
+                a = (y0 + xp*sinphi-yp*cosphi)/(vy*cosphi - vx*sinphi),
+                eq_1 = (xp+a*vx)*cosphi + (yp+a*vy)*sinphi - x0,
+                eq_2 = -(xp+a*vx)*sinphi + (yp+a*vy)*cosphi - y0;
+
+            if (fabs(eq_1) < tol && fabs(eq_2) < tol && a > 0) {
+                slibreal_t phi = acos(cosphi);
+                if (j == -1) phi = 2*M_PI - phi;
+                return (unsigned int)round((ntoroidal-1)*phi/(2.0*M_PI));
+            }
+        }
+    }
+
+    // No solution (this shouldn't happen)
+    SOFT::PrintWarning("LocatePointOfVisibility(): No solution found. x=%.16e; y=%.16e; vx=%.16e; vy=%.16e;", xp, yp, vx, vy);
+    return 0;
+}
+

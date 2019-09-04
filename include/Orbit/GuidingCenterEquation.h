@@ -28,13 +28,15 @@ class GuidingCenterEquation : public SOFTEquation {
         virtual orbit_class_t ClassifyOrbit(Integrator<6>*);
         orbit_class_t ClassifyOrbitPpar(const slibreal_t*, const unsigned int);
 
+        virtual orbit_type_t GetOrbitType() const { return ORBIT_TYPE_GUIDING_CENTER; }
+
         Vector<6>& Evaluate(const slibreal_t T, const Vector<6>& zval, Vector<6>& dzdt) { return Evaluate(T,zval,dzdt,nullptr); }
 		Vector<6>& Evaluate(const slibreal_t, const Vector<6>&, Vector<6>&, slibreal_t* gamma);
         slibreal_t GetPositionR(slibreal_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t);
         slibreal_t GetPositionZ(slibreal_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t);
         bool IncludesDrifts() { return this->include_drifts; }
         Vector<6>& InitializeParticle(Particle*, Vector<6>&);
-        void ToOrbitQuantities(slibreal_t*, slibreal_t*, Orbit*, slibreal_t, orbit_class_t, bool);
+        void ToOrbitQuantities(slibreal_t*, slibreal_t*, slibreal_t*, Orbit*, slibreal_t, orbit_class_t, bool);
 		void ToggleDrifts(bool);
 };
 

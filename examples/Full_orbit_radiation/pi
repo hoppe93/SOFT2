@@ -4,6 +4,7 @@
 
 magnetic_field     = mf;
 tools              = rad;
+include_drifts     = yes;
 
 # Configuration of EAST-like magnetic equilibrium
 @MagneticField mf (analytical) {
@@ -21,14 +22,17 @@ tools              = rad;
 
 # Phase space grid
 @ParticleGenerator PGen {
-    a      = 0.0, 0.95, 1200; # Normalized minor radius
-    p      = 60, 60, 1;
+    a      = 0, 0.95, 800; # Normalized minor radius
+    p      = 40, 40, 1;
     thetap = 0.2, 0.2, 1;
+    progress = 10;
+    nzeta = 20;
 }
 
 # Orbit generator
 @ParticlePusher PPusher {
-    nt = 2000;        # Number of timesteps per orbit (resolution parameter)
+    nt = 100000;        # Number of timesteps per orbit (resolution parameter)
+    equation = particle;
 }
 
 # Radiation tool
@@ -38,6 +42,7 @@ tools              = rad;
     ntoroidal   = 7000;    # No. of toroidal sections in tokamak (resolution parameter)
     model       = cone;    # Radiation model to use
     output      = image;   # List of configuration of output
+    #torquad = trapz;
 }
 
 # Detector properties
@@ -57,6 +62,6 @@ tools              = rad;
 
 @RadiationOutput image (image) {
     pixels = 600;
-    output = "data/image.mat";
+    output = "data/image-hrad.mat";
 }
 

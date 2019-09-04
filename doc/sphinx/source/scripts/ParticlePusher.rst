@@ -108,6 +108,12 @@ Options
    parameter is set to ``seconds``, :option:`@ParticlePusher time` gives the
    number of seconds to follow each orbit.
 
+   *The option 'poloidal' also works for particle/full orbits, even though the
+   concept of poloidal transit time is much less well-defined for in such cases.
+   To overcome this poor definition, SOFT first solves the corresponding
+   guiding-center orbit in order to determine the poloidal transit time, before
+   solving the actual particle orbit.*
+
    **Note:** The :ref:`module-radiation` module expects this parameter to be
    set to ``poloidal``, and the :option:`@ParticlePusher time` parameter to be
    set to ``1``.

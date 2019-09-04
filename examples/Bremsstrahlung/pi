@@ -19,7 +19,7 @@ tools              = rad;
     # Safety-factor (overriden in other scripts)
     qtype  = constant;
     qa1    = 1;
-    sigmaB = ccw;
+    sigmaB = cw;
 }
 
 # Phase space grid

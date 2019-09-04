@@ -14,9 +14,8 @@
  *
  * nt: Number of time points to allocate.
  */
-Orbit::Orbit(unsigned int nt, bool calcBDerivatives) {
-    this->ntau = nt;
-    this->hasBDerivatives = calcBDerivatives;
+Orbit::Orbit(orbit_type_t otype, unsigned int nt, bool calcBDerivatives)
+    : orbitType(otype), hasBDerivatives(calcBDerivatives), ntau(nt) {
 
     this->tau        = new slibreal_t[nt];
     this->x          = new slibreal_t[nt*3];
@@ -129,18 +128,21 @@ void Orbit::CopyTo(Orbit *o) {
  * the corresponding orbit (obtained through calls to the
  * 'SOFTEquation' object).
  *
- * tend:           Last time point at which to evaluate the orbit.
- * intg1:          Integrator object containing solution (6-dimensional).
- * intg2:          Second integrator object containing the solution of a
- *                 (very) slightly different orbit, that can be used to
- *                 calculate the spatial Jacobian determinant.
- * eqn:            Pointer to SOFTEquation solved by the integrator.
- * nudge:          Nudge value used to generate 'intg2'.
- * forceNumerical: Force the guiding-center Jacobian to be computed
- *                 numerically.
+ * tend:             Last time point at which to evaluate the orbit.
+ * intg1:            Integrator object containing solution (6-dimensional).
+ * intg2:            Second integrator object containing the solution of a
+ *                   (very) slightly different orbit, that can be used to
+ *                   calculate the spatial Jacobian determinant.
+ * timingIntegrator: If not nullptr, and if 'forceNumerical = false', use
+ *                   only this integrator to calculate the Jacobian.
+ * eqn:              Pointer to SOFTEquation solved by the integrator.
+ * nudge:            Nudge value used to generate 'intg2'.
+ * forceNumerical:   Force the guiding-center Jacobian to be computed
+ *                   numerically.
  */
 Orbit *Orbit::Create(
 	slibreal_t tend, Integrator<6> *intg1, Integrator<6> *intg2,
+    Integrator<6> *timingIntegrator,
 	SOFTEquation *eqn, Particle *p, slibreal_t nudge,
 	orbit_class_t cl, bool forceNumerical
 ) {
@@ -157,6 +159,7 @@ Orbit *Orbit::Create(
     );
 
     // Evaluate secondary orbit if available
+    slibreal_t *sol2 = nullptr, *timsol = nullptr;
     if (intg2 != nullptr) {
         intg2->OutputDense(
             this->ntau,
@@ -164,9 +167,18 @@ Orbit *Orbit::Create(
             this->_solution2, this->tau
         );
 
-        eqn->ToOrbitQuantities(this->_solution, this->_solution2, this, nudge, cl, forceNumerical);
-    } else
-        eqn->ToOrbitQuantities(this->_solution, nullptr, this, nudge, cl, forceNumerical);
+        sol2 = this->_solution2;
+    } else if (timingIntegrator != nullptr) {
+        timingIntegrator->OutputDense(
+            this->ntau,
+            0.0, tend,
+            this->_solution2, this->tau
+        );
+
+        timsol = this->_solution2;
+    }
+
+    eqn->ToOrbitQuantities(this->_solution, sol2, timsol, this, nudge, cl, forceNumerical);
 
     return this;
 }

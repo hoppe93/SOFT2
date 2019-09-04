@@ -65,11 +65,6 @@ void SoVVolume::Generate() {
     sfilesize_t ndims = 2, dims[2] = {this->np1, this->np2};
     sf->WriteMultiArray("volumearray", global_volumearray, ndims, dims);
 
-    sf->WriteList("param1", this->p1grid, this->np1);
-    sf->WriteList("param2", this->p2grid, this->np2);
-    sf->WriteString("param1name", Particle::GetCoordinateName(this->p1type));
-    sf->WriteString("param2name", Particle::GetCoordinateName(this->p2type));
-
 	this->WriteCommonQuantities(sf);
 
     sf->Close();

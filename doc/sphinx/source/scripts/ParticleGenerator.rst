@@ -26,6 +26,8 @@ Summary of options
 +--------------------------------------------------+------------------------------------------------------------------+
 | :option:`@ParticleGenerator progress`            | Instructs SOFT to output info on the simulation progress.        |
 +--------------------------------------------------+------------------------------------------------------------------+
+| :option:`@ParticleGenerator nzeta`               | The number of points to use for the gyro phase integral.         |
++--------------------------------------------------+------------------------------------------------------------------+
 
 In addition to these options, the following phase space parameters can also be
 specified. Exactly one spatial and two momentum parameters must be specified,
@@ -172,6 +174,17 @@ Options
    reports are split evenly accross the phase space, meaning that if the
    phase space consists of ``N`` total grid points, then SOFT reports progress
    roughly when the number of processed grid points is a multiple of ``N / n``.
+
+.. option:: nzeta
+
+   :Default value: ``1``
+   :Allowed values: Any positive integer.
+
+   Determines how many points to use for the integral over gyro angle. For
+   guiding-center calculations, this value should always be set to ``1``
+   (the only effect of setting it to some other value for guiding-center
+   calculations is that the simulation becomes slower by the factor specified).
+   This value only makes sense for full-orbit simulations.
 
 .. [#wikimassratio] https://en.wikipedia.org/wiki/Proton-to-electron_mass_ratio
 

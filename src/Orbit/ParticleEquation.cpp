@@ -169,6 +169,8 @@ Vector<6>& ParticleEquation::InitializeParticle(Particle *part, Vector<6>& zval)
  * solution:       6D solution to this equation (1-by-(6*ntimesteps) dimensional).
  * solution2:      Secondary 6D solution to use to calculate Jacobian determinant
  *                 (set to nullptr if spatial Jacobian determinant shouldn't be calculated).
+ * timingSolution: If not nullptr, and 'forceNumerical' is false, uses this solution
+ *                 to compute the Jacobian.
  * o:              Orbit object to store the converted result in.
  * nudge:          Nudge value used when calculating 'solution2'.
  * cl:             Orbit class (trapped, passing or unkown). If 'unknown', then this
@@ -176,8 +178,8 @@ Vector<6>& ParticleEquation::InitializeParticle(Particle *part, Vector<6>& zval)
  * forceNumerical: Force the guiding-center Jacobian to be computed numerically.
  */
 void ParticleEquation::ToOrbitQuantities(
-	slibreal_t *solution, slibreal_t *solution2, Orbit *o,
-	slibreal_t nudge, orbit_class_t cl, bool forceNumerical
+	slibreal_t *solution, slibreal_t *solution2, slibreal_t *timingSolution,
+    Orbit *o, slibreal_t nudge, orbit_class_t cl, bool forceNumerical
 ) {
     slibreal_t X,Y,Z;
     slibreal_t
@@ -237,9 +239,10 @@ void ParticleEquation::ToOrbitQuantities(
         bhat[i*3+1] = _B[1] / Babs[i];
         bhat[i*3+2] = _B[2] / Babs[i];
 
-        ppar[i] = p[0]*bhat[i*3+0] + p[1]*bhat[i*3+1] + p[2]*bhat[i*3+2];
+        ppar[i] = p[i*3+0]*bhat[i*3+0] + p[i*3+1]*bhat[i*3+1] + p[i*3+2]*bhat[i*3+2];
+	//printf("%e\n", ppar[i]);
 
-        p2[i] = p[0]*p[0] + p[1]*p[1] + p[2]*p[2];
+        p2[i] = p[i*3+0]*p[i*3+0] + p[i*3+1]*p[i*3+1] + p[i*3+2]*p[i*3+2];
         ppar2[i] = ppar[i]*ppar[i];
         pperp2[i] = p2[i] - ppar2[i];
         pperp[i] = sqrt(pperp2[i]);
@@ -247,7 +250,10 @@ void ParticleEquation::ToOrbitQuantities(
         gamma[i] = sqrt(p2[i] + 1.0);
     }
 
-    this->CalculateJacobians(solution, solution2, o, nudge, forceNumerical);
+    if (timingSolution != nullptr && forceNumerical == false)
+        this->CalculateJacobians(timingSolution, nullptr, o, nudge, forceNumerical);
+    else
+        this->CalculateJacobians(solution, solution2, o, nudge, forceNumerical);
 
     if (cl == ORBIT_CLASS_UNKNOWN)
         o->SetClassification(ClassifyOrbitPpar(ppar, nt));

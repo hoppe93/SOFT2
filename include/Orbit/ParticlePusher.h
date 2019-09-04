@@ -24,12 +24,15 @@ class ParticlePusher {
 	private:
         bool calculateJacobianOrbit = true;
 		ConfigBlock *settings;
-		Integrator<6> *integrator1, *integrator2;
+		Integrator<6> *integrator1, *integrator2, *timingIntegrator=nullptr;
         MagneticField2D *magfield;
         struct global_settings* globset;
-        SOFTEquation *equation;
+        SOFTEquation
+            *equation,
+            *timingEquation;
 
         bool forceNumericalJacobian = false;
+        bool useTimingIntegrator = false;
 
         slibreal_t integrator_tol;
         slibreal_t maxtime;
@@ -84,12 +87,15 @@ class ParticlePusher {
         bool MaxTimeReached(slibreal_t, slibreal_t);
         void ResetPoloidalTime();
 
+        void SetupTimingIntegrator();
+
         /* Mainly for internal use */
         Integrator<6> *GetIntegrator1() { return integrator1; }
         Orbit *GetOrbit() { return retorbit; }
 
         Orbit *Push(Particle*);
         void RunIntegrator(SOFTEquation*, Integrator<6>*, Particle*);
+        slibreal_t RunTimingIntegrator(Particle*);
 
         void ToggleJacobianCalculation(bool);
 };

@@ -93,12 +93,29 @@ namespace __Radiation {
             RadiationOutput *SetupRadiationOutput(ConfigBlock*, ConfigBlock*);
             virtual void Welcome(const std::string &prefix="  ") override;
 
+            void HandleTimeIntegral(
+                Orbit*, Particle*, void (Radiation::*)(
+                    RadiationParticle&, orbit_type_t, slibreal_t,
+                    slibreal_t, slibreal_t, slibreal_t, slibreal_t
+                )
+            );
+            void EvaluateToroidalTrapz(
+                RadiationParticle&, orbit_type_t,
+                slibreal_t, slibreal_t, slibreal_t,
+                slibreal_t, slibreal_t
+            );
+            void EvaluateToroidalTrapzImproved(
+                RadiationParticle&, orbit_type_t,
+                slibreal_t, slibreal_t, slibreal_t,
+                slibreal_t, slibreal_t
+            );
             // Regular trapezoidal rule
             void HandleTrapz(Orbit*, Particle*);
             // Improved trapezoidal rule
             void HandleTrapzImproved(Orbit*, Particle*);
-            unsigned int IntegrateToroidalImproved(RadiationParticle&, slibreal_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t, int, int, slibreal_t&);
+            unsigned int IntegrateToroidalImproved(RadiationParticle&, orbit_type_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t, slibreal_t, int, int, slibreal_t&);
             void LocateSurfaceOfVisibility(RadiationParticle*, unsigned int*, unsigned int*);
+            unsigned int LocatePointOfVisibility(RadiationParticle*);
             void ResetToroidalFlags();
 
             void SetDetector(Detector *det) { this->detector = det; }

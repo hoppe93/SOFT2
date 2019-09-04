@@ -113,10 +113,12 @@ ParticlePusher::ParticlePusher(
 
     // Time unit
     if ((*settings)["timeunit"] == "poloidal") {
-        if ((*settings)["equation"] != "guiding-center")
-            throw ParticlePusherException("Only the guiding-center equations of motion support the 'poloidal' time unit.");
-
-        this->timeunit = ORBITTIMEUNIT_POLOIDAL;
+        if (this->equation->GetOrbitType() != ORBIT_TYPE_GUIDING_CENTER) {
+            // Set up "timing equation"
+            SetupTimingIntegrator();
+            this->timeunit = ORBITTIMEUNIT_SECONDS;
+        } else
+            this->timeunit = ORBITTIMEUNIT_POLOIDAL;
     } else if ((*settings)["timeunit"] == "seconds")
         this->timeunit = ORBITTIMEUNIT_SECONDS;
     else
@@ -127,8 +129,7 @@ ParticlePusher::ParticlePusher(
 
     // Number of time steps
     this->ntimesteps = init_get_uint32(settings, "nt", "ParticlePusher");
-    this->retorbit = new Orbit(this->ntimesteps, globset->include_drifts);
-    //this->retorbit = new Orbit(this->ntimesteps, true);
+    this->retorbit = new Orbit(this->equation->GetOrbitType(), this->ntimesteps, globset->include_drifts);
     this->solution = new slibreal_t[this->ntimesteps];
 }
 
@@ -176,6 +177,35 @@ void ParticlePusher::InitEquation(const string& equation, ConfigBlock& eqnconf) 
 		this->InitGeneralIntegrator(*conf, eq);
     } else
         throw ParticlePusherException("Unrecognized equation type '%s'.", conf->GetSecondaryType().c_str());
+
+    // Emit a warning if the particle equations of motion are solved,
+    // while 'include_drifts = false'. Since drifts cannot be turned off
+    // in the particle equations of motion, SOFT must be run with
+    // 'include_drifts = true'.
+    if (this->equation->GetOrbitType() == ORBIT_TYPE_PARTICLE && !this->globset->include_drifts)
+        SOFT::PrintWarning(
+            SOFT::WARNING_OPP_PARTICLE_EQUATION_WO_DRIFTS,
+            "Solving the particle equations of motion, but 'include_drifts = false'. This is will lead an inconsistent calculation."
+        );
+}
+
+/**
+ * Set up the 'timing' equation to use along with the full-orbit solver.
+ * (This equation is used to determine the "poloidal time" of a particle).
+ * 
+ */
+void ParticlePusher::SetupTimingIntegrator() {
+    // Set equation
+    GuidingCenterEquation *eq = new GuidingCenterEquation(this->magfield, this->globset);
+    this->timingEquation = eq;
+
+    // Set up integrator
+    slibreal_t integrator_tol = 1e-6;
+    RKDP45<6> *rkdp45 = new RKDP45<6>(integrator_tol);
+    rkdp45->SetEquation(eq);
+
+    this->timingIntegrator = rkdp45;
+    this->useTimingIntegrator = true;
 }
 
 /**
@@ -403,6 +433,26 @@ void ParticlePusher::EvaluateSecondaryOrbit(Particle *p, enum Particle::nudge_di
 }
 
 /**
+ * Run the timing integrator (i.e. the orbit that will be
+ * used to calculate the poloidal transit time for a
+ * particle orbit)
+ *
+ * p:  Particle defining the initial state.
+ */
+slibreal_t ParticlePusher::RunTimingIntegrator(Particle *p) {
+    // Set temporary timing state
+    this->timeunit = ORBITTIMEUNIT_POLOIDAL;
+
+    RunIntegrator(this->timingEquation, this->timingIntegrator, p);
+
+    // Reset original state
+    this->timeunit = ORBITTIMEUNIT_SECONDS;
+    this->maxtime  = this->timingIntegrator->LastTime();
+
+    return this->maxtime;
+}
+
+/**
  * Push the given particle, i.e. calculate the
  * particle's orbit.
  *
@@ -414,6 +464,11 @@ void ParticlePusher::EvaluateSecondaryOrbit(Particle *p, enum Particle::nudge_di
 Orbit *ParticlePusher::Push(Particle *p) {
     slibreal_t poltime=0.0;
 
+    // Run timing integrator if necessary to determine
+    // the poloidal transit time
+    if (this->useTimingIntegrator)
+        RunTimingIntegrator(p);
+
     RunIntegrator(this->equation, this->integrator1, p);
 
     // If the chosen time unit is 'poloidal time', and
@@ -423,16 +478,20 @@ Orbit *ParticlePusher::Push(Particle *p) {
         orbit_class_t cl = ORBIT_CLASS_STAGNATION;
         slibreal_t time = this->integrator1->LastTime();
 
-        return retorbit->Create(time, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl, this->forceNumericalJacobian);
+        return retorbit->Create(time, this->integrator1, nullptr, this->timingIntegrator, this->equation, p, this->nudge_value, cl, this->forceNumericalJacobian);
     } else if (outside_domain_flag) {
         orbit_class_t cl = ORBIT_CLASS_COLLIDED;
         slibreal_t time = this->integrator1->LastTime();
 
-        return retorbit->Create(time, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl, this->forceNumericalJacobian);
+        return retorbit->Create(time, this->integrator1, nullptr, this->timingIntegrator, this->equation, p, this->nudge_value, cl, this->forceNumericalJacobian);
     }
 
-    if (this->timeunit == ORBITTIMEUNIT_POLOIDAL)
-        poltime = FindPoloidalTime(this->equation, this->integrator1);
+    if (this->timeunit == ORBITTIMEUNIT_POLOIDAL) {
+        if (this->useTimingIntegrator)
+            poltime = FindPoloidalTime(this->timingEquation, this->timingIntegrator);
+        else
+            poltime = FindPoloidalTime(this->equation, this->integrator1);
+    }
 
     orbit_class_t cl1;
     if (outside_domain_flag)
@@ -458,14 +517,14 @@ Orbit *ParticlePusher::Push(Particle *p) {
     switch (this->timeunit) {
         case ORBITTIMEUNIT_SECONDS:
             if (this->calculateJacobianOrbit && (!this->magfield->HasMagneticFlux() || this->forceNumericalJacobian))
-                return retorbit->Create(this->maxtime, this->integrator1, this->integrator2, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
+                return retorbit->Create(this->maxtime, this->integrator1, this->integrator2, this->timingIntegrator, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
             else
-                return retorbit->Create(this->maxtime, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
+                return retorbit->Create(this->maxtime, this->integrator1, nullptr, this->timingIntegrator, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
         default:
             if (this->calculateJacobianOrbit && (!this->magfield->HasMagneticFlux() || this->forceNumericalJacobian))
-                return retorbit->Create(poltime, this->integrator1, this->integrator2, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
+                return retorbit->Create(poltime, this->integrator1, this->integrator2, this->timingIntegrator, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
             else
-                return retorbit->Create(poltime, this->integrator1, nullptr, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
+                return retorbit->Create(poltime, this->integrator1, nullptr, this->timingIntegrator, this->equation, p, this->nudge_value, cl1, this->forceNumericalJacobian);
     }
 }
 
@@ -476,7 +535,6 @@ Orbit *ParticlePusher::Push(Particle *p) {
  */
 void ParticlePusher::RunIntegrator(SOFTEquation *eqn, Integrator<6> *intg, Particle *p) {
     Vector<6> init;
-
     eqn->InitializeParticle(p, init);
     intg->InitialValue(init);
 

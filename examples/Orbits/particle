@@ -4,9 +4,11 @@
 
 @ParticlePusher PPusher {
     equation = particle;
-    time     = 1.23e-7;
-    timeunit = seconds;
     nt       = 10000;
+    # To set a fixed time, uncomment the
+    # following two lines:
+    #timeunit = seconds;
+    #time     = 1.23e-7;
 }
 @Orbits orbits { output = "data/particle.mat"; }
 
