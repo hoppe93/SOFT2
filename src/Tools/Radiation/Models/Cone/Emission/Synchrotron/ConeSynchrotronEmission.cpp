@@ -99,17 +99,16 @@ void ConeSynchrotronEmission::CalculateSpectrum(RadiationParticle *rp) {
         beta = sqrt(betapar2+betaperp2),
         gammapar2 = gamma2 / (1.0 + pperp2);
 
-	Vector<3>& rhat = rp->GetRCP();
+	Vector<3> rhat = rp->GetRCP();
 	rhat.Normalize();
-	Vector<3> pos = rp->GetPosition();
-    	Vector<3> Bvec = this->magfield->Eval(rp->GetPosition());
-	Vector<3> rh_cr_rh_cr_Bvec = Vector<3>::Cross(rhat, Vector<3>::Cross(rhat, Bvec));
+    Vector<3> Bvec = this->magfield->Eval(rp->GetPosition());
+
+	slibreal_t Rc = Vector<3>::Cross(rhat, Vector<3>::Cross(rhat, Bvec)).Norm();
 
     slibreal_t c = LIGHTSPEED, e = fabs(rp->GetCharge()), l, lcl,
     	m = rp->GetMass(),
     	pf = c*e*e / (sqrt(3.0)*EPS0*gamma2) * gammapar2 * (1.0 - betapar2/beta), 
-	ikf,
-	lc = 4.0*M_PI*c*m/(3*e*gamma2*beta*rh_cr_rh_cr_Bvec.Norm());
+        ikf, lc = 4.0*M_PI*c*m/(3*e*gamma2*beta*Rc);
 
     // Evaluate spectrum at each wavelength
     for (unsigned int i = 0; i < nwavelengths; i++) {
@@ -133,13 +132,19 @@ void ConeSynchrotronEmission::CalculatePolarization(RadiationParticle *rp) {
         betapar2 = ppar2 / gamma2,
         betaperp2 = pperp2 / gamma2,
         beta = sqrt(betapar2+betaperp2),
-        gammapar2 = gamma2 / (1.0 + pperp2),
-        gammapar = sqrt(gammapar2);
+        gammapar2 = gamma2 / (1.0 + pperp2);
 
-    slibreal_t c = LIGHTSPEED, e = fabs(rp->GetCharge()),
-        m = rp->GetMass(), B = rp->GetB(),
+	Vector<3> rhat = rp->GetRCP();
+	rhat.Normalize();
+    Vector<3> Bvec = this->magfield->Eval(rp->GetPosition());
+
+    slibreal_t Rc = Vector<3>::Cross(rhat, Vector<3>::Cross(rhat, Bvec)).Norm();
+
+    slibreal_t
+        c = LIGHTSPEED, e = fabs(rp->GetCharge()), m = rp->GetMass(),
         pf = c*e*e / (sqrt(3.0)*EPS0*gamma2) * gammapar2 * (1.0 - betapar2/beta),
-        lc = 4.0*M_PI*m*c*gammapar / (3*gamma2*e*B);
+        //lc = 4.0*M_PI*m*c*gammapar / (3*gamma2*e*B);
+        lc = 4.0*M_PI*c*m/(3*e*gamma2*beta*Rc);
     
     Vector<3> bhat = this->magfield->Eval(rp->GetPosition());
     bhat.Normalize();
@@ -277,9 +282,9 @@ void ConeSynchrotronEmission::IntegrateSpectrumStokes() {
     for (x = 1; x < nwavelengths-1; x++)
         u += U[x];
 
-    this->power = i;
-    this->totQ  = q;
-    this->totU  = u;
+    this->power = i * (wavelengths[1]-wavelengths[0]);
+    this->totQ  = q * (wavelengths[1]-wavelengths[0]);
+    this->totU  = u * (wavelengths[1]-wavelengths[0]);
     this->totV  = 0;
 }
 
