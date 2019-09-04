@@ -80,6 +80,7 @@ void Cone::ComputeOverlappingRadiationGC(RadiationParticle *rp, const slibreal_t
 
     if (overlapFraction == 0) {
         this->nonzero = false;
+        return;
     } else {
         this->nonzero = true;
 
@@ -95,9 +96,9 @@ void Cone::ComputeOverlappingRadiationGC(RadiationParticle *rp, const slibreal_t
         this->I[i] = s[i] * overlapFraction;
 
     if (this->parent->MeasuresPolarization()) {
-        this->totQ = this->emission->GetPowerQ();
-        this->totU = this->emission->GetPowerU();
-        this->totV = this->emission->GetPowerV();
+        this->totQ = this->emission->GetPowerQ() * overlapFraction;
+        this->totU = this->emission->GetPowerU() * overlapFraction;
+        this->totV = this->emission->GetPowerV() * overlapFraction;
 
         s = this->emission->GetStokesQ();
         for (i = 0; i < n; i++)
