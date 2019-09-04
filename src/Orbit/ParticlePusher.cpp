@@ -442,6 +442,12 @@ Orbit *ParticlePusher::Push(Particle *p) {
 
     if (this->calculateJacobianOrbit && (!this->magfield->HasMagneticFlux() || this->forceNumericalJacobian)) {
         EvaluateSecondaryOrbit(p, Particle::NUDGE_OUTWARDS);
+
+        if (outside_domain_flag) {
+            slibreal_t time = this->integrator1->LastTime();
+            return retorbit->Create(time, this->integrator1, nullptr, this->timingIntegrator, this->equation, p, this->nudge_value, ORBIT_CLASS_COLLIDED, this->forceNumericalJacobian);
+        }
+
         orbit_class_t cl2 = this->equation->ClassifyOrbit(this->integrator2);
 
         if (cl1 != cl2)
