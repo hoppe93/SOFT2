@@ -47,8 +47,14 @@ void Green::PrepareAllocateGreen() {
     for (i = 0; i < this->nformat; i++)
         this->factors[i] = 1;
 
-    this->ndimensions = this->nformat;
-    this->dimensions = new sfilesize_t[this->nformat];
+    if (this->storeStokesParameters) {
+        this->ndimensions = this->nformat+1;
+        this->dimensions  = new sfilesize_t[this->ndimensions];
+        this->dimensions[0] = 4;
+    } else {
+        this->ndimensions = this->nformat;
+        this->dimensions  = new sfilesize_t[this->ndimensions];
+    }
 
     unsigned int NR=this->nr, N1=this->n1, N2=this->n2;
 #ifdef WITH_MPI
@@ -90,7 +96,10 @@ void Green::PrepareAllocateGreen() {
         }
 
         this->fsize *= s;
-        this->dimensions[i] = s;
+        if (this->storeStokesParameters)
+            this->dimensions[i+1] = s;
+        else
+            this->dimensions[i] = s;
 
         if (i > 0)
             this->factors[i-1] = s;

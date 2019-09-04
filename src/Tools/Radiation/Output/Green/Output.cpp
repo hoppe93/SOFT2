@@ -84,14 +84,12 @@ void Green::Generate() {
     sf->WriteList("wavelengths", this->detector->GetWavelengths(), this->nw);
 
     if (this->hasI)
-        sf->WriteScalar("rowpixels", this->subnrowpixels);
+        sf->WriteInt32List("rowpixels", &this->subnrowpixels, 1);
     if (this->hasJ)
-        sf->WriteScalar("colpixels", this->subncolpixels);
+        sf->WriteInt32List("colpixels", &this->subncolpixels, 1);
 
-    if (this->storeStokesParameters)
-        sf->WriteScalar("stokesparams", 1.0);
-	else
-		sf->WriteScalar("stokesparams", 0.0);
+    int32_t sp = (this->storeStokesParameters ? 1 : 0);
+    sf->WriteInt32List("stokesparams", &sp, 1);
 
 	this->WriteCommonQuantities(sf);
 

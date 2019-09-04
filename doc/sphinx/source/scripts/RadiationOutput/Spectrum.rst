@@ -8,13 +8,15 @@ The @RadiationOutput module for simulating spectrometers.
 Summary of options
 ^^^^^^^^^^^^^^^^^^
 
-+---------------------------------------------+----------------------------------------------------------+
-| **Option**                                  | **Description**                                          |
-+---------------------------------------------+----------------------------------------------------------+
-| :option:`@RadiationOutput(spectrum) common` | List of common quantities to include in the output file. |
-+---------------------------------------------+----------------------------------------------------------+
-| :option:`@RadiationOutput(spectrum) output` | Name of the output file to generate.                     |
-+---------------------------------------------+----------------------------------------------------------+
++---------------------------------------------------+----------------------------------------------------------+
+| **Option**                                        | **Description**                                          |
++---------------------------------------------------+----------------------------------------------------------+
+| :option:`@RadiationOutput(spectrum) common`       | List of common quantities to include in the output file. |
++---------------------------------------------------+----------------------------------------------------------+
+| :option:`@RadiationOutput(spectrum) output`       | Name of the output file to generate.                     |
++---------------------------------------------------+----------------------------------------------------------+
+| :option:`@RadiationOutput(spectrum) stokesparams` | Specifies whether or not to store Stokes parameters.     |
++---------------------------------------------------+----------------------------------------------------------+
 
 Example configuration
 ^^^^^^^^^^^^^^^^^^^^^
@@ -78,4 +80,15 @@ All options
 
    Specifies the name of the output file to generate. The file name extension
    determines the type of the output file.
+
+.. option:: stokesparams
+
+   :Default value: ``no``
+   :Allowed values: ``yes`` or ``no``.
+
+   If ``yes``, adds information about the Stokes parameter :math:`(I, Q, U, V)`
+   to the Green's function. Another dimension is added to the output array, and
+   becomes the new first dimension. This effectively means that instead of
+   storing one Green's function, four separate Green's function corresponding to
+   each of the Stokes parameters is stored contiguously in memory.
 

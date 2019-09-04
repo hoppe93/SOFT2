@@ -57,9 +57,9 @@ resulting from a plasma current density of the form
    \boldsymbol{j} = \sigma_I\hat{\boldsymbol{\varphi}}j(r)
    = \sigma_I\hat{\boldsymbol{\varphi}} q_{a1}\left[ 1 - \left(\frac{r}{r_0}\right)^{q_{a2}} \right],
 
-where :math:`q_{a1}` is interpreted as the central current density. From this,
-the plasma current :math:`I` can be related to the central safety factor
-:math:`q_0\equiv q(0)`:
+where :math:`q_{a1}` is interpreted as the central current density (given in
+units of mega-ampere, MA). From this, the plasma current :math:`I` can be
+related to the central safety factor :math:`q_0\equiv q(0)`:
 
 .. math::
     

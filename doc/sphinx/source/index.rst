@@ -15,6 +15,7 @@ Welcome to SOFTv2's documentation!
    scripts/index
    magnetic_field
    dominant
+   polarization
    mpi
    examples
    faq

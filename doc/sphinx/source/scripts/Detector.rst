@@ -23,6 +23,8 @@ Summary of options
 +------------------------+------------------------------------------------------------+
 | :option:`direction`    | Viewing direction / detector plane normal vector           |
 +------------------------+------------------------------------------------------------+
+| :option:`optics`       | Detector optics settings                                   |
++------------------------+------------------------------------------------------------+
 | :option:`position`     | Position relative to tokamak point-of-symmetry             |
 +------------------------+------------------------------------------------------------+
 | :option:`vision_angle` | Detector vision angle (field-of-view (half) opening angle) |
@@ -97,11 +99,23 @@ Options
    vector is normalized internally by SOFT to become a unit vector, and does not
    have to specified as a unit vector.
 
+.. option:: optics
+
+   | **Default value:** ``korger``
+   | **Allowed values:** ``korger``
+
+   Specifies which model to use for the detector optics. At the moment, the
+   detector optics in principle only specifies whether or not to apply any
+   polarization filters, but could in principle in the future be used to apply
+   any kind of detector transfer function. For now, the default value of this
+   option is the only possible one, and so there is no need to set this option
+   specifically.
+
 .. option:: position
 
    | **Default value:** None
    | **Example line:** ``position = 0, -1.069, 0;``
-   | **Allowed values:** ``
+   | **Allowed values:** Any real 3-vector except null
 
    Detector position relative to the tokamak point-of-symmetry. Units used for
    the vector components are meters.

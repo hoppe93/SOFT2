@@ -39,6 +39,16 @@ void Spectrum::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
         throw SpectrumException("No spectrum output name has been specifed. Set the option 'output'.");
     else
         this->output = (*conf)["output"];
+
+    // stokesparams
+    if (conf->HasSetting("stokesparams")) {
+        Setting *s = conf->GetSetting("stokesparams");
+
+        if (!s->IsBool())
+            throw SpectrumException("Illegal value assigned to 'stokesparams'. Expected boolean.");
+
+        this->measurePolarization = s->GetBool();
+    }
 }
 
 /**

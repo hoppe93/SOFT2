@@ -15,6 +15,7 @@ namespace __Radiation {
         private:
             std::string output;
             unsigned int nwavelengths;
+            bool measurePolarization = false;
 
             slibreal_t *I, *Q, *U, *V, *wavelengths;
             static slibreal_t *global_I, *global_Q, *global_U, *global_V;
@@ -35,7 +36,7 @@ namespace __Radiation {
             // Only called on root thread
             virtual void Generate() override;
 
-            virtual bool MeasuresPolarization() override { return false; }
+            virtual bool MeasuresPolarization() override { return this->measurePolarization; }
     };
 
     class SpectrumException : public RadiationOutputException {
