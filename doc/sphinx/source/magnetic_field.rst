@@ -55,11 +55,18 @@ resulting from a plasma current density of the form
 .. math::
 
    \boldsymbol{j} = \sigma_I\hat{\boldsymbol{\varphi}}j(r)
-   = \sigma_I\hat{\boldsymbol{\varphi}} q_{a1}\left[ 1 - \left(\frac{r}{r_0}\right)^{q_{a2}} \right],
+   = \sigma_I\hat{\boldsymbol{\varphi}} j_0\left[ 1 - \left(\frac{r}{r_0}\right)^{q_{a2}} \right].
 
-where :math:`q_{a1}` is interpreted as the central current density (given in
-units of mega-ampere, MA). From this, the plasma current :math:`I` can be
-related to the central safety factor :math:`q_0\equiv q(0)`:
+where :math:`j_0` is the central current density. The parameter :math:`q_{a1}`
+is interpreted as the on-axis safety factor, and is related to the central
+current density through
+
+.. math::
+
+   q_{a1} = \frac{2B_0}{\mu_0 j_0 R_{\rm m}}.
+
+From this, we can also relate the total plasma current :math:`I` the central safety
+factor :math:`q_0\equiv q(0)\equiv q_{a1}`:
 
 .. math::
     
