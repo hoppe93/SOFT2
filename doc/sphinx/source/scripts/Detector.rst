@@ -44,7 +44,7 @@ purposes, but one of the more important purposes is for spanning the camera
 images that this @RadiationOutput produces.
 
 The vector :math:`\hat{e}_1` is defined so that it always lies in the horizontal
-plane. Its mathematical definition is
+plane when the :option:`roll` angle is zero. Its mathematical definition is
 
 .. math::
 
