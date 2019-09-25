@@ -8,6 +8,7 @@
 #include <softlib/DistributionFunction/AnalyticalAvalanche.h>
 #include <softlib/DistributionFunction/ExponentialPitch.h>
 #include <softlib/DistributionFunction/CODEDistributionFunction.h>
+#include <softlib/DistributionFunction/GOCODEDistributionFunction.h>
 #include <softlib/DistributionFunction/LUKEDistributionFunction.h>
 #include <softlib/DistributionFunction/LinearRadialProfile.h>
 #include <softlib/DistributionFunction/PowerRadialProfile.h>
@@ -38,6 +39,8 @@ DistributionFunction *InitDistributionFunction(MagneticField2D *magfield, Config
         df = InitAvalancheDistribution(magfield, conf, root);
     else if (type == "code")
         df = InitCODEDistribution(magfield, conf, root);
+    else if (type == "gocode")
+        df = InitGOCODEDistribution(magfield, conf);
     else if (type == "luke")
         df = InitLUKEDistribution(magfield, conf);
     else if (type == "norse")
@@ -127,25 +130,7 @@ RadialDistributionFunction *InitCODEDistribution(MagneticField2D *magfield, Conf
         if (set->GetNumberOfValues() != 1)
             throw SOFTException("Distribution function '%s': interptype: Invalid value assigned to parameter. Expected string.", conf->GetName().c_str());
 
-        if (set->GetString() == "linear")
-            interptype = CODEDistributionFunction::INTERPOLATION_LINEAR;
-        else if (set->GetString() == "polynomial")
-            interptype = CODEDistributionFunction::INTERPOLATION_POLYNOMIAL;
-        else if (set->GetString() == "cspline")
-            interptype = CODEDistributionFunction::INTERPOLATION_CSPLINE;
-        else if (set->GetString() == "cspline_periodic")
-            interptype = CODEDistributionFunction::INTERPOLATION_CSPLINE_PERIODIC;
-        else if (set->GetString() == "akima")
-            interptype = CODEDistributionFunction::INTERPOLATION_AKIMA;
-        else if (set->GetString() == "akima_periodic")
-            interptype = CODEDistributionFunction::INTERPOLATION_AKIMA_PERIODIC;
-        else if (set->GetString() == "steffen")
-            interptype = CODEDistributionFunction::INTERPOLATION_STEFFEN;
-        else
-            throw SOFTException(
-                "Distribution function '%s': interptype: Unrecognized interpolation type requested: %s.",
-                conf->GetName().c_str(), set->GetString().c_str()
-            );
+        interptype = Get1DInterpolationType(set->GetString(), conf->GetName());
     }
 
     // Timestep
@@ -174,6 +159,50 @@ RadialDistributionFunction *InitCODEDistribution(MagneticField2D *magfield, Conf
             name, timestep, interptype
         )
     );
+}
+
+/**
+ * Initialize distribution function from GO+CODE output.
+ */
+DistributionFunction *InitGOCODEDistribution(MagneticField2D *magfield, ConfigBlock *conf) {
+    Setting *set;
+    string name;
+    int interptype = CODEDistributionFunction::INTERPOLATION_LINEAR;
+    int time = -1;
+
+    // Name
+    if (!conf->HasSetting("name"))
+        throw SOFTException("Distribution function '%s': Name of numerical distribution function file not specified.", conf->GetName().c_str());
+    else {
+        set = conf->GetSetting("name");
+        if (set->GetNumberOfValues() != 1)
+            throw SOFTException("Distribution function '%s': name: Invalid value assigned to parameter. Expected string.", conf->GetName().c_str());
+
+        name = set->GetString();
+    }
+
+    // Type of interpolation
+    if (conf->HasSetting("interptype")) {
+        set = conf->GetSetting("interptype");
+        if (set->GetNumberOfValues() != 1)
+            throw SOFTException("Distribution function '%s': interptype: Invalid value assigned to parameter. Expected string.", conf->GetName().c_str());
+
+        interptype = Get1DInterpolationType(set->GetString(), conf->GetName());
+    }
+
+    // Time step to run with
+    if (conf->HasSetting("time")) {
+        set = conf->GetSetting("time");
+        if (set->IsInteger32())
+            time = set->GetInteger32();
+        else if (set->GetNumberOfValues() == 1 && 
+            (set->GetString() == "end" || set->GetString() == "last"))
+            time = -1;
+        else
+            throw SOFTException("Distribution function '%s': time: Invalud value assigned to parameter. Expected 32-bit integer.", conf->GetName().c_str());
+    }
+
+    return new GOCODEDistributionFunction(name, magfield, time, interptype);
 }
 
 /**
@@ -336,3 +365,28 @@ RadialDistributionFunction *InitUnitDistributionFunction(MagneticField2D *magfie
     );
 }
 
+
+/***********
+ * HELPERS *
+ ***********/
+int Get1DInterpolationType(const string& s, const string& confname) {
+    if (s == "linear")
+        return CODEDistributionFunction::INTERPOLATION_LINEAR;
+    else if (s == "polynomial")
+        return CODEDistributionFunction::INTERPOLATION_POLYNOMIAL;
+    else if (s == "cspline")
+        return CODEDistributionFunction::INTERPOLATION_CSPLINE;
+    else if (s == "cspline_periodic")
+        return CODEDistributionFunction::INTERPOLATION_CSPLINE_PERIODIC;
+    else if (s == "akima")
+        return CODEDistributionFunction::INTERPOLATION_AKIMA;
+    else if (s == "akima_periodic")
+        return CODEDistributionFunction::INTERPOLATION_AKIMA_PERIODIC;
+    else if (s == "steffen")
+        return CODEDistributionFunction::INTERPOLATION_STEFFEN;
+    else
+        throw SOFTException(
+            "Distribution function '%s': interptype: Unrecognized interpolation type requested: %s.",
+            confname.c_str(), s.c_str()
+        );
+}
