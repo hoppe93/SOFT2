@@ -5,8 +5,8 @@
 The distribution function module, which defines a distribution function to
 weigh results with. A number of different types of distribution functions can be
 generated or loaded in SOFT2, including the analytical avalanche distribution [#fulop2006]_,
-direct output from the kinetic solver CODE, as well as regular SOFT phase-space
-distribution functions.
+direct output from the kinetic solvers CODE, LUKE and GO+CODE, as well as regular
+SOFT phase-space distribution functions.
 
 .. [#fulop2006] Fülöp et al., 2006 "Destabilization of magnetosonic-whistler waves by a relativistic runaway beam". *Physics of Plasmas* **13** (6), 062506 `doi:10.1063/1.2208327 <https://doi.org/10.1063/1.2208327>`_.
 
@@ -15,6 +15,8 @@ distribution functions.
 
    DistributionFunction/Avalanche
    DistributionFunction/CODE
+   DistributionFunction/GOCODE
+   DistributionFunction/LUKE
    DistributionFunction/Numerical
    DistributionFunction/Pitch
    DistributionFunction/Unit
@@ -32,6 +34,10 @@ distribution function types are listed in the table below.
 | :ref:`module-distribution-avalanche` | An analytical distribution function based on [#fulop2006]_. |
 +--------------------------------------+-------------------------------------------------------------+
 | :ref:`module-distribution-code`      | A momentum-space distribution function directly from CODE.  |
++--------------------------------------+-------------------------------------------------------------+
+| :ref:`module-distribution-gocode`    | GO-CODE distribution function.                              |
++--------------------------------------+-------------------------------------------------------------+
+| :ref:`module-distribution-luke`      | Distribution function from the LUKE 1D2P kinetic solver.    |
 +--------------------------------------+-------------------------------------------------------------+
 | :ref:`module-distribution-numerical` | A SOFT numerical distribution function.                     |
 +--------------------------------------+-------------------------------------------------------------+
