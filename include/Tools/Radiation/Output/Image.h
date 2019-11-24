@@ -36,6 +36,7 @@ namespace __Radiation {
 
             // Only called on root thread
             void Generate() override;
+            void NormalizeImage();
 
             void AllocateImage();
             void GetImagePixel(Detector*, RadiationParticle*, int&, int&);

@@ -239,6 +239,19 @@ if (GSL_FOUND)
 	endif ((GSL_VERSION VERSION_GREATER "2.0") OR (GSL_VERSION VERSION_EQUAL "2.0"))
 endif (GSL_FOUND)
 
+# Find libpng (optional dependency of 'softlib')
+find_package(PNG)
+if (PNG_FOUND)
+    include_directories(${PNG_INCLUDE_DIRS})
+    target_link_libraries(soft PUBLIC ${PNG_LIBRARIES})
+
+    if (BUILD_TESTS)
+        target_link_libraries(soft_tests PUBLIC ${PNG_LIBRARIES})
+    endif (BUILD_TESTS)
+else (PNG_FOUND)
+    message(INFO "No libpng was found. Configuring without PNG image support...")
+endif (PNG_FOUND)
+
 # Compile with official Matlab OR HDF5 support?
 if (OFFICIAL_MATLAB)
 	find_package(Matlab COMPONENTS MAT_LIBRARY MX_LIBRARY)

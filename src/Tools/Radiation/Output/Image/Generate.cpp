@@ -5,7 +5,9 @@
  */
 
 #include <omp.h>
+#include <string>
 #include <softlib/config.h>
+#include <softlib/ImageGenerator/ImageGenerator.h>
 #include "config.h"
 #include "Tools/Radiation/Output/Image.h"
 
@@ -14,6 +16,7 @@
 #endif
 
 using namespace __Radiation;
+using namespace std;
 
 slibreal_t *Image::global_image = nullptr,
            *Image::global_imageQ = nullptr,
@@ -91,44 +94,68 @@ void Image::Generate() {
         return;
 #endif
 
-    SFile *sf = SFile::Create(this->output, SFILE_MODE_WRITE);
+    // Write file
+    string ext = this->output.substr(this->output.size()-3);
+    printf("Extension: %s\n", ext.c_str());
 
-    slibreal_t **img = new slibreal_t*[this->nrowpixels];
-    for (int i = 0; i < this->nrowpixels; i++)
-        img[i] = global_image+(i*this->ncolpixels);
+#ifdef HAS_LIBPNG
+    if (ext == "png") {
+        NormalizeImage();
+        ImageGenerator::gen(
+            ImageGenerator::IMAGE_TYPE_PNG, this->output,
+            global_image, this->nrowpixels, this->ncolpixels,
+            ImageGenerator::COLORMAP_GERIMAP
+        );
+    } else
+#endif
+    if (ext == "ppm") {
+        NormalizeImage();
+        ImageGenerator::gen(
+            ImageGenerator::IMAGE_TYPE_PPM, this->output,
+            global_image, this->nrowpixels, this->ncolpixels,
+            ImageGenerator::COLORMAP_GERIMAP
+        );
+    } else {
+        SFile *sf = SFile::Create(this->output, SFILE_MODE_WRITE);
 
-    if (!this->MeasuresPolarization())
-        sf->WriteArray("image", img, this->nrowpixels, this->ncolpixels);
-    else {
-        slibreal_t **imgQ = new slibreal_t*[this->nrowpixels];
-        slibreal_t **imgU = new slibreal_t*[this->nrowpixels];
-        slibreal_t **imgV = new slibreal_t*[this->nrowpixels];
+        slibreal_t **img = new slibreal_t*[this->nrowpixels];
+        for (int i = 0; i < this->nrowpixels; i++)
+            img[i] = global_image+(i*this->ncolpixels);
 
-        for (int i = 0; i < this->nrowpixels; i++) {
-            imgQ[i] = global_imageQ+(i*this->ncolpixels);
-            imgU[i] = global_imageU+(i*this->ncolpixels);
-            imgV[i] = global_imageV+(i*this->ncolpixels);
+        if (!this->MeasuresPolarization())
+            sf->WriteArray("image", img, this->nrowpixels, this->ncolpixels);
+        else {
+            slibreal_t **imgQ = new slibreal_t*[this->nrowpixels];
+            slibreal_t **imgU = new slibreal_t*[this->nrowpixels];
+            slibreal_t **imgV = new slibreal_t*[this->nrowpixels];
+
+            for (int i = 0; i < this->nrowpixels; i++) {
+                imgQ[i] = global_imageQ+(i*this->ncolpixels);
+                imgU[i] = global_imageU+(i*this->ncolpixels);
+                imgV[i] = global_imageV+(i*this->ncolpixels);
+            }
+
+            sf->WriteArray("StokesI", img, this->nrowpixels, this->ncolpixels);
+            sf->WriteArray("StokesQ", imgQ, this->nrowpixels, this->ncolpixels);
+            sf->WriteArray("StokesU", imgU, this->nrowpixels, this->ncolpixels);
+            sf->WriteArray("StokesV", imgV, this->nrowpixels, this->ncolpixels);
         }
 
-        sf->WriteArray("StokesI", img, this->nrowpixels, this->ncolpixels);
-        sf->WriteArray("StokesQ", imgQ, this->nrowpixels, this->ncolpixels);
-        sf->WriteArray("StokesU", imgU, this->nrowpixels, this->ncolpixels);
-        sf->WriteArray("StokesV", imgV, this->nrowpixels, this->ncolpixels);
+        this->WriteCommonQuantities(sf);
+
+        sf->Close();
+
+        delete [] img;
     }
-
-	this->WriteCommonQuantities(sf);
-
-    sf->Close();
 
 #ifdef COLOR_TERMINAL
     // Check if image is empty
     bool empty = true;
-    for (int i = 0; i < this->nrowpixels; i++) {
-        for (int j = 0; j < this->ncolpixels; j++) {
-            if (img[i][j] != 0) {
-                empty = false;
-                break;
-            }
+    unsigned int N = this->nrowpixels*this->ncolpixels;
+    for (unsigned int i = 0; i < N; i++) {
+        if (global_image[i] != 0) {
+            empty = false;
+            break;
         }
     }
 
@@ -138,7 +165,23 @@ void Image::Generate() {
 #endif
         SOFT::PrintInfo("Wrote image to '%s'.", this->output.c_str());
 
-    delete [] img;
     delete [] global_image;
+}
+
+void Image::NormalizeImage() {
+    const unsigned int N = this->nrowpixels * this->ncolpixels;
+
+    // Locate maximum of image
+    slibreal_t imax = 0.;
+    for (unsigned int i = 0; i < N; i++) {
+        if (global_image[i] > imax)
+            imax = global_image[i];
+    }
+
+    if (imax == 0) return;
+
+    // Normalize all pixels to the max value
+    for (unsigned int i = 0; i < N; i++)
+        global_image[i] /= imax;
 }
 
