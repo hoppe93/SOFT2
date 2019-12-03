@@ -108,6 +108,12 @@ The output file contains the following variables:
 | ``StokesV``           | ``stokesparams=yes`` | Image of Stokes :math:`V` parameter.                    |
 +-----------------------+----------------------+---------------------------------------------------------+
 
+.. note::
+
+   It is possible to output a pixel graphic image (PNG or PPM) directly,
+   instead of a MAT/HDF5 file as described above. Such pixel graphic images
+   can only contain the actual image, and no additional information.
+
 Common quantities
 -----------------
 By default, the following "common quantities" are also included in the output
@@ -164,7 +170,13 @@ All options
    :Allowed values: Any valid file name.
 
    Specifies the name of the output file to generate. The file name extension
-   determines the type of the output file.
+   determines the type of the output file. All file types supported by the
+   ``SFile`` interface are allowed. In addition, it is also possible to
+   directly output `PNG <https://en.wikipedia.org/wiki/Portable_Network_Graphics>`_
+   and `PPM <https://en.wikipedia.org/wiki/Netpbm_format>`_ (i.e. pixel
+   graphic) files directly. With such files, only the image is output and
+   no "common quantities" are included. It also only possible to output the
+   I Stokes parameter in PNG/PPM format.
 
 .. option:: pixels
 
