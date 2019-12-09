@@ -18,6 +18,7 @@ SOFT phase-space distribution functions.
    DistributionFunction/GOCODE
    DistributionFunction/LUKE
    DistributionFunction/Numerical
+   DistributionFunction/NumericalOld
    DistributionFunction/Pitch
    DistributionFunction/Unit
 

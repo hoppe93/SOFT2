@@ -308,7 +308,19 @@ SOFTDistributionFunction *InitNumericalDistribution(MagneticField2D *magfield, C
             );
     }
 
-    return new SOFTDistributionFunction(name, magfield, logarithmize, interptype);
+    SOFTDistributionFunction *sdf = new SOFTDistributionFunction(name, magfield, logarithmize, interptype);
+
+    // Flip sign of pitch (may be necessary, depending on how
+    // the electric and magnetic fields are oriented).
+    if (conf->HasSetting("flippitchsign")) {
+        set = conf->GetSetting("flippitchsign");
+        if (set->GetNumberOfValues() != 1)
+            throw SOFTException("Distribution function '%s': flippitchsign: Invlaid value assigned to parameter. Expected boolean.", conf->GetName().c_str());
+
+        sdf->FlipPitchSign(set->GetBool());
+    }
+
+    return sdf;
 }
 
 /**
