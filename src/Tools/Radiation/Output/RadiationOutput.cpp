@@ -27,8 +27,8 @@ const char
 	RadiationOutput::PARAM2[]             = "param2",
 	RadiationOutput::PARAM2NAME[]         = "param2name",
 	RadiationOutput::R[]                  = "r",
+    RadiationOutput::RO_SEPARATRIX[]      = "separatrix",
 	RadiationOutput::RO_WALL[]            = "wall",
-	RadiationOutput::TP_BOUNDARY[]		  = "tpBoundary",
     RadiationOutput::VERSION_SOFT[]       = "versionSOFT";
     //RadiationOutput::VERSION_SOFTLIB[]    = "versionSOFTLib";
 
@@ -158,8 +158,9 @@ void RadiationOutput::InitializeCommonQuantities() {
 		})
 	);
 
-	// domain & wall
+	// domain, separatrix & wall
 	all_quantities.insert(PAIR(RO_DOMAIN, [this](SFile *sf) { this->write_domain(sf, this->RO_DOMAIN); }));
+    all_quantities.insert(PAIR(RO_SEPARATRIX, [this](SFile *sf) { this->write_separatrix(sf, this->RO_SEPARATRIX); }));
 	all_quantities.insert(PAIR(RO_WALL,   [this](SFile *sf) { this->write_domain(sf, this->RO_WALL); }));
 
     // version
@@ -189,6 +190,30 @@ void RadiationOutput::write_domain(SFile *sf, const string &name) {
 	}
 
 	sf->WriteArray(name, domain, 2, ndom);
+}
+
+/**
+ * Write the separatrix to the given SFile
+ * (if the magnetic field has a separatrix).
+ *
+ * sf:   SFile object to write separatrix to.
+ * name: Name of variable to store domain under.
+ */
+void RadiationOutput::write_separatrix(SFile *sf, const string &name) {
+	unsigned int nsep = this->magfield->GetNSeparatrix();
+	slibreal_t **sep = new slibreal_t*[2], *rsep, *zsep;
+	sep[0] = new slibreal_t[2*nsep];
+	sep[1] = sep[0] + nsep;
+
+	rsep = this->magfield->GetRSeparatrix();
+	zsep = this->magfield->GetZSeparatrix();
+
+	for (unsigned int i = 0; i < nsep; i++) {
+		sep[0][i] = rsep[i];
+		sep[1][i] = zsep[i];
+	}
+
+	sf->WriteArray(name, sep, 2, nsep);
 }
 
 /**

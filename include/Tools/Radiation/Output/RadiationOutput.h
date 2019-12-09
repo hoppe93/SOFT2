@@ -27,6 +27,7 @@ namespace __Radiation {
 
 			// Private functions
 			void write_domain(SFile*, const std::string&);
+            void write_separatrix(SFile*, const std::string&);
         protected:
             Detector *detector;
             MagneticField2D *magfield;
@@ -45,9 +46,9 @@ namespace __Radiation {
 				PARAM2[],
 				PARAM2NAME[],
 				RO_DOMAIN[],
+                RO_SEPARATRIX[],
 				RO_WALL[],
 				R[],
-				TP_BOUNDARY[],
                 VERSION_SOFT[];
                 //VERSION_SOFTLIB[];
         public:

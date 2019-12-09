@@ -96,7 +96,6 @@ void Image::Generate() {
 
     // Write file
     string ext = this->output.substr(this->output.size()-3);
-    printf("Extension: %s\n", ext.c_str());
 
 #ifdef HAS_LIBPNG
     if (ext == "png") {
