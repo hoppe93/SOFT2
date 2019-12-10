@@ -39,6 +39,8 @@ DistributionFunction *InitDistributionFunction(MagneticField2D *magfield, Config
         df = InitAvalancheDistribution(magfield, conf, root);
     else if (type == "code")
         df = InitCODEDistribution(magfield, conf, root);
+    else if (type == "connorhastie")
+        df = InitConnorHastieDistribution(magfield, conf, root);
     else if (type == "gocode")
         df = InitGOCODEDistribution(magfield, conf);
     else if (type == "luke")
@@ -157,6 +159,32 @@ RadialDistributionFunction *InitCODEDistribution(MagneticField2D *magfield, Conf
         radprof,
         new CODEDistributionFunction(
             name, timestep, interptype
+        )
+    );
+}
+
+/**
+ * Initialize a Connor-Hastie distribution function.
+ */
+RadialDistributionFunction *InitConnorHastieDistribution(MagneticField2D *magfield, ConfigBlock *conf, ConfigBlock *root) {
+    Setting *set;
+    slibreal_t EHat, Zeff;
+    RadialProfile *radprof;
+
+    EHat = InitAvalancheDistribution_param(conf, "EHat");
+    Zeff = InitAvalancheDistribution_param(conf, "Zeff");
+
+    if (conf->HasSetting("radprof")) {
+        set = conf->GetSetting("radprof");
+        radprof = InitRadialProfile(magfield, set, root, conf->GetName());
+    } else
+        radprof = new UniformRadialProfile();
+
+    // Combine...
+    return new RadialDistributionFunction(
+        radprof,
+        new ConnorHastieDistribution(
+            EHat, Zeff
         )
     );
 }

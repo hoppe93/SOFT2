@@ -4,6 +4,8 @@
 #include <string>
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
+#include <softlib/DistributionFunction/AnalyticalAvalanche.h>
+#include <softlib/DistributionFunction/ConnorHastieDistribution.h>
 #include <softlib/DistributionFunction/DistributionFunction.h>
 #include <softlib/DistributionFunction/GOCODEDistributionFunction.h>
 #include <softlib/DistributionFunction/LinearRadialProfile.h>
@@ -17,6 +19,7 @@ DistributionFunction *InitDistributionFunction(MagneticField2D*, ConfigBlock*, C
 RadialDistributionFunction *InitAvalancheDistribution(MagneticField2D*, ConfigBlock*, ConfigBlock*);
 slibreal_t InitAvalancheDistribution_param(ConfigBlock*, const std::string&);
 RadialDistributionFunction *InitCODEDistribution(MagneticField2D*, ConfigBlock*, ConfigBlock*);
+RadialDistributionFunction *InitConnorHastieDistribution(MagneticField2D*, ConfigBlock*, ConfigBlock*);
 DistributionFunction *InitGOCODEDistribution(MagneticField2D*, ConfigBlock*);
 DistributionFunction *InitLUKEDistribution(MagneticField2D*, ConfigBlock*);
 DistributionFunction *InitNORSEDistribution(MagneticField2D*, ConfigBlock*, ConfigBlock*);
