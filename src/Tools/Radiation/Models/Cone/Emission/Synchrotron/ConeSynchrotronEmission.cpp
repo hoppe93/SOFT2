@@ -265,7 +265,10 @@ void ConeSynchrotronEmission::IntegrateSpectrum() {
     for (i = 1; i < nwavelengths-1; i++)
         s += I[i];
 
-    this->power = s * (wavelengths[1]-wavelengths[0]);
+    if (nwavelengths > 1)
+        this->power = s * (wavelengths[1]-wavelengths[0]);
+    else
+        this->power = s;
 }
 
 void ConeSynchrotronEmission::IntegrateSpectrumStokes() {
@@ -282,9 +285,16 @@ void ConeSynchrotronEmission::IntegrateSpectrumStokes() {
     for (x = 1; x < nwavelengths-1; x++)
         u += U[x];
 
-    this->power = i * (wavelengths[1]-wavelengths[0]);
-    this->totQ  = q * (wavelengths[1]-wavelengths[0]);
-    this->totU  = u * (wavelengths[1]-wavelengths[0]);
-    this->totV  = 0;
+    if (nwavelengths > 1) {
+        this->power = i * (wavelengths[1]-wavelengths[0]);
+        this->totQ  = q * (wavelengths[1]-wavelengths[0]);
+        this->totU  = u * (wavelengths[1]-wavelengths[0]);
+        this->totV  = 0;
+    } else {
+        this->power = i;
+        this->totQ  = q;
+        this->totU  = u;
+        this->totV  = 0;
+    }
 }
 
