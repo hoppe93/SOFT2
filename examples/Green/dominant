@@ -9,7 +9,12 @@ distribution_function = dist;
     Zeff = 3;
 }
 
-@RadiationOutput green (green) {
+@Radiation rad {
+    output = green dominant;
+}
+
+@RadiationOutput dominant (green) {
+    format = 12;
     with_f = yes;
     output = "data/dominant.mat";
 }

@@ -25,7 +25,7 @@ namespace __Radiation {
 			static const std::string DEFAULT_QUANTITIES[];
 			static const unsigned int NDEFAULT_QUANTITIES;
 
-            static slibreal_t *global_function;
+            slibreal_t *global_function;
             slibreal_t *function;
             size_t fsize, fsizeWithoutStokes, *factors;
             sfilesize_t *dimensions, ndimensions;

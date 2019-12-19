@@ -57,4 +57,36 @@ namespace MemoryManager {
 
         blocks.erase(name);
     }
+
+    /**
+     * Retrieves the memory block with the given name,
+     *
+     * name: Name of block to return memory for.
+     */
+    void *get_block(const string &name) {
+        return blocks[name]->ptr;
+    }
+
+    /**
+     * Set the memory of the given block.
+     * This as an alternative to allocating new memory,
+     * and instead uses memory which has already been
+     * allocated elsewhere.
+     */
+    void *set_block(const string &name, const size_t size, void *ptr) {
+        #pragma omp critical (MemoryManager_allocate)
+        {
+            if (block_exists(name))
+                deallocate(name);
+
+            blocks[name] = new struct memory_block;
+
+            blocks[name]->name = name;
+            blocks[name]->size = size;
+            blocks[name]->ptr  = ptr;
+        }
+
+        return blocks[name]->ptr;
+    }
 }
+

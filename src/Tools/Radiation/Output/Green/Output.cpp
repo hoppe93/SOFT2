@@ -7,6 +7,7 @@
 #include <omp.h>
 #include <softlib/config.h>
 #include "config.h"
+#include "MemoryManager.h"
 #include "Tools/Radiation/Output/Green.h"
 
 #ifdef WITH_MPI
@@ -17,8 +18,6 @@
 using namespace __Radiation;
 using namespace std;
 
-slibreal_t *Green::global_function = nullptr;
-
 /**
  * Finish gathering output and merge output
  * stored on individual threads to the global
@@ -27,11 +26,12 @@ slibreal_t *Green::global_function = nullptr;
 void Green::Finish() {
     #pragma omp critical (Green_Finish)
     {
-        if (global_function == nullptr) {
-            global_function = this->function;
-        } else {
+        if (!MemoryManager::block_exists(this->GetName()))
+            this->global_function = (slibreal_t*)MemoryManager::set_block(this->GetName(), this->fsize, this->function);
+        else {
+            this->global_function = (slibreal_t*)MemoryManager::get_block(this->GetName());
             for (unsigned int i = 0; i < this->fsize; i++)
-                global_function[i] += this->function[i];
+                this->global_function[i] += this->function[i];
 
             delete [] this->function;
         }
@@ -97,7 +97,7 @@ void Green::Generate() {
 
     SOFT::PrintInfo("Wrote Green's function to '%s'.", this->output.c_str());
 
-    delete [] global_function;
+    MemoryManager::deallocate(this->GetName());
 }
 
 /**
