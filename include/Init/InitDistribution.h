@@ -5,6 +5,7 @@
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
 #include <softlib/DistributionFunction/AnalyticalAvalanche.h>
+#include <softlib/DistributionFunction/BesselRadialProfile.h>
 #include <softlib/DistributionFunction/ConnorHastieDistribution.h>
 #include <softlib/DistributionFunction/DistributionFunction.h>
 #include <softlib/DistributionFunction/GOCODEDistributionFunction.h>
@@ -29,6 +30,7 @@ RadialDistributionFunction *InitUnitDistributionFunction(MagneticField2D*, Confi
 
 // Radial profiles
 RadialProfile *InitRadialProfile(MagneticField2D*, Setting*, ConfigBlock*, const std::string&);
+BesselRadialProfile *InitBesselRadialProfile(MagneticField2D*, ConfigBlock *conf=nullptr);
 LinearRadialProfile *InitLinearRadialProfile(MagneticField2D*, ConfigBlock *conf=nullptr);
 PowerRadialProfile *InitPowerRadialProfile(MagneticField2D*, ConfigBlock*);
 void InitRadialProfile_get_radial_limits(MagneticField2D*, ConfigBlock*, slibreal_t*, slibreal_t*);

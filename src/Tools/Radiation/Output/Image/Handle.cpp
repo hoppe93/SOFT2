@@ -54,7 +54,8 @@ void Image::Handle(Detector *det, Model *model, RadiationParticle *rp) {
     diffel = rp->GetDifferentialElement();
     f = rp->GetF();
 
-    this->image[i*this->ncolpixels + j] += model->GetPower() * diffel * f;
+    slibreal_t v = model->GetPower() * diffel * f;
+    this->image[i*this->ncolpixels + j] += v;
 
     if (this->MeasuresPolarization()) {
         this->imageQ[i*this->ncolpixels + j] += model->GetPowerQ() * diffel * f;

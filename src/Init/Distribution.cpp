@@ -6,6 +6,7 @@
 #include <softlib/Configuration.h>
 #include <softlib/DistributionFunction/DistributionFunction.h>
 #include <softlib/DistributionFunction/AnalyticalAvalanche.h>
+#include <softlib/DistributionFunction/BesselRadialProfile.h>
 #include <softlib/DistributionFunction/ExponentialPitch.h>
 #include <softlib/DistributionFunction/CODEDistributionFunction.h>
 #include <softlib/DistributionFunction/GOCODEDistributionFunction.h>
@@ -168,11 +169,13 @@ RadialDistributionFunction *InitCODEDistribution(MagneticField2D *magfield, Conf
  */
 RadialDistributionFunction *InitConnorHastieDistribution(MagneticField2D *magfield, ConfigBlock *conf, ConfigBlock *root) {
     Setting *set;
-    slibreal_t EHat, Zeff;
+    slibreal_t EHat, Zeff, pMax, deltaP;
     RadialProfile *radprof;
 
     EHat = InitAvalancheDistribution_param(conf, "EHat");
     Zeff = InitAvalancheDistribution_param(conf, "Zeff");
+    pMax = InitAvalancheDistribution_param(conf, "pMax");
+    deltaP = InitAvalancheDistribution_param(conf, "deltaP");
 
     if (conf->HasSetting("radprof")) {
         set = conf->GetSetting("radprof");
@@ -184,7 +187,7 @@ RadialDistributionFunction *InitConnorHastieDistribution(MagneticField2D *magfie
     return new RadialDistributionFunction(
         radprof,
         new ConnorHastieDistribution(
-            EHat, Zeff
+            EHat, Zeff, pMax, deltaP
         )
     );
 }

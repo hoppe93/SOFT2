@@ -6,6 +6,7 @@
 #include <string>
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
+#include <softlib/DistributionFunction/BesselRadialProfile.h>
 #include <softlib/DistributionFunction/LinearRadialProfile.h>
 #include <softlib/DistributionFunction/PowerRadialProfile.h>
 #include <softlib/DistributionFunction/UniformRadialProfile.h>
@@ -39,7 +40,9 @@ RadialProfile *InitRadialProfile(MagneticField2D *magfield, Setting *rpset, Conf
     ConfigBlock *conf = root->GetConfigBlock(CONFBLOCK_RADIALPROFILE, name);
 
     type = conf->GetSecondaryType();
-    if (type == "linear")
+    if (type == "bessel")
+        return InitBesselRadialProfile(magfield, conf);
+    else if (type == "linear")
         return InitLinearRadialProfile(magfield, conf);
     else if (type == "power")
         return InitPowerRadialProfile(magfield, conf);
@@ -47,6 +50,25 @@ RadialProfile *InitRadialProfile(MagneticField2D *magfield, Setting *rpset, Conf
         return new UniformRadialProfile();
     else
         throw SOFTException("Radial profile '%s': type: Unrecognized value assigned to parameter.", name.c_str());
+}
+
+/**
+ * Initialize a Bessel J0 radial profile using the
+ * given configuration block.
+ */
+BesselRadialProfile *InitBesselRadialProfile(MagneticField2D *magfield, ConfigBlock *conf) {
+    slibreal_t rmin, rmax;
+
+    rmin = magfield->GetMagneticAxisR();
+    rmax = magfield->GetMaxRadius();
+
+    if (conf != nullptr) {
+        InitRadialProfile_get_radial_limits(
+            magfield, conf, &rmin, &rmax
+        );
+    }
+
+    return new BesselRadialProfile(rmin, rmax);
 }
 
 /**
