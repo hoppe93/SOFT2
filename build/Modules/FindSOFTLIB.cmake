@@ -4,7 +4,7 @@
 #
 # Finds SOFTLib, both binaries and headers.
 
-set(SOFTLIB_INCLUDE_RELPATH "../../softlib/include/")
+set(SOFTLIB_INCLUDE_RELPATH "../../softlib/build/include/")
 set(SOFTLIB_LIBRARY_RELPATH "../../softlib/build/src/")
 
 find_path(SOFTLIB_INCLUDE_DIR softlib/config.h
