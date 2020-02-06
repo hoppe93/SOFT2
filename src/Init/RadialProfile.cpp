@@ -166,7 +166,7 @@ void InitRadialProfile_get_radial_limits(
  * uplim:  Highest permitted value.
  */
 slibreal_t InitRadialProfile_get_radial_limits_inner(
-    Setting *set, const slibreal_t lowlim, const slibreal_t uplim, const string &rpname
+    Setting *set, const slibreal_t lowlim, const slibreal_t, const string &rpname
 ) {
     slibreal_t tmp;
     if (!set->IsScalar())
@@ -176,11 +176,14 @@ slibreal_t InitRadialProfile_get_radial_limits_inner(
         );
 
     tmp = set->GetScalar();
-    if (tmp > uplim || tmp < lowlim)
+    if (tmp < lowlim) {
         throw SOFTException(
-            "Radial profile '%s': %s: Invalid value assigned to parameter. Must be on interval [%f, %f].",
-            rpname.c_str(), set->GetName().c_str(), lowlim, uplim
+            "Radial profile '%s': %s: Invalid value assigned to parameter. Lower point must be greater than %f.",
+            rpname.c_str(), set->GetName().c_str(), lowlim
         );
+    /*} else if (tmp > uplim) {
+        SOFT::PrintWarning(...);*/
+    }
 
     return tmp;
 }
