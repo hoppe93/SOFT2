@@ -53,23 +53,25 @@ orbit of the guiding-center and :math:`\phi` is the toroidal angle.
 Summary of options
 ------------------
 
-+-----------------------------------+----------------------------------------------------------+
-| **Option**                        | **Description**                                          |
-+-----------------------------------+----------------------------------------------------------+
-| :option:`@Radiation detector`     | Specifies which detector configuration to use            |
-+-----------------------------------+----------------------------------------------------------+
-| :option:`@Radiation model`        | Specifies which radiation model to use                   |
-+-----------------------------------+----------------------------------------------------------+
-| :option:`@Radiation ntoroidal`    | Toroidal resolution parameter                            |
-+-----------------------------------+----------------------------------------------------------+
-| :option:`@Radiation output`       | Specifies which output module(s) to use                  |
-+-----------------------------------+----------------------------------------------------------+
-| :option:`@Radiation torthreshold` | Parameter for :ref:`toroidal-optim`                      |
-+-----------------------------------+----------------------------------------------------------+
-| :option:`@Radiation torquad`      | Quadrature rule to use when evaluating toroidal integral |
-+-----------------------------------+----------------------------------------------------------+
-| :option:`@Radiation wall_opacity` | Specifies the wall "opacity"                             |
-+-----------------------------------+----------------------------------------------------------+
++-------------------------------------+----------------------------------------------------------+
+| **Option**                          | **Description**                                          |
++-------------------------------------+----------------------------------------------------------+
+| :option:`@Radiation detector`       | Specifies which detector configuration to use            |
++-------------------------------------+----------------------------------------------------------+
+| :option:`@Radiation ignore_trapped` | Discards all trapped orbits                              |
++-------------------------------------+----------------------------------------------------------+
+| :option:`@Radiation model`          | Specifies which radiation model to use                   |
++-------------------------------------+----------------------------------------------------------+
+| :option:`@Radiation ntoroidal`      | Toroidal resolution parameter                            |
++-------------------------------------+----------------------------------------------------------+
+| :option:`@Radiation output`         | Specifies which output module(s) to use                  |
++-------------------------------------+----------------------------------------------------------+
+| :option:`@Radiation torthreshold`   | Parameter for :ref:`toroidal-optim`                      |
++-------------------------------------+----------------------------------------------------------+
+| :option:`@Radiation torquad`        | Quadrature rule to use when evaluating toroidal integral |
++-------------------------------------+----------------------------------------------------------+
+| :option:`@Radiation wall_opacity`   | Specifies the wall "opacity"                             |
++-------------------------------------+----------------------------------------------------------+
 
 Example configuration
 ---------------------
@@ -171,6 +173,17 @@ Options
 
    Specifies the name of the configuration block to use for setting the
    properties of the detector.
+
+.. option:: ignore_trapped
+
+   :Default value: No (include trapped orbits)
+   :Allowed values: ``yes`` and ``no``
+
+   Since trapped runaway electrons are rare, calculations can sometimes be
+   sped up, and numerical issues avoided, by discarding trapped orbits. In
+   particular, SOFT has problems calculating the guiding-center Jacobian
+   numerically for trapped orbits, and so including trapped orbits can yield
+   unphysical results if one is not careful.
 
 .. option:: model
 

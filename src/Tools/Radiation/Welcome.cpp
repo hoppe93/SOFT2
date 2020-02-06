@@ -19,6 +19,9 @@ void Radiation::Welcome(const string &prefix) {
     SOFT::PrintInfo(prefix+"Model:           "+this->model->GetDescription());
     SOFT::PrintInfo(prefix+"Polarization:    "+(this->MeasuresPolarization()?SOFT::PRINT_YES:SOFT::PRINT_NO));
 
+    // Ignoring trapped particles?
+    SOFT::PrintInfo(prefix+"Ignore trapped:  %s", (this->ignoreTrapped?SOFT::PRINT_YES.c_str():SOFT::PRINT_NO.c_str()));
+
     // Outputs
     if (noutput > 0)
         SOFT::PrintInfo(prefix+"Enabled outputs:");

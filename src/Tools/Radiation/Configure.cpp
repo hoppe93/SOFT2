@@ -130,6 +130,15 @@ void Radiation::Configure(
         SetDetector(new __Radiation::Detector(cb, root));
     }
 
+    // ignoreTrapped
+    if (conf->HasSetting("ignore_trapped")) {
+        Setting *s = conf->GetSetting("ignore_trapped");
+        if (!s->IsBool())
+            throw RadiationException("Invalid value assigned to 'ignore_trapped'. Expected boolean.");
+        else
+            this->ignoreTrapped = s->GetBool();
+    }
+
     // ntoroidal
     if (!conf->HasSetting("ntoroidal"))
         ntoroidal = 3500;

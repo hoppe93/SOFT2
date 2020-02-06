@@ -67,6 +67,7 @@ namespace __Radiation {
             char *torflags;
             slibreal_t torthreshold = 1e-9;
 
+            bool ignoreTrapped = false;
             bool measuresPolarization = false;
             wall_opacity_t wall_opacity;
         public:

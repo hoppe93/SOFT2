@@ -42,6 +42,10 @@ Radiation::~Radiation() {
 void Radiation::Handle(Orbit *o, Particle *p) {
     switch (o->GetClassification()) {
         case ORBIT_CLASS_TRAPPED:
+            if (this->ignoreTrapped)
+                return;
+            // Intended fall-through
+            [[fallthrough]];
         case ORBIT_CLASS_PASSING:
             if (this->quadrature == QUADRATURE_FINDSOV)
                 //HandleTrapzImproved(o, p);
