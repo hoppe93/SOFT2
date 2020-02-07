@@ -35,8 +35,8 @@ orbit_class_t *Orbits::classification;  /* Orbit classifications */
  * Initialize the Orbits tool and adjust it
  * to suit the configured phase-space.
  */
-Orbits::Orbits(MagneticField2D *__UNUSED__(mf), ParticleGenerator *pg, ParticlePusher *pusher)
-        : Tool("Orbits") {
+Orbits::Orbits(MagneticField2D *mf, ParticleGenerator *pg, ParticlePusher *pusher)
+        : Tool("Orbits"), OutputModule(mf, pg) {
 
     nr  = pg->GetNr();
     np1 = pg->GetN1();

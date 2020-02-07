@@ -5,9 +5,10 @@
 #include <softlib/Configuration.h>
 #include "Orbit/Orbit.h"
 #include "PhaseSpace/Particle.h"
+#include "Tools/OutputModule.h"
 #include "Tools/Tool.h"
 
-class Orbits : public Tool {
+class Orbits : public Tool, public OutputModule {
     private:
         unsigned int norbits;
         unsigned int nr, np1, np2;
@@ -37,6 +38,9 @@ class Orbits : public Tool {
             **gamma;     /* Lorentz factor (or energy) */
 
         static orbit_class_t *classification;   /* Orbit classifications */
+
+        static const std::string DEFAULT_QUANTITIES[];
+        static const unsigned int NDEFAULT_QUANTITIES;
 
         ParticlePusher *pusher; // Reference to pusher object
     public:

@@ -61,6 +61,7 @@ set(soft
 	"${PROJECT_SOURCE_DIR}/src/softexit.cpp"
 )
 set(tools
+    "${PROJECT_SOURCE_DIR}/src/Tools/OutputModule.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Tool.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/ToolHandler.cpp"
 )

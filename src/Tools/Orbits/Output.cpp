@@ -42,5 +42,7 @@ void Orbits::Output() {
         sf->WriteArray("Jdtdrho", this->Jdtdrho, this->norbits, this->ntau);
     }
 
+    this->WriteCommonQuantities(sf);
+
     sf->Close();
 }

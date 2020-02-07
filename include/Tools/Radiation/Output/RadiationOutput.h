@@ -1,6 +1,8 @@
 #ifndef _RADIATION_OUTPUT_H
 #define _RADIATION_OUTPUT_H
 
+#include "Tools/OutputModule.h"
+
 namespace __Radiation {
     class RadiationOutput;
 }
@@ -14,51 +16,30 @@ namespace __Radiation {
 #include <softlib/SFile.h>
 #include "Tools/Radiation/Models/Model.h"
 #include "PhaseSpace/ParticleGenerator.h"
+#include "Tools/Radiation/Detector.h"
 #include "Tools/Radiation/RadiationParticle.h"
 
 namespace __Radiation {
-    class RadiationOutput {
-        private:
-            std::string name;
-			std::vector<std::string> common_quantities;
-
-			typedef std::function<void(SFile*)> qfunc;
-			std::map<std::string, qfunc> all_quantities;
-
-			// Private functions
-			void write_domain(SFile*, const std::string&);
-            void write_separatrix(SFile*, const std::string&);
+    class RadiationOutput : public OutputModule {
         protected:
             Detector *detector;
-            MagneticField2D *magfield;
-			ParticleGenerator *particlegenerator;
 
-			static const char
-                DATETIME[],
-				DETECTOR_APERTURE[],
-				DETECTOR_DIRECTION[],
-				DETECTOR_EHAT1[],
-				DETECTOR_EHAT2[],
-				DETECTOR_POSITION[],
-				DETECTOR_VISANG[],
-				PARAM1[],
-				PARAM1NAME[],
-				PARAM2[],
-				PARAM2NAME[],
-				RO_DOMAIN[],
-                RO_SEPARATRIX[],
-				RO_WALL[],
-				R[],
-                VERSION_SOFT[];
-                //VERSION_SOFTLIB[];
+            static const char
+                DETECTOR_APERTURE[],
+                DETECTOR_DIRECTION[],
+                DETECTOR_EHAT1[],
+                DETECTOR_EHAT2[],
+                DETECTOR_POSITION[],
+                DETECTOR_VISANG[];
+
         public:
-            RadiationOutput(Detector *d, MagneticField2D *m, ParticleGenerator *pgen) {
+            RadiationOutput(Detector *d, MagneticField2D *m, ParticleGenerator *pgen)
+                : OutputModule(m, pgen) {
                 this->detector = d;
-                this->magfield = m;
-				this->particlegenerator = pgen;
-				this->InitializeCommonQuantities();
+
+                this->InitializeCommonQuantities();
             }
-            virtual ~RadiationOutput() { }
+
             virtual void Configure(ConfigBlock*, ConfigBlock*) = 0;
             virtual void Finish() = 0;
             virtual void Generate() = 0;
@@ -68,12 +49,7 @@ namespace __Radiation {
 
             virtual bool MeasuresPolarization() = 0;
 
-			void ConfigureCommonQuantities(const std::string*, const unsigned int, const std::vector<std::string>& list=std::vector<std::string>());
-			void InitializeCommonQuantities();
-			void WriteCommonQuantities(SFile*);
-
-            const std::string &GetName() const { return this->name; }
-            void SetName(const std::string &name) { this->name = name; }
+            virtual void InitializeCommonQuantities() override;
     };
 }
 
