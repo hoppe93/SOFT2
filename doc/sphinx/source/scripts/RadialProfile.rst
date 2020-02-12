@@ -11,6 +11,7 @@ that support coupling.
 .. toctree::
    :hidden:
 
+   RadialProfile/Bessel
    RadialProfile/Linear
    RadialProfile/Power
    RadialProfile/Uniform
@@ -25,6 +26,8 @@ listed in the table below.
 
 +-------------------------------------+--------------------------------------------------------------------------------+
 | **Type**                            | **Function**                                                                   |
++-------------------------------------+--------------------------------------------------------------------------------+
+| :ref:`module-radialprofile-bessel`  | :math:`J_0\left(\frac{r - r_{\rm min}}{r_{\rm max} - r_{\rm min}}x_0\right)`   |
 +-------------------------------------+--------------------------------------------------------------------------------+
 | :ref:`module-radialprofile-linear`  | :math:`1 - \frac{r - r_{\rm min}}{r_{\rm max} - r_{\rm min}}`                  |
 +-------------------------------------+--------------------------------------------------------------------------------+
