@@ -26,15 +26,22 @@ using namespace std;
 void Green::Finish() {
     #pragma omp critical (Green_Finish)
     {
-        if (!MemoryManager::block_exists(this->GetName()))
-            this->global_function = (slibreal_t*)MemoryManager::set_block(this->GetName(), this->fsize, this->function);
-        else {
-            this->global_function = (slibreal_t*)MemoryManager::get_block(this->GetName());
-            for (unsigned int i = 0; i < this->fsize; i++)
-                this->global_function[i] += this->function[i];
+        // We only need to merge the Green's function if each thread
+        // has its own local copy of the function. If all phase space
+        // parameters are part of the function, all threads work on the
+        // exact same function, and so no merging is necessary.
+        if (!this->containsAllPhaseSpaceParameters) {
+            if (!MemoryManager::block_exists(this->GetName()))
+                this->global_function = (slibreal_t*)MemoryManager::set_block(this->GetName(), this->fsize, this->function);
+            else {
+                this->global_function = (slibreal_t*)MemoryManager::get_block(this->GetName());
+                for (unsigned int i = 0; i < this->fsize; i++)
+                    this->global_function[i] += this->function[i];
 
-            delete [] this->function;
-        }
+                delete [] this->function;
+            }
+        } else
+            this->global_function = this->function;
     }
 }
 

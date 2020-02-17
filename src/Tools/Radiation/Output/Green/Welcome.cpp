@@ -53,8 +53,12 @@ string Green::TranslateFormat(const string& fmt) {
  * Print info/welcome message.
  */
 void Green::Welcome(const string &prefix) {
-    size_t gf_totsize = this->fsize * sizeof(slibreal_t) * omp_get_num_threads();
     slibreal_t gfsize = this->fsize * sizeof(slibreal_t);
+    size_t gf_totsize = gfsize;
+
+    if (!this->containsAllPhaseSpaceParameters)
+        gf_totsize *= omp_get_num_threads();
+    
     slibreal_t gfmem  = gf_totsize;
 
     int unit = 0, unitmem = 0;

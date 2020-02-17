@@ -44,7 +44,7 @@ namespace __Radiation {
                 hasI=false, hasJ=false, hasW=false,
                 weighWithDistribution = false,
                 withJacobian = true,
-                containsAllMomentumSpaceParameters = false,
+                containsAllPhaseSpaceParameters = false,
                 pixelsset = false;      // True of the number of pixels has been set
 
             // Indices of parameters

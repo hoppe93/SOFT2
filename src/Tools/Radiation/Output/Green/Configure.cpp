@@ -8,6 +8,7 @@
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
 #include "config.h"
+#include "MemoryManager.h"
 #include "SOFT.h"
 #include "Tools/Radiation/Output/Green.h"
 
@@ -125,7 +126,7 @@ void Green::PrepareAllocateGreen() {
     }
 #endif
 
-    this->containsAllMomentumSpaceParameters = (this->hasP1 && this->hasP2 && this->hasR);
+    this->containsAllPhaseSpaceParameters = (this->hasP1 && this->hasP2 && this->hasR);
 }
 
 /**
@@ -274,15 +275,42 @@ void Green::Configure(ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
  * Initialize this output module (after configuration).
  */
 void Green::Initialize() {
-    try {
-        this->function = new slibreal_t[this->fsize];
-    } catch (bad_alloc& ba) {
-        throw GreenException("Failed to allocate memory for Green's function: %s.", ba.what());
-    }
+    // If all phase-space parameters are included in the
+    // Green's function, then we can save memory and store
+    // a single global Green's function instead of one per thread.
+    if (this->containsAllPhaseSpaceParameters) {
+        bool success = true;
+        #pragma omp critical (Green_alloc)
+        {
+            if (!MemoryManager::block_exists(this->GetName())) {
+                try {
+                    this->function = new slibreal_t[this->fsize];
+                } catch (bad_alloc& ba) {
+                    success = false;
+                }
 
-    // Initialize function
-    for (size_t i = 0; i < this->fsize; i++)
-        this->function[i] = 0;
+                if (success) {
+                    MemoryManager::set_block(this->GetName(), this->fsize, this->function);
+                    for (size_t i = 0; i < this->fsize; i++)
+                        this->function[i] = 0;
+                }
+            } else
+                this->function = (slibreal_t*)MemoryManager::get_block(this->GetName());
+        }
+
+        if (!success)
+            throw GreenException("Failed to allocate memory for Green's function.");
+    } else {
+        try {
+            this->function = new slibreal_t[this->fsize];
+        } catch (bad_alloc& ba) {
+            throw GreenException("Failed to allocate memory for Green's function: %s.", ba.what());
+        }
+
+        // Initialize function
+        for (size_t i = 0; i < this->fsize; i++)
+            this->function[i] = 0;
+    }
 }
 
 /**

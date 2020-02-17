@@ -82,7 +82,7 @@ void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
          * of phase-space) and therefore we must block
          * other threads from writing at the same time.
          */
-        if (!containsAllMomentumSpaceParameters) {
+        if (!containsAllPhaseSpaceParameters) {
             if (storeStokesParameters)
                 copyStokes();
             else copySpec();
@@ -109,7 +109,7 @@ void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
          * of phase-space) and therefore we must block
          * other threads from writing at the same time.
          */
-        if (!containsAllMomentumSpaceParameters) {
+        if (!containsAllPhaseSpaceParameters) {
             if (storeStokesParameters) {
                 #pragma omp atomic update
                 this->function[this->fsizeWithoutStokes*0 + index] += I * diffel;
