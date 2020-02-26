@@ -53,6 +53,8 @@ def plotImage(wl, Pow):
     ax = fig.add_subplot(111)
     ax.plot(wl, wl*Pow, color='C0')
     ax.set_title("Title")
+
+    ax.set_yscale('log')
     
     
     ax.set_xlabel("$x-axis$")

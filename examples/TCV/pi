@@ -1,0 +1,81 @@
+# Generate a momentum-space
+# Green's function.
+##############################
+
+</home/paulburger/svn/TCV64711/multicam.soft>
+
+magnetic_field     = mf_tcv;
+tools              = rad;
+
+# Configuration of EAST-like magnetic equilibrium
+@MagneticField mf (analytical) {
+    B0     = 5;     # On-axis field strength (T)
+    Rm     = 0.68;  # Major radius (m)
+    rminor = 0.22;  # Minor radius (m)
+
+    # Safety-factor
+    qtype  = linear;
+    qa1    = 2;
+    qa2    = 1;
+}
+
+@MagneticField mf_tcv (numeric) {
+	filename="/home/paulburger/svn/TCV64711/eq/TCV64711-t0667.mat";
+}
+
+# Phase space grid
+@ParticleGenerator PGen {
+    a      = 0.0, 0.5, 200; # Normalized minor radius
+    #ppar   = 2, 165, 40;     # Parallel momentum (mc)
+    #pperp  = 1, 15, 40;    # Perpendicular momentum (mc)
+    p=60,60,1;
+    ithetap=0.22,1.0,200;
+
+    progress = 10;
+}
+
+# Orbit generator
+@ParticlePusher PPusher {
+    nt = 2000;        # Number of timesteps per orbit (resolution parameter)
+}
+
+# Radiation tool
+@Radiation rad {
+    detector = multicam;
+
+    ntoroidal   = 7000;    # No. of toroidal sections in tokamak (resolution parameter)
+    model       = cone;    # Radiation model to use
+    output      = image, green, topview;   # List of configuration of output
+}
+
+# Detector properties
+# Set up a tangentially viewing HXR camera.
+@Detector det {
+    aperture     = 0.006;
+    position     = 0.68, -0.68, 0;
+    direction    = 0, 1, 0;
+    vision_angle = 0.78 fov;
+    spectrum     = no;
+}
+
+# Radiation model
+@RadiationModel cone (cone) {
+    emission = synchrotron;
+}
+
+@RadiationOutput image (image) {
+    pixels = 600;
+    output = "data/image.mat";
+}
+
+@RadiationOutput topview (topview) {
+    pixels = 1000;
+    output = "data/topview.mat";
+}
+
+@RadiationOutput green (green) {
+    format = 12ij;
+	pixels = 400;
+    output = "data/green.mat";
+}
+

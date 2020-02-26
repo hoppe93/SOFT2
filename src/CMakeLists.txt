@@ -77,6 +77,8 @@ set(tool_radiation
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/AngularDistribution/Configure.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/AngularDistribution/Handle.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/AngularDistribution/Emission/ADEmission.cpp"
+	"${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/AngularDistribution/Emission/Cyclotron/AngularSpectralDistribution.cpp"
+	"${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/AngularDistribution/Emission/Cyclotron/CyclotronEmission.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/AngularDistribution/Emission/Synchrotron/AngularDistribution.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/AngularDistribution/Emission/Synchrotron/AngularDistributionDrifts.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/AngularDistribution/Emission/Synchrotron/AngularSpectralDistribution.cpp"
@@ -93,6 +95,7 @@ set(tool_radiation
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Emission/Bremsstrahlung/ConeBremsstrahlungScreenedEmission.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Emission/Bremsstrahlung/dilog_func.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Emission/Synchrotron/ConeSynchrotronEmission.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/cyclotron_func.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/synchrotron_func.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Emission/Unit/ConeUnitEmission.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Models/Cone/Projection/Original.cpp"
@@ -140,6 +143,8 @@ set(tool_radiation
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/ToroidalIntegral/Trapz.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/ToroidalIntegral/TrapzImproved.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Radiation/Welcome.cpp"
+
+
 )
 set(tool_radiation_tests
     #"${PROJECT_SOURCE_DIR}/tests/deep/Tools/Radiation/Models/AngularDistribution/Test_AngularDistribution.cpp"

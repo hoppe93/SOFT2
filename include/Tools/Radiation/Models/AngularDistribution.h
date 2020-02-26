@@ -6,6 +6,7 @@
 #include "Tools/Radiation/Models/Model.h"
 #include "Tools/Radiation/Models/AngularDistribution/ADEmission.h"
 #include "Tools/Radiation/Models/AngularDistribution/ADSynchrotronEmission.h"
+#include "Tools/Radiation/Models/AngularDistribution/ADCyclotronEmission.h"
 #include "Tools/Radiation/Models/AngularDistribution/ADQuadrature2D.h"
 #include "Tools/Radiation/RadiationException.h"
 #include "Tools/Radiation/RadiationParticle.h"
@@ -35,6 +36,7 @@ namespace __Radiation {
             virtual void Configure(struct global_settings*, ConfigBlock*, ConfigBlock*) override;
             void ConfigureEmission(ConfigBlock*, const std::string&, struct global_settings*);
             ADSynchrotronEmission *ConfigureSynchrotronEmission(ConfigBlock*, struct global_settings*);
+            ADCyclotronEmission *ConfigureCyclotronEmission(ConfigBlock*, struct global_settings*);
             virtual void InitializeOrbit(Orbit *__UNUSED__(o)) override {}
             virtual void InitializeTimestep(RadiationParticle*) override;
 

@@ -66,6 +66,8 @@ void AngularDistribution::ConfigureEmission(ConfigBlock *conf, const string& emn
         throw AngularDistributionException("Bremsstrahlung has not been implemented in the angular distribution model yet.");
     } else if (emname == "synchrotron") {
         this->emission = ConfigureSynchrotronEmission(conf, globset);
+    } else if (emname == "cyclotron") {
+        this->emission = ConfigureCyclotronEmission(conf, globset);
     } else
         throw AngularDistributionException("Unrecognized emission model requested: '%s'.", emname.c_str());
 
@@ -99,6 +101,20 @@ ADSynchrotronEmission *AngularDistribution::ConfigureSynchrotronEmission(ConfigB
     return new ADSynchrotronEmission(
         this->parent->detector, this->parent->magfield,
         globset, qagsLimit, qagsEpsRel
+    );
+}
+
+/*
+ * configure cyclotron emission.
+ */
+
+ADCyclotronEmission *AngularDistribution::ConfigureCyclotronEmission(ConfigBlock *conf, struct global_settings *globset) {
+    Setting *set;
+
+
+    return new ADCyclotronEmission(
+        this->parent->detector, this->parent->magfield,
+        globset
     );
 }
 
