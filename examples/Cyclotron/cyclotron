@@ -7,11 +7,11 @@
 
 magnetic_field     = mf;
 tools              = rad;
-num_threads = 1;
+#num_threads = 1;
 
 # Configuration of analytical magnetic equilibrium
 @MagneticField mf (analytical) {
-    B0     = 5;     # On-axis field strength (T)
+    B0     = 3.5;     # On-axis field strength (T)
     Rm     = 0.68;  # Major radius (m)
     rminor = 0.22;  # Minor radius (m)
 
@@ -23,13 +23,14 @@ num_threads = 1;
 
 # Phase space grid
 @ParticleGenerator PGen {
-    a      = 0.3, 0.5, 5;  # Normalized minor radius
-    #gamma  = 60, 60, 1;     # Energy (mc^2) (approx. 30 MeV)
-    #thetap = 0.2, 0.2, 1;   # Pitch angle (rad)
-    p      = 0.1, 0.1, 1;
-    thetap = 0.2, 0.2, 1;
+    a      = 0.3, 0.3, 1;  # Normalized minor radius
+    #gamma  = 1.01, 1.5, 50;   
+    #thetap = 0.1, 0.4, 30;
 
-    progress = 10;
+    gamma  = 1.001, 1.5, 50;   
+    thetap = 0.1, 0.3, 10;
+
+    progress = 100;
 }
 
 # Orbit generator
@@ -42,7 +43,7 @@ num_threads = 1;
     detector    = "det";      # Name of detector configuration (quotations optional)
     ntoroidal   = 7000;       # No. of toroidal sections in tokamak (resolution parameter)
     model       = angdist;    # Radiation model to use
-    output      = image,spectrum ;  # List of configuration of output
+    output      = image, green, spectrum ;  # List of configuration of output
 
     ####################################
     # NOTE: This is required to acquire
@@ -60,7 +61,7 @@ num_threads = 1;
     position     = 0.9, 0, 0;
     direction    = -1, 0, 0;
     vision_angle = 0.01 fov;
-    spectrum     = 1e11, 3.5e11, 1000;
+    spectrum     = 69e9, 139e9, 280;
 }
 
 @RadiationModel angdist (angdist) {
@@ -78,6 +79,10 @@ num_threads = 1;
 @RadiationOutput image (image) {
     pixels = 600;
     output = "data/image.mat";
+}
+@RadiationOutput green (green) {
+    format = "w12";
+    output = "data/green.mat";
 }
 @RadiationOutput spectrum (spectrum) {
     output = "data/ourSpectrum.h5";

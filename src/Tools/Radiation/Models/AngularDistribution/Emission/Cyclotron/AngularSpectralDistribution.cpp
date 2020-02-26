@@ -61,8 +61,11 @@ void ADCyclotronEmission::CalculateSpectrum(
 				f_min=wavelengths[0],
     			freq_spacing=(f_max-f_min)/nwavelengths;		//spacing between frequencies as stated in the config script
 
-    m_max=(int) (f_max*2*M_PI/omega_0*(1-betapar*cosMu)+1); // rounds up to integer
-    m_min=(int) (f_min*2*M_PI/omega_0*(1-betapar*cosMu)); //rounds down to integer
+    m_max=(int) floor(f_max*2*M_PI/omega_0*(1-betapar*cosMu)); // rounds up to integer
+    m_min=(int) ceil(f_min*2*M_PI/omega_0*(1-betapar*cosMu)); //rounds up to integer
+
+    for (unsigned int i = 0; i < nwavelengths; i++)
+    	I[i] = 0;
 
 
     for (m = m_min; m < m_max+1; ++m) {
