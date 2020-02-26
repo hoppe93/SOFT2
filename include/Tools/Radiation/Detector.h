@@ -26,7 +26,7 @@ namespace __Radiation {
 
             std::string name;
 
-            slibreal_t wavelength0, wavelength1, *wavelengths;
+            slibreal_t wavelength0, wavelength1, *wavelengths, wavelengthstep;
             unsigned int nwavelengths=0;
 
             // Basis vectors
@@ -54,6 +54,7 @@ namespace __Radiation {
             slibreal_t GetWavelengthLower() { return wavelength0; }
             slibreal_t GetWavelengthUpper() { return wavelength1; }
             slibreal_t *GetWavelengths() { return wavelengths; }
+            slibreal_t GetWavelengthStep() { return wavelengthstep; }
             unsigned int GetNWavelengths() { return nwavelengths; }
             Optics *GetOptics() { return this->optics; }
 

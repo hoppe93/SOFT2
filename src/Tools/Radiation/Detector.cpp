@@ -224,14 +224,16 @@ void __Radiation::Detector::SetSpectralRange(slibreal_t w0, slibreal_t w1, unsig
 
     if (nw > 1) {
         this->wavelengths = new slibreal_t[nw];
+        this->wavelengthstep = (w1-w0) / (nw-1.0);
         for (unsigned int i = 0; i < nw; i++)
-            this->wavelengths[i] = w0 + (w1-w0) * ((slibreal_t)i) / (nw-1.0);
+            this->wavelengths[i] = w0 + i * this->wavelengthstep;
     } else if (nw == 1) {
         if (w0 != w1)
             throw DetectorException("Detector '%s': Spectral range consists of one point but endpoints differ.", this->name.c_str());
 
         this->wavelengths = new slibreal_t;
         this->wavelengths[0] = w0;
+        this->wavelengthstep = 0;
     }
 }
 

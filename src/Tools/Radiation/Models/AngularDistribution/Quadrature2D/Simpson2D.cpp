@@ -102,10 +102,18 @@ slibreal_t ADSimpson2D::_OuterIntegral(
     // Account for the differential element
     // and factor 1/3 in the Y integral as well
     slibreal_t d = nDotNHat * dX*dX / 9.0;
-    if (withSpectrum)
+    if (withSpectrum) {
         MultiplySpectra<withPolarization>(
             d, nwavelengths, I, Q, U, V
         );
+
+        // Compute total detected power
+        for (i = 0; i < nwavelengths; i++)
+            S += I[i];
+
+        return (S*detector->GetWavelengthStep());
+    } else
+        return (S*d);
 
     return (S * d);
 }
