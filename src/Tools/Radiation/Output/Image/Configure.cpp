@@ -15,6 +15,7 @@ using namespace std;
 const string Image::DEFAULT_QUANTITIES[] = {
 	RadiationOutput::DETECTOR_DIRECTION,
 	RadiationOutput::DETECTOR_POSITION,
+    RadiationOutput::DETECTOR_ROLL,
 	RadiationOutput::DETECTOR_VISANG,
 	RadiationOutput::RO_WALL
 };

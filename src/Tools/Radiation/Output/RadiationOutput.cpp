@@ -19,6 +19,7 @@ const char
 	RadiationOutput::DETECTOR_EHAT1[]     = "detectorEhat1",
 	RadiationOutput::DETECTOR_EHAT2[]     = "detectorEhat2",
 	RadiationOutput::DETECTOR_POSITION[]  = "detectorPosition",
+    RadiationOutput::DETECTOR_ROLL[]      = "detectorRoll",
 	RadiationOutput::DETECTOR_VISANG[]    = "detectorVisang";
 
 void RadiationOutput::InitializeCommonQuantities() {
@@ -68,6 +69,13 @@ void RadiationOutput::InitializeCommonQuantities() {
 			sf->WriteList(this->DETECTOR_POSITION, detpos, 3);
 		}
 	);
+
+    DefineCommonQuantity(
+        DETECTOR_ROLL, [this](SFile *sf) {
+            slibreal_t roll = this->detector->GetRoll();
+            sf->WriteList(this->DETECTOR_ROLL, &roll, 1);
+        }
+    );
 
 	// detectorVisang
     DefineCommonQuantity(

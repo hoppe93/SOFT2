@@ -30,6 +30,7 @@ namespace __Radiation {
                 DETECTOR_EHAT1[],
                 DETECTOR_EHAT2[],
                 DETECTOR_POSITION[],
+                DETECTOR_ROLL[],
                 DETECTOR_VISANG[];
 
         public:

@@ -126,6 +126,8 @@ file:
 +-----------------------+---------------------------------------------------------+
 | ``detectorPosition``  | Vector representing position of detector.               |
 +-----------------------+---------------------------------------------------------+
+| ``detectorRoll``      | Detector view roll angle.                               |
++-----------------------+---------------------------------------------------------+
 | ``detectorVisang``    | (Full) FOV vision angle of the detector.                |
 +-----------------------+---------------------------------------------------------+
 | ``wall``              | Domain contour used for the simulation.                 |

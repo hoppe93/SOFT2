@@ -46,6 +46,7 @@ namespace __Radiation {
             Vector<3>& GetEHat1() { return ehat1; }
             Vector<3>& GetEHat2() { return ehat2; }
             Vector<3>& GetPosition() { return position; }
+            slibreal_t GetRoll() { return roll; }
             slibreal_t GetCosVisionAngleFOV() { return cos_vision_angle_fov; }
             slibreal_t GetVisionAngleFOV() { return vision_angle_fov; }
             slibreal_t GetVisionAngleImage() { return vision_angle_image; }
