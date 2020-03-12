@@ -114,8 +114,6 @@ slibreal_t ADSimpson2D::_OuterIntegral(
         return (S*detector->GetWavelengthStep());
     } else
         return (S*d);
-
-    return (S * d);
 }
 
 /**

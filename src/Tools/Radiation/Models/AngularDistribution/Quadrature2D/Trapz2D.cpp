@@ -90,12 +90,18 @@ slibreal_t ADTrapz2D::_OuterIntegral(
 
     // Multiply with the differential element
     slibreal_t d = nDotNHat * dX*dX;
-    if (withSpectrum)
+    if (withSpectrum) {
         MultiplySpectra<withPolarization>(
             d, nwavelengths, I, Q, U, V
         );
 
-    return (S * d);
+        // Compute total detected power
+        for (i = 0; i < nwavelengths; i++)
+            S += I[i];
+
+        return (S*detector->GetWavelengthStep());
+    } else
+        return (S*d);
 }
 
 /**
