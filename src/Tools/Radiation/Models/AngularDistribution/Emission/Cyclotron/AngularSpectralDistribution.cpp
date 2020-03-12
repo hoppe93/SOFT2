@@ -6,6 +6,7 @@
 #include "Tools/Radiation/Models/AngularDistribution/ADCyclotronEmission.h"
 #include "Tools/Radiation/cyclotron_func.h"
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 using namespace __Radiation;
@@ -51,6 +52,7 @@ void ADCyclotronEmission::CalculateSpectrum(
     Vector<3> &n, slibreal_t sinMu,  slibreal_t cosMu
 ) {
 
+
     unsigned int m_min,m_max;
     unsigned int m;
     slibreal_t
@@ -61,17 +63,19 @@ void ADCyclotronEmission::CalculateSpectrum(
 				f_min=wavelengths[0],
     			freq_spacing=(f_max-f_min)/nwavelengths;		//spacing between frequencies as stated in the config script
 
-    m_max=(int) floor(f_max*2*M_PI/omega_0*(1-betapar*cosMu)); // rounds up to integer
+    m_max=(int) floor(f_max*2*M_PI/omega_0*(1-betapar*cosMu)); // rounds down to integer
     m_min=(int) ceil(f_min*2*M_PI/omega_0*(1-betapar*cosMu)); //rounds up to integer
+
 
     for (unsigned int i = 0; i < nwavelengths; i++)
     	I[i] = 0;
 
-
     for (m = m_min; m < m_max+1; ++m) {
-    	if (m==0)continue;
+    	if (m==0 || ((harmonics!=nullptr) && (find(harmonics, harmonics+harmonics_number, m) == harmonics+harmonics_number))  )continue;
 
-		slibreal_t
+
+
+    	slibreal_t
 		w= m*w_m,
 		J = cyclotron_func1(m,w*x_w),
 		J_prime = 0.5*(cyclotron_func1(m-1,w*x_w)-cyclotron_func1(m+1,w*x_w));

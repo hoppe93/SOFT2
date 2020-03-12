@@ -111,10 +111,33 @@ ADSynchrotronEmission *AngularDistribution::ConfigureSynchrotronEmission(ConfigB
 ADCyclotronEmission *AngularDistribution::ConfigureCyclotronEmission(ConfigBlock *conf, struct global_settings *globset) {
     Setting *set;
 
+    int *harmonics_list;
+    int harmonics_no;
+    // harmonics
+
+       if (!conf->HasSetting("harmonics")){
+           harmonics_list = nullptr;
+       	   harmonics_no=0;
+       }
+       else{
+		   set = conf->GetSetting("harmonics");
+		   harmonics_no=set->GetNumberOfValues();
+		   if (!set->IsNumericVector(harmonics_no))
+			   throw AngularDistributionException("Expected integers.");
+		   else {
+			   vector<slibreal_t> v = set->GetNumericVector();
+			   slibreal_t *a = v.data();
+			   harmonics_list = new int[harmonics_no];
+			   for (int i=0; i<harmonics_no;i++){
+				   harmonics_list[i]=v.at(i);
+
+			   }
+		   }
+       }
 
     return new ADCyclotronEmission(
         this->parent->detector, this->parent->magfield,
-        globset
+        globset, harmonics_list, harmonics_no
     );
 }
 

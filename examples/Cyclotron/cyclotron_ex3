@@ -1,0 +1,87 @@
+# Configuration for simulation of bremsstrahlung
+# radiation images.
+#
+# Based on Zhou et al., PoP 21 (2014)
+# https://doi.org/10.1063/1.4881469
+##############################
+
+magnetic_field     = mf;
+tools              = rad;
+#num_threads = 1;
+
+# Configuration of analytical magnetic equilibrium
+@MagneticField mf (analytical) {
+    B0     = 3.5;     # On-axis field strength (T)
+    Rm     = 0.68;  # Major radius (m)
+    rminor = 0.22;  # Minor radius (m)
+
+    # Safety-factor (overriden in other scripts)
+    qtype  = constant;
+    qa1    = 1;
+    sigmaB = ccw;
+}
+
+# Phase space grid
+@ParticleGenerator PGen {
+    a      = 0.1, 0.5, 10;  # Normalized minor radius
+    gamma  = 1.01, 1.5, 30;   
+    thetap = 0.1, 0.5, 10;
+
+    progress = 100;
+}
+
+# Orbit generator
+@ParticlePusher PPusher {
+    nt       = 5000;        # Number of timesteps per orbit (resolution parameter)
+}
+
+# Radiation tool
+@Radiation rad {
+    detector    = "det";      # Name of detector configuration (quotations optional)
+    ntoroidal   = 7000;       # No. of toroidal sections in tokamak (resolution parameter)
+    model       = angdist;    # Radiation model to use
+    output      = green ;  # List of configuration of output
+
+    ####################################
+    # NOTE: This is required to acquire
+    # the speedup from the 'maximize'
+    # quadrature rule
+    ####################################
+    #torthreshold = 1e-3;
+    torquad = trapz;
+}
+
+# Detector properties
+# Set up a tangentially viewing HXR camera.
+@Detector det {
+    aperture     = 0.006;
+    position     = 0.9, 0, 0;
+    direction    = -1, 0, 0;
+    vision_angle = 0.01 fov;
+    spectrum     = 69e9, 139e9, 280;
+}
+
+@RadiationModel angdist (angdist) {
+    emission = cyclotron;
+    #emission = synchrotron;
+    harmonics = 2;
+
+    # Number of points (in each direction) on detector
+    # (=> in total there will be 'nsamples*nsamples'
+    # points covering the detector)
+    # 
+    # This is the resolution parameter corresponding to
+    # the integral over the detector surface
+    nsamples = 1;
+}
+@RadiationOutput image (image) {
+    pixels = 600;
+    output = "data/image.mat";
+}
+@RadiationOutput green (green) {
+    format = "w12";
+    output = "data/green_ex3_m2.mat";
+}
+@RadiationOutput spectrum (spectrum) {
+    output = "data/ourSpectrum_big.h5";
+}

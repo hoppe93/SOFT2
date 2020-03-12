@@ -26,7 +26,10 @@ namespace __Radiation {
             slibreal_t B, ppar, pperp, gamma, m, q,
                 iGamma, betaDotFactor, rho, gammapar2;
             slibreal_t sinphi, cosphi;      // Toroidal angle
+
         };
+        int *harmonics;
+        int harmonics_number;
 
         private:
             bool includeDrifts = false;
@@ -49,8 +52,7 @@ namespace __Radiation {
             struct Optics::Efield Efield;
         public:
             ADCyclotronEmission(
-                Detector*, MagneticField2D*, struct global_settings*
-            );
+                Detector*, MagneticField2D*, struct global_settings*, int*,int);
             ~ADCyclotronEmission();
 
             virtual slibreal_t Evaluate(RadiationParticle*, Vector<3>&, slibreal_t, slibreal_t, bool) override;

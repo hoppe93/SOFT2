@@ -25,6 +25,7 @@ namespace __Radiation {
             // Number of points on detector surface
             unsigned int nsamples;
 
+
             std::string emissionName = "N/A";
 
             // Default settings

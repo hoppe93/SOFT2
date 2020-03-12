@@ -24,13 +24,10 @@ tools              = rad;
 # Phase space grid
 @ParticleGenerator PGen {
     a      = 0.3, 0.3, 1;  # Normalized minor radius
-    #gamma  = 1.01, 1.5, 50;   
-    #thetap = 0.1, 0.4, 30;
+    gamma  = 1.3, 1.5, 20;   
+    thetap = 0.2, 0.2, 1;
 
-    gamma  = 1.001, 1.5, 50;   
-    thetap = 0.1, 0.3, 10;
-
-    progress = 100;
+    progress = 10;
 }
 
 # Orbit generator
@@ -43,7 +40,7 @@ tools              = rad;
     detector    = "det";      # Name of detector configuration (quotations optional)
     ntoroidal   = 7000;       # No. of toroidal sections in tokamak (resolution parameter)
     model       = angdist;    # Radiation model to use
-    output      = image, green, spectrum ;  # List of configuration of output
+    output      = green, spectrum ;  # List of configuration of output
 
     ####################################
     # NOTE: This is required to acquire
@@ -61,12 +58,13 @@ tools              = rad;
     position     = 0.9, 0, 0;
     direction    = -1, 0, 0;
     vision_angle = 0.01 fov;
-    spectrum     = 69e9, 139e9, 280;
+    #spectrum     = 69e9, 139e9, 280;
+    spectrum     = 69e9, 35e10, 280;
 }
 
 @RadiationModel angdist (angdist) {
     emission = cyclotron;
-    #emission = synchrotron;
+    #harmonics = 4;
 
     # Number of points (in each direction) on detector
     # (=> in total there will be 'nsamples*nsamples'
@@ -74,16 +72,16 @@ tools              = rad;
     # 
     # This is the resolution parameter corresponding to
     # the integral over the detector surface
-    nsamples = 1;
+    nsamples = 1;#r_trigger=0     #1 for format=rw12, 0 for w12
 }
 @RadiationOutput image (image) {
     pixels = 600;
-    output = "data/image.mat";
+    output = "data/image_ex2_all.mat";
 }
 @RadiationOutput green (green) {
     format = "w12";
-    output = "data/green.mat";
+    output = "data/green_all.mat";
 }
 @RadiationOutput spectrum (spectrum) {
-    output = "data/ourSpectrum.h5";
+    output = "data/spectrum_ex2_all.h5";
 }
