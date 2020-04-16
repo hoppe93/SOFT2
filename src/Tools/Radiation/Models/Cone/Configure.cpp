@@ -25,7 +25,11 @@ using namespace __Radiation;
  * root: Root ConfigBlock. Provided to allow access
  *       to configuration of possible sub-modules.
  */
-void Cone::Configure(struct global_settings *__UNUSED__(globset), ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
+void Cone::Configure(struct global_settings *globset, ConfigBlock *conf, ConfigBlock *__UNUSED__(root)) {
+    // If drifts are enabled, we adjust the guiding-center
+    // position to account for the finite Larmor radius
+    this->parent->SetShiftedLarmorRadius(globset->include_drifts);
+
     // edgecheck
     if (conf->HasSetting("edgecheck")) {
         Setting *s = conf->GetSetting("edgecheck");

@@ -96,15 +96,16 @@ void Radiation::EvaluateToroidalTrapzImproved(
 }
 
 unsigned int Radiation::IntegrateToroidalImproved(
-    RadiationParticle &rp, orbit_type_t otype, slibreal_t x0, slibreal_t y0, slibreal_t z,
+    RadiationParticle &rp, orbit_type_t otype, slibreal_t x0, slibreal_t y0, slibreal_t z0,
     slibreal_t px0, slibreal_t py0, int startj, int sgn, slibreal_t &mx
 ) {
-    slibreal_t x, y, px, py;
+    slibreal_t x, y, z, px, py;
     bool has_outer_wall = (wall_opacity!=WALL_OPACITY_SEMI_TRANSPARENT);
     Vector<3> rcp, detx;
     unsigned int niter = 0;
 
     detx = detector->GetPosition();
+    z = z0;
 
     // Toroidal integral
     int j = startj;
@@ -122,6 +123,14 @@ unsigned int Radiation::IntegrateToroidalImproved(
 
         px = px0*cosphi[j] + py0*sinphi[j];
         py =-px0*sinphi[j] + py0*cosphi[j];
+
+        // If drifts are enabled and we're using a guiding-center cone
+        // model, then we should also shift the guiding-center position
+        // to take the finite Larmor radius into account
+        if (this->shiftLarmorRadius) {
+            z = z0;
+            this->ShiftLarmorRadius(x, y, z, px, py, rp.GetP()[2], &rp);
+        }
 
         // Check if within FOV
         if (!IsWithinFieldOfView(x, y, z, rcp)) {

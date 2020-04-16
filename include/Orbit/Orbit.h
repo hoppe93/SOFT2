@@ -13,7 +13,8 @@ typedef enum {
     ORBIT_CLASS_COLLIDED=1,       // Collided with wall
     ORBIT_CLASS_STAGNATION=2,     // Stagnation orbit
 	ORBIT_CLASS_PASSING=3,        // Passing orbit
-	ORBIT_CLASS_TRAPPED=4         // Trapped orbit
+	ORBIT_CLASS_TRAPPED=4,        // Trapped orbit
+    ORBIT_CLASS_DISCARDED=5       // Discarded orbit
 } orbit_class_t;
 
 #include <softlib/config.h>

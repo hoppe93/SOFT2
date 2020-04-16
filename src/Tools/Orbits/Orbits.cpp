@@ -103,6 +103,10 @@ orbit_class_t *Orbits::Allocate_class(const unsigned int norbits) {
     orbit_class_t *p = new orbit_class_t[norbits];
     this->allocatedBytes += norbits * sizeof(orbit_class_t);
 
+    for (unsigned int i = 0; i < norbits; i++) {
+        p[i] = ORBIT_CLASS_DISCARDED;
+    }
+
     return p;
 }
 

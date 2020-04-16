@@ -69,6 +69,7 @@ namespace __Radiation {
 
             bool ignoreTrapped = false;
             bool measuresPolarization = false;
+            bool shiftLarmorRadius = false;
             wall_opacity_t wall_opacity;
         public:
             __Radiation::Detector *detector;
@@ -124,6 +125,9 @@ namespace __Radiation {
 
             bool IsWithinFieldOfView(slibreal_t, slibreal_t, slibreal_t, Vector<3>&);
             bool MeasuresPolarization() { return measuresPolarization; }
+
+            void SetShiftedLarmorRadius(bool v) { this->shiftLarmorRadius = v; }
+            void ShiftLarmorRadius(slibreal_t&, slibreal_t&, slibreal_t&, const slibreal_t, const slibreal_t, const slibreal_t, RadiationParticle*);
 
             static void PrepareConfiguration(Configuration*);
     };

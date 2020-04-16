@@ -11,7 +11,7 @@ using namespace __Radiation;
 
 void Radiation::HandleTrapz(Orbit *o, Particle *p) {
     unsigned int ntau, i, j, tindex;
-    slibreal_t x, y, z, x0, y0, px, py, px0, py0, *X, *P;
+    slibreal_t x, y, z, x0, y0, z0, px, py, px0, py0, *X, *P;
     Vector<3> rcp, detx;
     bool has_outer_wall = (wall_opacity!=WALL_OPACITY_SEMI_TRANSPARENT);
 
@@ -38,7 +38,7 @@ void Radiation::HandleTrapz(Orbit *o, Particle *p) {
 
         x0  = X[tindex+0];
         y0  = X[tindex+1];
-        z   = X[tindex+2];
+        z0  = X[tindex+2];
 
         px0 = P[tindex+0];
         py0 = P[tindex+1];
@@ -50,6 +50,14 @@ void Radiation::HandleTrapz(Orbit *o, Particle *p) {
 
             px = px0*cosphi[j] + py0*sinphi[j];
             py =-px0*sinphi[j] + py0*cosphi[j];
+
+            // If drifts are enabled and we're using a guiding-center cone
+            // model, then we should also shift the guiding-center position
+            // to take the finite Larmor radius into account
+            if (this->shiftLarmorRadius) {
+                z = z0;
+                this->ShiftLarmorRadius(x, y, z, px, py, rp.GetP()[2], &rp);
+            }
 
             // Check if within FOV
             if (!IsWithinFieldOfView(x, y, z, rcp))

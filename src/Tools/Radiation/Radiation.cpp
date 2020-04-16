@@ -105,3 +105,31 @@ void Radiation::RegisterOutput(RadiationParticle *rp) {
     }
 }
 
+/**
+ * Account for the finite Larmor radius by shifting
+ * the guiding-center position according to
+ *
+ *   X~ = X - l*Vhat
+ *
+ * with
+ *   
+ *   l = rho / tan(thetap)
+ *
+ * where X is the guiding-center position, Vhat is the
+ * guiding-center velocity vector and rho is the Larmor
+ * radius.
+ */
+void Radiation::ShiftLarmorRadius(
+    slibreal_t &x, slibreal_t &y, slibreal_t &z,
+    const slibreal_t px, const slibreal_t py, const slibreal_t pz,
+    RadiationParticle *rp
+    
+) {
+    slibreal_t p = sqrt(px*px + py*py + pz*pz);
+    slibreal_t rho = rp->GetPperp() / (fabs(rp->GetCharge())*rp->GetB());
+
+    x -= rho * (px/p);
+    y -= rho * (py/p);
+    z -= rho * (py/p);
+}
+
