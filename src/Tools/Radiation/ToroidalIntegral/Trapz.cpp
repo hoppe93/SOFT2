@@ -54,10 +54,10 @@ void Radiation::HandleTrapz(Orbit *o, Particle *p) {
             // If drifts are enabled and we're using a guiding-center cone
             // model, then we should also shift the guiding-center position
             // to take the finite Larmor radius into account
-            if (this->shiftLarmorRadius) {
+            /*if (this->shiftLarmorRadius) {
                 z = z0;
                 this->ShiftLarmorRadius(x, y, z, px, py, rp.GetP()[2], &rp);
-            }
+            }*/
 
             // Check if within FOV
             if (!IsWithinFieldOfView(x, y, z, rcp))
