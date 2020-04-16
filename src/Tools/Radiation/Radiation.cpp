@@ -125,11 +125,13 @@ void Radiation::ShiftLarmorRadius(
     RadiationParticle *rp
     
 ) {
+    const slibreal_t mc = ELECTRON_MASS*LIGHTSPEED;
     slibreal_t p = sqrt(px*px + py*py + pz*pz);
-    slibreal_t rho = rp->GetPperp() / (fabs(rp->GetCharge())*rp->GetB());
+    slibreal_t rho = mc*rp->GetPperp() / (fabs(rp->GetCharge())*rp->GetB());
+    slibreal_t tanthetap = rp->GetPperp() / rp->GetPpar();
 
-    x -= rho * (px/p);
-    y -= rho * (py/p);
-    z -= rho * (py/p);
+    x -= (rho/tanthetap) * (px/p);
+    y -= (rho/tanthetap) * (py/p);
+    z -= (rho/tanthetap) * (py/p);
 }
 

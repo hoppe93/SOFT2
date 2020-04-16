@@ -32,7 +32,9 @@ using namespace std;
  *       indicates a double root and only one of
  *       them should be tested.
  */
-void Radiation::LocateSurfaceOfVisibility(RadiationParticle *rp, unsigned int *phi1, unsigned int *phi2) {
+void Radiation::LocateSurfaceOfVisibility(
+    RadiationParticle *rp, unsigned int *phi1, unsigned int *phi2
+) {
     const slibreal_t tol = 0.5*M_PI / ntoroidal;    // (2*pi/ntoroidal) / 2
     Vector<3> v = rp->GetPHat(), x = rp->GetPosition(), d = this->detector->GetPosition();
 
