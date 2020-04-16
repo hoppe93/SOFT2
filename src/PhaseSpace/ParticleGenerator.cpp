@@ -198,7 +198,8 @@ ParticleGenerator::ParticleGenerator(MagneticField2D *mf, ConfigBlock *conf, str
         else if (str == "2")
             this->mpi_distribute_mode = MPI_DISTMODE_MOMENTUM2;
         else {
-            for (int i = 0; i < pg_ncoordinates; i++) {
+            int i;
+            for (i = 0; i < pg_ncoordinates; i++) {
                 if (str == pg_coordinate_names[i]) {
                     if (pg_coordinate_types[i] == this->mom1type)
                         this->mpi_distribute_mode = MPI_DISTMODE_MOMENTUM1;
