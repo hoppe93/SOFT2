@@ -243,7 +243,7 @@ DistributionFunction *InitLUKEDistribution(MagneticField2D *magfield, ConfigBloc
     Setting *set;
     string name;
     bool logarithmize = false;
-    int interptype = NumericMomentumSpaceDistributionFunction::INTERPOLATION_CUBIC;
+    int interptype = NumericMomentumSpaceDistributionFunction::INTERPOLATION_LINEAR;
     
     // Name
     if (!conf->HasSetting("name"))
@@ -300,7 +300,7 @@ SOFTDistributionFunction *InitNumericalDistribution(MagneticField2D *magfield, C
     Setting *set;
     string name;
     bool logarithmize = false;
-    int interptype = NumericMomentumSpaceDistributionFunction::INTERPOLATION_CUBIC;
+    int interptype = NumericMomentumSpaceDistributionFunction::INTERPOLATION_LINEAR;
     
     // Name
     if (!conf->HasSetting("name"))
