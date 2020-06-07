@@ -26,6 +26,22 @@ SOFT phase-space distribution functions.
    DistributionFunction/Pitch
    DistributionFunction/Unit
 
+.. note::
+
+   When specifying distribution functions directly to SOFT, the radial
+   coordinate of the distribution is interpreted as a *drift surface* label.
+   This is in contrast to the usual radial coordinate in SOFT which is a *flux
+   surface* label. This means that minor radius :math:`r=0` corresponds to the
+   centre of the *drift surface* when specifying a distribution function to
+   SOFT, and NOT to the magnetic axis as is otherwise the case.
+
+   Note also that the radial coordinate in the :ref:`module-ro-green`
+   RadiationOutput is in fact a *flux surface* label. Hence, if the same
+   distribution is applied after a simulation, instead of during a simulation
+   (using the :option:`global distribution_function` option), by multiplying it
+   with a Green's function, then the radial coordinate of the distribution is
+   interpreted as a *flux surface* label.
+
 Types
 ^^^^^
 SOFT provides several different types of distribution functions. Which type is
