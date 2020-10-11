@@ -7,6 +7,7 @@
 #include <softlib/DistributionFunction/DistributionFunction.h>
 #include <softlib/DistributionFunction/AnalyticalAvalanche.h>
 #include <softlib/DistributionFunction/BesselRadialProfile.h>
+#include <softlib/DistributionFunction/DREAMDistributionFunction.h>
 #include <softlib/DistributionFunction/ExponentialPitch.h>
 #include <softlib/DistributionFunction/CODEDistributionFunction.h>
 #include <softlib/DistributionFunction/GOCODEDistributionFunction.h>
@@ -42,6 +43,8 @@ DistributionFunction *InitDistributionFunction(MagneticField2D *magfield, Config
         df = InitCODEDistribution(magfield, conf, root);
     else if (type == "connorhastie")
         df = InitConnorHastieDistribution(magfield, conf, root);
+    else if (type == "dream")
+        df = InitDREAMDistributionFunction(magfield, conf);
     else if (type == "gocode")
         df = InitGOCODEDistribution(magfield, conf);
     else if (type == "luke")
@@ -190,6 +193,76 @@ RadialDistributionFunction *InitConnorHastieDistribution(MagneticField2D *magfie
             EHat, Zeff, pMax, deltaP
         )
     );
+}
+
+/**
+ * Initialize distribution function from DREAM output.
+ */
+DREAMDistributionFunction *InitDREAMDistributionFunction(MagneticField2D *magfield, ConfigBlock *conf) {
+    Setting *set;
+    string name, distname = "";
+    bool logarithmize = false;
+    int interptype = NumericMomentumSpaceDistributionFunction::INTERPOLATION_LINEAR;
+    
+    // Name
+    if (!conf->HasSetting("name"))
+        throw SOFTException("Distribution function '%s': Name of DREAM output file not specified.", conf->GetName().c_str());
+    else {
+        set = conf->GetSetting("name");
+        if (set->GetNumberOfValues() != 1)
+            throw SOFTException("Distribution function '%s': name: Invalid value assigned to parameter. Expected string.", conf->GetName().c_str());
+
+        name = set->GetString();
+    }
+
+    // Interpolate logarithmically
+    if (conf->HasSetting("logarithmize")) {
+        set = conf->GetSetting("logarithmize");
+        if (!set->IsBool())
+            throw SOFTException("Distribution function '%s': logarithmize: Invalid value assigned to parameter. Expected boolean.", conf->GetName().c_str());
+
+        logarithmize = set->GetBool();
+    }
+
+    // Type of interpolation
+    if (conf->HasSetting("interptype")) {
+        set = conf->GetSetting("interptype");
+        if (set->GetNumberOfValues() != 1)
+            throw SOFTException("Distribution function '%s': interptype: Invalid value assigned to parameter. Expected string.", conf->GetName().c_str());
+
+        if (set->GetString() == "cubic")
+            interptype = NumericMomentumSpaceDistributionFunction::INTERPOLATION_CUBIC;
+        else if (set->GetString() == "linear")
+            interptype = NumericMomentumSpaceDistributionFunction::INTERPOLATION_LINEAR;
+        else
+            throw SOFTException(
+                "Distribution function '%s': interptype: Unrecognized interpolation type requested: %s.",
+                conf->GetName().c_str(), set->GetString().c_str()
+            );
+    }
+
+    // Name of distribution function to load (usually 'f_re' or 'f_hot')
+    if (conf->HasSetting("distribution")) {
+        set = conf->GetSetting("distribution");
+        if (!set->GetNumberOfValues() != 1)
+            throw SOFTException("Distribution function '%s': distribution: Invalid value assigned to parameter. Expected string.", conf->GetName().c_str());
+
+        distname = set->GetString();
+    }
+
+    DREAMDistributionFunction *ddf = new DREAMDistributionFunction(name, magfield, distname, logarithmize, interptype);
+
+    // Flip sign of pitch (may be necessary, depending on how
+    // the electric and magnetic fields are oriented).
+    if (conf->HasSetting("flippitchsign")) {
+        set = conf->GetSetting("flippitchsign");
+        if (set->GetNumberOfValues() != 1)
+            throw SOFTException("Distribution function '%s': flippitchsign: Invlaid value assigned to parameter. Expected boolean.", conf->GetName().c_str());
+
+        ddf->FlipPitchSign(set->GetBool());
+    }
+
+    return ddf;
 }
 
 /**
