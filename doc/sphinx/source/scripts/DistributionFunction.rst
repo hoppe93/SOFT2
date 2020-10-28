@@ -19,6 +19,7 @@ SOFT phase-space distribution functions.
    DistributionFunction/Avalanche
    DistributionFunction/CODE
    DistributionFunction/ConnorHastie
+   DistributionFunction/DREAM
    DistributionFunction/GOCODE
    DistributionFunction/LUKE
    DistributionFunction/Numerical
@@ -57,6 +58,8 @@ distribution function types are listed in the table below.
 | :ref:`module-distribution-code`      | A momentum-space distribution function directly from CODE.   |
 +--------------------------------------+--------------------------------------------------------------+
 | :ref:`module-distribution-connor`    | An analytical distribution function based on [#connor1975]_. |
++--------------------------------------+--------------------------------------------------------------+
+| :ref:`module-distribution-dream`     | Distribution function from the DREAM 1D2P transport solver.  |
 +--------------------------------------+--------------------------------------------------------------+
 | :ref:`module-distribution-gocode`    | GO-CODE distribution function.                               |
 +--------------------------------------+--------------------------------------------------------------+
