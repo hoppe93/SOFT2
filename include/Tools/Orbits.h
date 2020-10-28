@@ -38,6 +38,9 @@ class Orbits : public Tool, public OutputModule {
             **gamma;     /* Lorentz factor (or energy) */
 
         static orbit_class_t *classification;   /* Orbit classifications */
+        /* Orbit properties */
+        static slibreal_t
+            *drift_shift;
 
         static const std::string DEFAULT_QUANTITIES[];
         static const unsigned int NDEFAULT_QUANTITIES;
@@ -48,6 +51,7 @@ class Orbits : public Tool, public OutputModule {
 
         slibreal_t **Allocate(const unsigned int, const unsigned int, const unsigned int);
         orbit_class_t *Allocate_class(const unsigned int);
+        slibreal_t *Allocate_prop(const unsigned int);
         virtual void Configure(struct global_settings*, ConfigBlock*, ConfigBlock*) override;
         virtual void Finish() override {}
         virtual void Handle(Orbit*, Particle*) override;

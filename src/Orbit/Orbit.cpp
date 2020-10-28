@@ -151,6 +151,7 @@ Orbit *Orbit::Create(
     this->ip2 = p->GetIndexP2();
     this->m = p->GetMass();
     this->q = p->GetCharge();
+    this->drift_shift = p->GetDriftShift();
 
     intg1->OutputDense(
         this->ntau,

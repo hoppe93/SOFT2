@@ -38,6 +38,10 @@ class Orbit {
         unsigned int ir, ip1, ip2;
         slibreal_t m, q;       // Particle mass and charge
 
+        // Distance by which the orbit is drifting in
+        // the outer midplane
+        slibreal_t drift_shift=0;
+
 		/* Time-evolving quantities */
 		slibreal_t
 			*tau,		/* Time points (orbit time) */
@@ -119,11 +123,14 @@ class Orbit {
         slibreal_t *GetGamma() const { return this->gamma; }
         slibreal_t GetGamma(unsigned int ti) const { return this->gamma[ti]; }
 
+        slibreal_t GetDriftShift() const { return this->drift_shift; }
         slibreal_t GetCharge() const { return this->q; }
         slibreal_t GetMass() const { return this->m; }
         unsigned int GetIndexR() const { return this->ir; }
         unsigned int GetIndexP1() const { return this->ip1; }
         unsigned int GetIndexP2() const { return this->ip2; }
+
+        void SetDriftShift(const slibreal_t d) { this->drift_shift = d; }
 };
 
 class OrbitException : public SOFTException {
