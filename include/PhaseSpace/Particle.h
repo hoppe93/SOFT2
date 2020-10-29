@@ -39,6 +39,7 @@ class Particle {
         // Phase-space indices corresponding
         // to this particle
         unsigned int ir, ip1, ip2, izeta;
+        unsigned int nr, np1, np2, nzeta;
 
 		// Useful quantities
 		slibreal_t gamma;				// Particle Lorentz factor
@@ -122,6 +123,11 @@ class Particle {
         unsigned int GetIndexP2()   const { return this->ip2; }
         unsigned int GetIndexZeta() const { return this->izeta; }
 
+        unsigned int GetNR()        const { return this->nr; }
+        unsigned int GetNP1()       const { return this->np1; }
+        unsigned int GetNP2()       const { return this->np2; }
+        unsigned int GetNZeta()     const { return this->nzeta; }
+
 		/* Set coordinates */
 		void SetDRho(const slibreal_t v)        { this->drho = v; }
 		void SetDMomentum1(const slibreal_t v)  { this->dparam1 = v; }
@@ -153,6 +159,12 @@ class Particle {
             SetIndex1(i1);
             SetIndex2(i2);
             SetIndexZeta(izeta);
+        }
+        void SetNumberOfPoints(unsigned int nr, unsigned int np1, unsigned int np2, unsigned int nzeta) {
+            this->nr = nr;
+            this->np1 = np1;
+            this->np2 = np2;
+            this->nzeta = nzeta;
         }
 
         static void VerifyCoordinateSpecification(slibreal_t, slibreal_t, unsigned int, int);

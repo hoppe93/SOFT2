@@ -1,0 +1,38 @@
+# Generate a basic single-particle
+# synchrotron radiation image.
+##################################
+
+magnetic_field     = mf;
+tools              = intg;
+include_drifts     = no;
+
+# Configuration of EAST-like magnetic equilibrium
+@MagneticField mf (analytical) {
+    B0     = 5;     # On-axis field strength (T)
+    Rm     = 0.68;  # Major radius (m)
+    rminor = 0.22;  # Minor radius (m)
+
+    # Safety-factor
+    qtype  = linear;
+    qa1    = 2;
+    qa2    = 1;
+
+    sigmaB = cw;
+}
+
+# Phase space grid
+@ParticleGenerator PGen {
+    a      = 0.0, 0.5, 10000; # Normalized minor radius
+    p      = 10, 10, 1;
+    thetap = 0.2, 0.2, 1;
+}
+
+# Orbit generator
+@ParticlePusher PPusher {
+    nt = 8000;        # Number of timesteps per orbit (resolution parameter)
+}
+
+# Integrator tool
+@Integrator intg {
+}
+

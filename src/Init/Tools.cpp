@@ -13,6 +13,7 @@
 #include "Tools/Tool.h"
 #include "Tools/ToolHandler.h"
 
+#include "Tools/Integrator.h"
 #include "Tools/Orbits.h"
 #include "Tools/Radiation/Radiation.h"
 
@@ -53,10 +54,11 @@ void PrepareToolConfiguration(Configuration*);
  * Add an entry for the new tool here. And
  * don't forget to increment 'INIT_TOOLS_NTOOLS' by one!
  */
-const int INIT_TOOLS_NTOOLS = 2;
+const int INIT_TOOLS_NTOOLS = 3;
 struct soft_toolspec toolinit_tools[INIT_TOOLS_NTOOLS] = {
-    {"@Orbits",    0, InitTool<Orbits>,    PrepareToolConfiguration<Orbits>},
-    {"@Radiation", 0, InitTool<__Radiation::Radiation>, PrepareToolConfiguration<__Radiation::Radiation>}
+    {"@Integrator", 0, InitTool<__SOFT::Integrator>, PrepareToolConfiguration<__SOFT::Integrator>},
+    {"@Orbits",     0, InitTool<Orbits>,    PrepareToolConfiguration<Orbits>},
+    {"@Radiation",  0, InitTool<__Radiation::Radiation>, PrepareToolConfiguration<__Radiation::Radiation>}
 };
 
 /**
