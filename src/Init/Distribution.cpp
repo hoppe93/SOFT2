@@ -14,6 +14,8 @@
 #include <softlib/DistributionFunction/LUKEDistributionFunction.h>
 #include <softlib/DistributionFunction/LinearRadialProfile.h>
 #include <softlib/DistributionFunction/PowerRadialProfile.h>
+#include <softlib/DistributionFunction/GaussianRadialProfile.h>
+#include <softlib/DistributionFunction/GaussianRadialProfile.h>
 #include <softlib/DistributionFunction/RadialProfile.h>
 #include <softlib/DistributionFunction/SOFTDistributionFunction.h>
 #include <softlib/DistributionFunction/UniformRadialProfile.h>
@@ -118,7 +120,7 @@ RadialDistributionFunction *InitCODEDistribution(MagneticField2D *magfield, Conf
     string name;
     int interptype = CODEDistributionFunction::INTERPOLATION_CSPLINE;
     int timestep = -1;
-    
+
     // Name
     if (!conf->HasSetting("name"))
         throw SOFTException("Distribution function '%s': Name of numerical distribution function file not specified.", conf->GetName().c_str());
@@ -144,7 +146,7 @@ RadialDistributionFunction *InitCODEDistribution(MagneticField2D *magfield, Conf
         set = conf->GetSetting("time");
         if (set->IsInteger32())
             timestep = set->GetInteger32();
-        else if (set->GetNumberOfValues() == 1 && 
+        else if (set->GetNumberOfValues() == 1 &&
             (set->GetString() == "end" || set->GetString() == "last"))
             timestep = -1;
         else
@@ -203,7 +205,7 @@ DREAMDistributionFunction *InitDREAMDistributionFunction(MagneticField2D *magfie
     string name, distname = "";
     bool logarithmize = false;
     int interptype = NumericMomentumSpaceDistributionFunction::INTERPOLATION_LINEAR;
-    
+
     // Name
     if (!conf->HasSetting("name"))
         throw SOFTException("Distribution function '%s': Name of DREAM output file not specified.", conf->GetName().c_str());
@@ -299,7 +301,7 @@ DistributionFunction *InitGOCODEDistribution(MagneticField2D *magfield, ConfigBl
         set = conf->GetSetting("time");
         if (set->IsInteger32())
             time = set->GetInteger32();
-        else if (set->GetNumberOfValues() == 1 && 
+        else if (set->GetNumberOfValues() == 1 &&
             (set->GetString() == "end" || set->GetString() == "last"))
             time = -1;
         else
@@ -317,7 +319,7 @@ DistributionFunction *InitLUKEDistribution(MagneticField2D *magfield, ConfigBloc
     string name;
     bool logarithmize = false;
     int interptype = NumericMomentumSpaceDistributionFunction::INTERPOLATION_LINEAR;
-    
+
     // Name
     if (!conf->HasSetting("name"))
         throw SOFTException("Distribution function '%s': Name of numerical distribution function file not specified.", conf->GetName().c_str());
@@ -374,7 +376,7 @@ SOFTDistributionFunction *InitNumericalDistribution(MagneticField2D *magfield, C
     string name;
     bool logarithmize = false;
     int interptype = NumericMomentumSpaceDistributionFunction::INTERPOLATION_LINEAR;
-    
+
     // Name
     if (!conf->HasSetting("name"))
         throw SOFTException("Distribution function '%s': Name of numerical distribution function file not specified.", conf->GetName().c_str());
