@@ -15,7 +15,6 @@
 #include <softlib/DistributionFunction/LinearRadialProfile.h>
 #include <softlib/DistributionFunction/PowerRadialProfile.h>
 #include <softlib/DistributionFunction/GaussianRadialProfile.h>
-#include <softlib/DistributionFunction/GaussianRadialProfile.h>
 #include <softlib/DistributionFunction/RadialProfile.h>
 #include <softlib/DistributionFunction/SOFTDistributionFunction.h>
 #include <softlib/DistributionFunction/UniformRadialProfile.h>
