@@ -9,6 +9,7 @@
 #include <softlib/DistributionFunction/ConnorHastieDistribution.h>
 #include <softlib/DistributionFunction/DREAMDistributionFunction.h>
 #include <softlib/DistributionFunction/DistributionFunction.h>
+#include <softlib/DistributionFunction/GaussianRadialProfile.h>
 #include <softlib/DistributionFunction/GOCODEDistributionFunction.h>
 #include <softlib/DistributionFunction/LinearRadialProfile.h>
 #include <softlib/DistributionFunction/PowerRadialProfile.h>
@@ -35,6 +36,7 @@ RadialProfile *InitRadialProfile(MagneticField2D*, Setting*, ConfigBlock*, const
 BesselRadialProfile *InitBesselRadialProfile(MagneticField2D*, ConfigBlock *conf=nullptr);
 LinearRadialProfile *InitLinearRadialProfile(MagneticField2D*, ConfigBlock *conf=nullptr);
 PowerRadialProfile *InitPowerRadialProfile(MagneticField2D*, ConfigBlock*);
+GaussianRadialProfile *InitGaussianRadialProfile(MagneticField2D*, ConfigBlock*);
 void InitRadialProfile_get_radial_limits(MagneticField2D*, ConfigBlock*, slibreal_t*, slibreal_t*);
 slibreal_t InitRadialProfile_get_radial_limits_inner(Setting*, const slibreal_t, const slibreal_t, const std::string&);
 int Get1DInterpolationType(const std::string&, const std::string&);

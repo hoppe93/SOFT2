@@ -1,0 +1,83 @@
+# Generate a basic single-particle
+# synchrotron radiation image.
+##################################
+
+magnetic_field     = mf;
+tools              = rad;
+distribution_function = ourDistribution;
+
+# Configuration of EAST-like magnetic equilibrium
+@MagneticField mf (analytical) {
+    B0     = 5;     # On-axis field strength (T)
+    Rm     = 0.68;  # Major radius (m)
+    rminor = 0.22;  # Minor radius (m)
+
+    # Safety-factor
+    qtype  = linear;
+    qa1    = 2;
+    qa2    = 1;
+
+    sigmaB = cw;
+}
+
+# Phase space grid
+@ParticleGenerator PGen {
+    a      = 0.0, 0.95, 200; # Normalized minor radius
+    p      = 60, 60, 1;
+    thetap = 0.2, 0.2, 1;
+
+    progress = 10;
+}
+
+# Orbit generator
+@ParticlePusher PPusher {
+    nt = 2000;        # Number of timesteps per orbit (resolution parameter)
+}
+
+# Radiation tool
+@Radiation rad {
+    detector = det;
+
+    ntoroidal   = 7000;    # No. of toroidal sections in tokamak (resolution parameter)
+    model       = cone;    # Radiation model to use
+    output      = image;   # List of configuration of output
+}
+
+# Detector properties
+# Set up a tangentially viewing HXR camera.
+@Detector det {
+    aperture     = 0.006;
+    position     = 0.68, -0.68, 0;
+    direction    = 0, 1, 0;
+    vision_angle = 0.55 fov;
+    spectrum     = no;
+}
+
+# Radiation model
+@RadiationModel cone (cone) {
+    emission = synchrotron;
+}
+
+
+@DistributionFunction ourDistribution (unit) {
+
+radprof   = ourradprof;
+}
+
+
+@RadialProfile ourradprof (gaussian) {
+    # Set normalized minor radius
+    # These settings creates a beam with radius
+    # 2/3 of the device minor radius.
+    amin = 0;
+    amax = 0.99;
+
+    # Create gaussian profile f(r) = a * exp(-(r-b)**2/c**2)
+    gau_a = 0.05;
+    gau_b = 1.80;
+    gau_c = 0.04;
+}
+@RadiationOutput image (image) {
+    pixels = 600;
+    output = "data/image.mat";
+}
