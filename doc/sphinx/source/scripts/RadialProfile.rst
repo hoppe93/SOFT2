@@ -12,6 +12,7 @@ that support coupling.
    :hidden:
 
    RadialProfile/Bessel
+   RadialProfile/Gaussian
    RadialProfile/Linear
    RadialProfile/Power
    RadialProfile/Uniform
@@ -24,17 +25,19 @@ secondary type of the configuration block, i.e. by giving the type in
 parentheses after the block name. The available distribution function types are
 listed in the table below.
 
-+-------------------------------------+--------------------------------------------------------------------------------+
-| **Type**                            | **Function**                                                                   |
-+-------------------------------------+--------------------------------------------------------------------------------+
-| :ref:`module-radialprofile-bessel`  | :math:`J_0\left(\frac{r - r_{\rm min}}{r_{\rm max} - r_{\rm min}}x_0\right)`   |
-+-------------------------------------+--------------------------------------------------------------------------------+
-| :ref:`module-radialprofile-linear`  | :math:`1 - \frac{r - r_{\rm min}}{r_{\rm max} - r_{\rm min}}`                  |
-+-------------------------------------+--------------------------------------------------------------------------------+
-| :ref:`module-radialprofile-power`   | :math:`1 - \left( \frac{r - r_{\rm min}}{r_{\rm max} - r_{\rm min}} \right)^b` |
-+-------------------------------------+--------------------------------------------------------------------------------+
-| :ref:`module-radialprofile-uniform` | :math:`1`                                                                      |
-+-------------------------------------+--------------------------------------------------------------------------------+
++--------------------------------------+--------------------------------------------------------------------------------+
+| **Type**                             | **Function**                                                                   |
++--------------------------------------+--------------------------------------------------------------------------------+
+| :ref:`module-radialprofile-bessel`   | :math:`J_0\left(\frac{r - r_{\rm min}}{r_{\rm max} - r_{\rm min}}x_0\right)`   |
++--------------------------------------+--------------------------------------------------------------------------------+
+| :ref:`module-radialprofile-gaussian` | :math:`a\exp\left[-\left(\frac{\rho-b}{c}\right)^2\right]`                     |
++--------------------------------------+--------------------------------------------------------------------------------+
+| :ref:`module-radialprofile-linear`   | :math:`1 - \frac{r - r_{\rm min}}{r_{\rm max} - r_{\rm min}}`                  |
++--------------------------------------+--------------------------------------------------------------------------------+
+| :ref:`module-radialprofile-power`    | :math:`1 - \left( \frac{r - r_{\rm min}}{r_{\rm max} - r_{\rm min}} \right)^b` |
++--------------------------------------+--------------------------------------------------------------------------------+
+| :ref:`module-radialprofile-uniform`  | :math:`1`                                                                      |
++--------------------------------------+--------------------------------------------------------------------------------+
 
 Here, :math:`r` denotes the minor radial location of the particle,
 :math:`r_{\rm min}` and :math:`r_{\rm max}` are the minor radial coordinates
