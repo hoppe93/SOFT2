@@ -23,6 +23,8 @@ Summary of options
 +-------------------------------+------------------------------------------------------------------------------+
 | :option:`dream name`          | Name of file containing DREAM distribution function.                         |
 +-------------------------------+------------------------------------------------------------------------------+
+| :option:`dream time`          | Index of time step from distribution function to use.                        |
++-------------------------------+------------------------------------------------------------------------------+
 
 Example configuration
 ^^^^^^^^^^^^^^^^^^^^^
@@ -88,4 +90,13 @@ All options
    :Allowed values: Any valid file name
 
    Name of the file containing the distribution function.
+
+.. option:: time
+
+   :Default value: ``-1`` (last timestep)
+   :Allowed values: Any integer with absolute value less than the number of time points in the distribution function
+
+   Selects the index of the time step to take the distribution function from.
+   Negative indices count from the back of the array, so that ``-1`` corresponds
+   to the last timestep, ``-2`` to the next-to-last etc.
 

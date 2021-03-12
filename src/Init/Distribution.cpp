@@ -203,6 +203,7 @@ DREAMDistributionFunction *InitDREAMDistributionFunction(MagneticField2D *magfie
     string name, distname = "";
     bool logarithmize = false;
     int interptype = NumericMomentumSpaceDistributionFunction::INTERPOLATION_LINEAR;
+    int timestep = -1;
     
     // Name
     if (!conf->HasSetting("name"))
@@ -250,7 +251,19 @@ DREAMDistributionFunction *InitDREAMDistributionFunction(MagneticField2D *magfie
         distname = set->GetString();
     }
 
-    DREAMDistributionFunction *ddf = new DREAMDistributionFunction(name, magfield, distname, logarithmize, interptype);
+    // Timestep
+    if (conf->HasSetting("time")) {
+        set = conf->GetSetting("time");
+        if (set->IsInteger32())
+            timestep = set->GetInteger32();
+        else if (set->GetNumberOfValues() == 1 && 
+            (set->GetString() == "end" || set->GetString() == "last"))
+            timestep = -1;
+        else
+            throw SOFTException("Distribution function '%s': time: Invalud value assigned to parameter. Expected 32-bit integer.", conf->GetName().c_str());
+    }
+
+    DREAMDistributionFunction *ddf = new DREAMDistributionFunction(name, magfield, distname, timestep, logarithmize, interptype);
 
     // Flip sign of pitch (may be necessary, depending on how
     // the electric and magnetic fields are oriented).
