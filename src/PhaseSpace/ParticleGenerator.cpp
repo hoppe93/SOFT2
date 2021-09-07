@@ -585,6 +585,7 @@ void ParticleGenerator::InitializeParticle(
 ) {
 	slibreal_t d=0.0, _dp1=(dp1==0?1:dp1), _dp2=(dp2==0?1:dp2), z0;
     part->SetIndices(ir, i1, i2, izeta);
+    part->SetNumberOfPoints(this->nr, this->n1, this->n2, this->nzeta);
 	part->InitializeMomentum(mom1type, mom2type, p1, p2, zeta, _dp1, _dp2, dzeta);
 
 	if (include_drifts)

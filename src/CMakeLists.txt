@@ -38,6 +38,10 @@ set(tools
     "${PROJECT_SOURCE_DIR}/src/Tools/Tool.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/ToolHandler.cpp"
 )
+set(tool_integrator
+    "${PROJECT_SOURCE_DIR}/src/Tools/Integrator/Integrator.cpp"
+    "${PROJECT_SOURCE_DIR}/src/Tools/Integrator/Welcome.cpp"
+)
 set(tool_orbits
     "${PROJECT_SOURCE_DIR}/src/Tools/Orbits/Orbits.cpp"
     "${PROJECT_SOURCE_DIR}/src/Tools/Orbits/Configure.cpp"
@@ -118,7 +122,7 @@ set(mpi
     "${PROJECT_SOURCE_DIR}/src/SMPI.cpp"
 )
 
-set(all_tools ${tool_orbits} ${tool_radiation})
+set(all_tools ${tool_integrator} ${tool_orbits} ${tool_radiation})
 set(core ${init} ${orbit} ${phasespace} ${soft} ${tools} ${all_tools})
 set(target ${main} ${core})
 
