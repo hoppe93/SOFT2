@@ -126,7 +126,6 @@ ADCyclotronEmission *AngularDistribution::ConfigureCyclotronEmission(ConfigBlock
 			   throw AngularDistributionException("Expected integers.");
 		   else {
 			   vector<slibreal_t> v = set->GetNumericVector();
-			   slibreal_t *a = v.data();
 			   harmonics_list = new int[harmonics_no];
 			   for (int i=0; i<harmonics_no;i++){
 				   harmonics_list[i]=v.at(i);

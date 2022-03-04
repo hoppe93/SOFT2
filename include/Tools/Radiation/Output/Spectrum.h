@@ -27,6 +27,7 @@ namespace __Radiation {
             Spectrum(Detector*, MagneticField2D*, ParticleGenerator*);
             ~Spectrum();
 
+			void AllocateSpectrum();
             virtual void Configure(ConfigBlock*, ConfigBlock*) override;
             virtual void Finish() override;
             virtual void Handle(Detector*, Model*, RadiationParticle*) override;

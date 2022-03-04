@@ -19,22 +19,6 @@ Spectrum::Spectrum(Detector *d, MagneticField2D *m, ParticleGenerator *pgen) : R
         throw SpectrumException("Spectrum requested, but detector has no spectral range.");
 
     this->wavelengths = d->GetWavelengths();
-    this->I = new slibreal_t[this->nwavelengths];
-
-    for (unsigned int i = 0; i < this->nwavelengths; i++)
-        this->I[i] = 0.0;
-
-    if (this->MeasuresPolarization()) {
-        this->Q = new slibreal_t[this->nwavelengths];
-        this->U = new slibreal_t[this->nwavelengths];
-        this->V = new slibreal_t[this->nwavelengths];
-
-        for (unsigned int i = 0; i < this->nwavelengths; i++) {
-            this->Q[i] = 0.0;
-            this->U[i] = 0.0;
-            this->V[i] = 0.0;
-        }
-    }
 }
 
 /**

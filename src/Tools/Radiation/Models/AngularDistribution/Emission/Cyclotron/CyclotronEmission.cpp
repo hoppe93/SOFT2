@@ -18,14 +18,18 @@ using namespace __Radiation;
  * globset:    Global settings object (used to determine whether
  *             or not to enable drifts; drifts are disabled at the moment).
  */
-ADCyclotronEmission::ADCyclotronEmission( Detector *det, MagneticField2D *mf, struct global_settings *, int* harmonics_list, int harmonics_no) : ADEmission(det, mf) {
+ADCyclotronEmission::ADCyclotronEmission(
+	Detector *det, MagneticField2D *mf, struct global_settings*, 
+	int *harmonics_list, int harmonics_no
+) : ADEmission(det, mf) {
 
-    if (det->GetNWavelengths() == 0)
-        throw ADCyclotronException("Wavelength range needs to be specified?");
-    this->harmonics=harmonics_list;
-    this->harmonics_number=harmonics_no;
+	if (det->GetNWavelengths() == 0)
+		throw ADCyclotronException("Wavelength range needs to be specified?");
 
+	for (int i = 0; i < harmonics_no; i++)
+		this->harmonics.push_back(harmonics_list[i]);
 
+	std::sort(this->harmonics.begin(), this->harmonics.end());
 }
 
 /**
@@ -41,15 +45,21 @@ ADCyclotronEmission::~ADCyclotronEmission() { }
  * sinMu,  cosMu:  Angle between _GC_ velocity and observation direction.
  * pol: polarization: not regarded here
  */
-slibreal_t ADCyclotronEmission::Evaluate(RadiationParticle *rp, Vector<3> &n,slibreal_t sinMu,  slibreal_t cosMu, bool pol) {
-
-        CalculateSpectrum(n, sinMu, cosMu);
-        IntegrateSpectrum();
+slibreal_t ADCyclotronEmission::Evaluate(
+	RadiationParticle *rp, Vector<3> &n,slibreal_t sinMu,
+	slibreal_t cosMu, bool pol
+) {
+	if (pol) {
+		CalculatePolarization(rp, n, sinMu, cosMu);
+		IntegrateSpectrumStokes();
+		IntegrateSpectrum();
+	} else {
+		CalculateSpectrum(n, sinMu, cosMu);
+		IntegrateSpectrum();
+	}
 
     return this->power;
 }
-
-
 
 /**
  * Prepare to handle a particle. Calculates necessary
@@ -59,8 +69,10 @@ slibreal_t ADCyclotronEmission::Evaluate(RadiationParticle *rp, Vector<3> &n,sli
  * pol: polarization: not regarded here
  */
 void ADCyclotronEmission::Prepare(RadiationParticle *rp, bool pol) {
-
-	PrepareSpectrum(rp);
+	if (pol)
+		PreparePolarization(rp);
+	else
+		PrepareSpectrum(rp);
 }
 
 /**

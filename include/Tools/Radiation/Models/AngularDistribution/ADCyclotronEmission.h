@@ -28,8 +28,7 @@ namespace __Radiation {
             slibreal_t sinphi, cosphi;      // Toroidal angle
 
         };
-        int *harmonics;
-        int harmonics_number;
+		std::vector<int> harmonics;
 
         private:
             bool includeDrifts = false;
@@ -61,7 +60,7 @@ namespace __Radiation {
             virtual void CalculatePolarization(RadiationParticle*, Vector<3>&, slibreal_t, slibreal_t) override;
             virtual void CalculateSpectrum(Vector<3>&, slibreal_t, slibreal_t) override;
 
-
+			void GetHarmonicsInSpectralRange(const slibreal_t, unsigned int&, unsigned int&);
             struct angdist_params *GetParams() { return &angdistParams; }
 
             virtual void InitializeToroidalStep(const slibreal_t, const slibreal_t) override;

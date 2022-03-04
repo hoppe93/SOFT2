@@ -104,7 +104,10 @@ void Green::Generate() {
 
     SOFT::PrintInfo("Wrote Green's function to '%s'.", this->output.c_str());
 
-    MemoryManager::deallocate(this->GetName());
+	if (this->containsAllPhaseSpaceParameters)
+		MemoryManager::deallocate(this->GetName());
+	else
+		delete [] this->function;
 }
 
 /**
