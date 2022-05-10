@@ -43,7 +43,6 @@ void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
     // Set value of Green's function
     if (hasW) {
         slibreal_t *I, *Q=nullptr, *U=nullptr, *V=nullptr;
-        const size_t inc = (this->iw==this->nformat-1?0:this->factors[this->iw]);
 
         I = m->GetStokesI();
         if (storeStokesParameters) {
@@ -54,9 +53,9 @@ void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
 
         // Functions for copying either Stokes parameters
         // or spectrum
-        auto copyStokes = [this,&I,&Q,&U,&V,&diffel,&inc,&index,&wavindex]() {
+        auto copyStokes = [this,&I,&Q,&U,&V,&diffel,&index,&wavindex]() {
             const size_t fsw = this->fsizeWithoutStokes;
-            for (size_t i = 0; i < (unsigned)this->nw; i++, index+=inc) {
+            for (size_t i = 0; i < (unsigned)this->nw; i++) {
                 #pragma omp atomic update
                 this->function[fsw*0 + index + i*wavindex] += I[i] * diffel;
                 #pragma omp atomic update
@@ -67,8 +66,8 @@ void Green::Handle(Detector *det, Model *m, RadiationParticle *rp) {
                 this->function[fsw*3 + index + i*wavindex] += V[i] * diffel;
             }
         };
-        auto copySpec = [this,&I,&diffel,&inc,&index,&wavindex]() {
-            for (int i = 0; i < nw; i++, index+=inc) {
+        auto copySpec = [this,&I,&diffel,&index,&wavindex]() {
+            for (int i = 0; i < nw; i++) {
                 #pragma omp atomic update
                 this->function[index+i*wavindex] += I[i] * diffel;
             }
