@@ -69,22 +69,27 @@ void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution
         dtau = o->GetTau()[1]-o->GetTau()[0],
         J;
 
+	// Evaluate analytical jacobian
     if (!forceNumerical && magfield->HasMagneticFlux()) {
         hasFlux = true;
 
         slibreal_t
-            p0  = sqrt(p2[0]),
-            B0  = Babs[0],
-            xi0 = ppar[0] / p0,
-            g0  = sqrt(1 + p0*p0),
-            q_m = particle->GetCharge() / (g0*particle->GetMass()),
-            u0  = p0*LIGHTSPEED / g0,
-            *X0 = o->GetX(),
-            R0  = hypot(X0[0], X0[1]),
-            Z0  = X0[2];
+            p0   = sqrt(p2[0]),
+            B0   = Babs[0],
+            xi0  = ppar[0] / p0,
+            g0   = sqrt(1 + p0*p0),
+            q    = std::abs(particle->GetCharge()),
+			c    = LIGHTSPEED,
+			m    = particle->GetMass(),
+            *X0  = o->GetX(),
+            R0   = hypot(X0[0], X0[1]),
+            Z0   = X0[2],
+			tauB = o->GetTau(o->GetNTau()-1),
+			sigmaBp = magfield->GetCocosSigmaBp(),
+			twoPi   = magfield->GetCocosEBp()==0 ? 1 : 2*M_PI;
 
         struct flux_diff *fd = magfield->EvalFluxDerivatives(X0);
-        slibreal_t dpsi_dR    = fd->dpsi_dR/(2*M_PI);
+        slibreal_t dpsi_dR    = fd->dpsi_dR;
 
         if (this->globset->include_drifts) {
             struct magnetic_field_data mfd = magfield->EvalDerivatives(R0, 0.0, Z0);
@@ -92,20 +97,22 @@ void SOFTEquation::CalculateJacobians(slibreal_t *solution, slibreal_t *solution
             slibreal_t
                 bphi       = mfd.B[1] / B0,
                 dB0_dR     = mfd.gradB[0],
-                dbphiR0_dR = bphi + R0/B0*mfd.J[1][0] - bphi*R0/B0*dB0_dR;
+                dbphiR0_dR = bphi + R0/B0*mfd.J[1][0] - bphi*R0/B0*dB0_dR,
+				prefac = m * c*c*c*c * p0*p0*p0 * tauB / (2*M_PI*g0*q*B0);
 
-            slibreal_t
-                T1 = q_m*dpsi_dR*xi0,
-                T2 = dbphiR0_dR*u0*xi0*xi0,
-                T3 = 0.5*bphi*R0/B0*dB0_dR*u0*(1.0 - xi0*xi0);
+			slibreal_t
+				T1 = c*p0*bphi*R0*(1-xi0*xi0)*dB0_dR / (2*B0),
+				T2 = c*p0*xi0 * dbphiR0_dR,
+				T3 = (q/m)*sigmaBp/twoPi * dpsi_dR;
 
-            // Jacobian according to [Petrov & Harvey, PPCF 58 (2016)]
-            J = u0 / (fabs(q_m)*B0) * fabs((
-                T1 - T2 + T3
-            ) * dtau * this->particle->GetDRho());
+			J = prefac * std::abs(T1 - xi0*(T2 + T3));
         } else {
-            J = u0 / B0 * fabs((dpsi_dR*xi0) * dtau * this->particle->GetDRho());
+			J = c*c*c*c * p0*p0*p0 * tauB * std::abs(xi0)
+				/ (2*M_PI*twoPi*g0*B0)
+				* std::abs(dpsi_dR);
         }
+
+		J *= dtau * this->particle->GetDRho();
     }
 
     for (i = 0; i < nt; i++) {
