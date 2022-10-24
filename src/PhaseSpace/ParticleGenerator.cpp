@@ -808,8 +808,18 @@ slibreal_t ParticleGenerator::CalculateVerticalOrbitDriftShift(
         Xpol_d = xpol(b);
     }
 
-    while ((Xpol_d=xpol(b)) < Xpol_c)
+	int iter = 0;
+	const int MAXITER = 500;
+    while ((Xpol_d=xpol(b)) < Xpol_c && iter < MAXITER) {
         b -= db;
+		iter++;
+	}
+
+	if (iter >= MAXITER)
+		throw ParticleGeneratorException(
+			"Divergence when determining orbit drift shift at r = %.16e, ppar = %.16e, pperp = %.16e.",
+			r, ppar, pperp
+		);
     
     // Carry out the golden-section search
     if (a > b) {
