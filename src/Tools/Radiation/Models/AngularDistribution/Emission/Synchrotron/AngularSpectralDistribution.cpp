@@ -41,6 +41,7 @@ void ADSynchrotronEmission::PrepareSpectrum(RadiationParticle *rp) {
     this->cosThetap = rp->GetPpar() / p;
     this->sinThetap = rp->GetPperp() / p;
     this->betapar = beta*cosThetap;
+	this->Vsign = (rp->GetP().Dot(rp->GetBvec())) >= 0 ? 1 : -1;
 
     this->lambdac = 4.0*M_PI*LIGHTSPEED*gammapar*igamma2*m / (3.0*q*B);
 }
@@ -78,7 +79,7 @@ void ADSynchrotronEmission::__CalculateSpectrum(
 ) {
     unsigned int i;
     slibreal_t
-        cosPsi = cosMu*cosThetap + sinMu*sinThetap,
+        cosPsi = Vsign * (cosMu*cosThetap + sinMu*sinThetap),
         sinPsi2 = 1.0 - cosPsi*cosPsi,
         mcospsi = 1.0-beta*cosPsi,
         xifac = gamma3*lambdac*sqrt(mcospsi*mcospsi*mcospsi/(0.5*beta*cosPsi));
