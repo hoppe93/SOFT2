@@ -138,7 +138,8 @@ slibreal_t ADSimpson2D::_InnerIntegral(
 
     // Endpoint 1
     EvaluateAngles(X, rdet2, rp, a);
-    EVAL(withSpectrum, withPolarization);
+    //EVAL(withSpectrum, withPolarization);
+	this->emission->Evaluate(rp, a.n, a.sinMu, a.cosMu, withPolarization);
     S  = this->emission->GetTotalEmission() / a.rcp2;
     if (withSpectrum)
         SumSpectra<withPolarization>(
@@ -151,7 +152,8 @@ slibreal_t ADSimpson2D::_InnerIntegral(
 
     // Endpoint 2
     EvaluateAngles(X, -rdet2, rp, a);
-    EVAL(withSpectrum, withPolarization);
+    //EVAL(withSpectrum, withPolarization);
+	this->emission->Evaluate(rp, a.n, a.sinMu, a.cosMu, withPolarization);
     S += this->emission->GetTotalEmission() / a.rcp2;
     if (withSpectrum)
         SumSpectra<withPolarization>(
@@ -165,7 +167,8 @@ slibreal_t ADSimpson2D::_InnerIntegral(
     // Inner points
     for (i = 1; i < nsamples; i += 2) {
         EvaluateAngles(X, i*dX - rdet2, rp, a);
-        EVAL(withSpectrum, withPolarization);
+        //EVAL(withSpectrum, withPolarization);
+		this->emission->Evaluate(rp, a.n, a.sinMu, a.cosMu, withPolarization);
 
         S += 4.0 * this->emission->GetTotalEmission() / a.rcp2;
         if (withSpectrum)
@@ -180,7 +183,8 @@ slibreal_t ADSimpson2D::_InnerIntegral(
 
     for (i = 2; i < nsamples-1; i += 2) {
         EvaluateAngles(X, i*dX - rdet2, rp, a);
-        EVAL(withSpectrum, withPolarization);
+        //EVAL(withSpectrum, withPolarization);
+		this->emission->Evaluate(rp, a.n, a.sinMu, a.cosMu, withPolarization);
 
         S += 2.0 * this->emission->GetTotalEmission() / a.rcp2;
         if (withSpectrum)

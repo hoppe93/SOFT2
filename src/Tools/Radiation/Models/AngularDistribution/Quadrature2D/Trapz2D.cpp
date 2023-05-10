@@ -126,7 +126,8 @@ slibreal_t ADTrapz2D::_InnerIntegral(
 
     // Endpoint 1
     EvaluateAngles(X, rdet2, rp, a);
-    EVAL(withSpectrum, withPolarization);
+    //EVAL(withSpectrum, withPolarization);
+	this->emission->Evaluate(rp, a.n, a.sinMu, a.cosMu, withPolarization);
     S  = 0.5*this->emission->GetTotalEmission() / a.rcp2;
     if (withSpectrum)
         SumSpectra<withPolarization>(
@@ -139,7 +140,8 @@ slibreal_t ADTrapz2D::_InnerIntegral(
 
     // Endpoint 2
     EvaluateAngles(X, -rdet2, rp, a);
-    EVAL(withSpectrum, withPolarization);
+    //EVAL(withSpectrum, withPolarization);
+	this->emission->Evaluate(rp, a.n, a.sinMu, a.cosMu, withPolarization);
     S += 0.5*this->emission->GetTotalEmission() / a.rcp2;
     if (withSpectrum)
         SumSpectra<withPolarization>(
@@ -153,7 +155,8 @@ slibreal_t ADTrapz2D::_InnerIntegral(
     // Inner points
     for (i = 1; i < nsamples-1; i++) {
         EvaluateAngles(X, i*dX - rdet2, rp, a);
-        EVAL(withSpectrum, withPolarization);
+        //EVAL(withSpectrum, withPolarization);
+		this->emission->Evaluate(rp, a.n, a.sinMu, a.cosMu, withPolarization);
 
         S += this->emission->GetTotalEmission() / a.rcp2;
         if (withSpectrum)
