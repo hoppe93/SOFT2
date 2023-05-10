@@ -79,7 +79,7 @@ void ADSynchrotronEmission::__CalculateSpectrum(
 ) {
     unsigned int i;
     slibreal_t
-        cosPsi = Vsign * (cosMu*cosThetap + sinMu*sinThetap),
+        cosPsi = (Vsign*cosMu*cosThetap + sinMu*sinThetap),
         sinPsi2 = 1.0 - cosPsi*cosPsi,
         mcospsi = 1.0-beta*cosPsi,
         xifac = gamma3*lambdac*sqrt(mcospsi*mcospsi*mcospsi/(0.5*beta*cosPsi));
