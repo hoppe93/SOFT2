@@ -110,7 +110,10 @@ void ADSynchrotronEmission::IntegrateSpectrum() {
     for (i = 1; i < nwavelengths-1; i++)
         s += I[i];
 
-    this->power = s * (wavelengths[1]-wavelengths[0]);
+	if (nwavelengths > 1)
+		this->power = s * (wavelengths[1]-wavelengths[0]);
+	else
+		this->power = s;
 }
 
 /**
