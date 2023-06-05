@@ -33,6 +33,7 @@ void Orbits::Output() {
     delete [] cl;
 
     sf->WriteList("driftshift", this->drift_shift, this->norbits);
+	sf->WriteList("f", this->f, this->norbits);
 
     if (this->computeJacobian) {
         sf->WriteArray("Jdtdrho", this->Jdtdrho, this->norbits, this->ntau);

@@ -28,7 +28,8 @@ slibreal_t
     **Orbits::gamma;     /* Lorentz factor (or energy) */
 
 slibreal_t
-    *Orbits::drift_shift;/* Orbit drift shift in outer midplane */
+    *Orbits::drift_shift,/* Orbit drift shift in outer midplane */
+	*Orbits::f;			 /* Distribution function */
 
 orbit_class_t *Orbits::classification;  /* Orbit classifications */
 
@@ -71,6 +72,7 @@ Orbits::Orbits(MagneticField2D *mf, ParticleGenerator *pg, ParticlePusher *pushe
 
             Orbits::classification = Allocate_class(norbits);
             Orbits::drift_shift    = Allocate_prop(norbits);
+			Orbits::f              = Allocate_prop(norbits);
         }
     }
 }
@@ -132,7 +134,7 @@ slibreal_t *Orbits::Allocate_prop(const unsigned int norbits) {
  * 
  * o: Orbit to handle.
  */
-void Orbits::Handle(Orbit *o, Particle *__UNUSED__(part)) {
+void Orbits::Handle(Orbit *o, Particle *part) {
     unsigned int
         ir = o->GetIndexR(),
         ip1 = o->GetIndexP1(),
@@ -158,6 +160,7 @@ void Orbits::Handle(Orbit *o, Particle *__UNUSED__(part)) {
     Orbits::classification[index] = o->GetClassification();
 
     Orbits::drift_shift[index] = o->GetDriftShift();
+	Orbits::f[index] = part->GetF();
 }
 
 /**

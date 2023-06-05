@@ -40,7 +40,8 @@ class Orbits : public Tool, public OutputModule {
         static orbit_class_t *classification;   /* Orbit classifications */
         /* Orbit properties */
         static slibreal_t
-            *drift_shift;
+            *drift_shift,
+			*f;			/* Distribution function */
 
         static const std::string DEFAULT_QUANTITIES[];
         static const unsigned int NDEFAULT_QUANTITIES;
