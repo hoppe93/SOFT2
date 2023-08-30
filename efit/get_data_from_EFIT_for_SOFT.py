@@ -8,6 +8,7 @@
 
 ### Import ###
 
+import argparse
 import numpy as np
 from matplotlib import pyplot as plt
 import scipy.interpolate as interp
@@ -22,31 +23,31 @@ import geqdsk
 
 ### Setup ###
 
-hdf5 		= 1;					# write to hdf5 file
-plot 		= 0;					# generate plots
-verbose 	= 1; 					# print to terminal
-read 		= 0; 					# try reading written file
-itot		= 1; 					# calculate total plasma current from Jphi
-ienc		= 1; 					# calculate enclosed plasma current from Br,Bz at LCFS
+parser = argparse.ArgumentParser('Export data from EFIT to SOFT equilibrium file')
 
-# Gfile info
-#gfilename    	= '../data/SPARC_V1E_FT_TSC.gfile'; 	# gfile from TSC (outdated)
-#gfilename    	= '../data/SPARC_V1E_transp_3.geq'; 	# gfile from TRANSP, from Pablo RF
-try: 			
-	gfilename = str(sys.argv[1]);
-except: 	
-	raise ValueError('...Please provide path to gfile');
+parser.add_argument('-h', '--no-hdf5', dest='hdf5',
+                    help='Do NOT write EFIT data to HDF5 file.',
+                    action='store_false', default=True)
+parser.add_argument('-p', '--plot', help='Generate plots.',
+                    action='store_true', default=False)
+parser.add_argument('-v', '--verbose', help='Print to terminal.',
+                    action='store_true', default=False)
+parser.add_argument('-r', '--read-back',
+                    help='Try to read back the written file.',
+                    action='store_true', default=False)
+parser.add_argument('-t', '--itot',
+                    help='Calculate total plasma current from Jphi.',
+                    action='store_true', default=False)
+parser.add_argument('-e', '--ienc',
+                    help='Calculate enclosed plasma current from Br, Bz at LCFS.',
+                    action='store_true', default=False)
 
-# Wall info
-userwall	= 0; 					# use user-supplied wall info
-#wallfile    	= '../data/V2_FirstWall.txt';       	# for first wall contour, from Adam Kuang email, 201223
-try: 			
-	wallfile 	= str(sys.argv[2]);
-	userwall	= 1;
-	print('...Using supplied wall info');
-except: 		
-	print('...Using wall info stored in gfile');
-	
+parser.add_argument('gFilename', help='Name of EFIT Gfile to load equilibrium from.')
+parser.add_argument('-w', '--wall', dest='wallfile',
+                    help='Name of file containing wall.',
+                    nargs='?', default='')
+
+args = parser.parse_args()
 
 ### Define ###
 
@@ -110,16 +111,15 @@ def get_Br_Bz(psi,R,Z,dR=5e-3,dZ=5e-3,Rpsi=[],Zpsi=[]):
 # Variable	Mandatory	Type		Description
 #mf name	Yes		String	(Meta) 	Name of magnetic field data
 #mf desc	Yes		String	(Meta) 	Description of data
-name 		= gfilename;
+name 		= args.gFilename;
 desc 		= name;
 gfile       	= geqdsk.geqdsk(name); 		# from Pablo RF
 
 
 # Variable	Mandatory	Type		Description
 #mf wall	Yes [1]		2-by-many vectorTokamak wall contour
-if userwall:	wall,RFW,ZFW 	= get_wall(wallfile);
+if args.wallfile:	wall,RFW,ZFW 	= get_wall(args.wallfile);
 else:
-	wallfile	= '';				# for file name to save data
 	RFW        	= gfile.Ginfo['RLIM'];       	# R of surrounding limiter contour in meter (FW=first wall)
 	ZFW         	= gfile.Ginfo['ZLIM'];       	# Z of surrounding limiter contour in meter 
 	wall 		= np.vstack((RFW,ZFW)); 	# wall points
@@ -193,7 +193,7 @@ verBr 		= r;
 verBz 		= r;
 
 
-if itot:# Get current density *inside LCFS*
+if args.itot:# Get current density *inside LCFS*
 	# From Ian Stewart email 230818, J_phi = R*p' + FF'/(R*mu_0)
 	u0 		= 4*np.pi*1e-7; 
 	PPRIME 		= gfile.Ginfo['PPRIMERZ']; 	# p'(z,r)
@@ -203,10 +203,10 @@ if itot:# Get current density *inside LCFS*
 	JPHI_IN 	= deepcopy(JPHI);		# A/m^2, jphi(r,z)
 	JPHI_IN[~boolIn]= 0; 				# A/m^2, jphi(r,z), outside LCFS set to 0
 	ITOT 		= np.trapz(np.trapz(JPHI_IN,z,axis=1),r,axis=0); # integrate over z, then r
-	if verbose: 	print('Itot = '+str(ITOT*1e-6)+' MA');
+	if args.verbose: 	print('Itot = '+str(ITOT*1e-6)+' MA');
 
 
-if ienc:# Integrate Bpol around LCFS, i.e. integral(B.dl) = u0*Ienc
+if args.ienc:# Integrate Bpol around LCFS, i.e. integral(B.dl) = u0*Ienc
 	BR_LCFS 	= np.zeros(len(RBBBS)); 	# T, radial B-field at boundary
 	BZ_LCFS 	= np.zeros(len(RBBBS));		# T, veritcal B-field at boundary
 	for i in range(len(RBBBS)):
@@ -215,36 +215,35 @@ if ienc:# Integrate Bpol around LCFS, i.e. integral(B.dl) = u0*Ienc
 	integral2 	= np.sum(BR_LCFS[1:]*np.diff(RBBBS)+BZ_LCFS[1:]*np.diff(ZBBBS));	# calculate integral again
 	integral 	= 0.5*(integral1+integral2);						# take average
 	Ienc 		= integral/u0; 			# A, enclosed current
-	if verbose: 	print('Ienc = '+str(Ienc*1e-6)+' MA');
+	if args.verbose: 	print('Ienc = '+str(Ienc*1e-6)+' MA');
 
 
-if hdf5:### Write to HDF5 ###
+if args.hdf5:### Write to HDF5 ###
 	
-	h5fn 	= gfilename+'_'+wallfile+'.h5';
-	hf 	= h5py.File(h5fn,'w');
-	hf.create_dataset('Bphi',	data=Bphi); 	#	Yes		nz-by-nr matrix	Toroidal field component
-	hf.create_dataset('Br',		data=Br); 	#	Yes		nz-by-nr matrix	Radial field component
-	hf.create_dataset('Bz',		data=Bz); 	#	Yes		nz-by-nr matrix	Vertical field component
-	hf.create_dataset('desc',	data=desc); 	#	Yes		String	(Meta) 	Description of data
-	hf.create_dataset('maxis',	data=maxis); 	#	Yes		2-vector	Location of magnetic axis
-	hf.create_dataset('name',	data=name); 	#	Yes		String	(Meta) 	Name of magnetic field data
-	hf.create_dataset('Psi',	data=Psi); 	#	No		nz-by-nr matrix	Poloidal magnetic flux
-	hf.create_dataset('r',		data=r); 	#	Yes		nr-vector	Radial grid
-	hf.create_dataset('separatrix',	data=separatrix)#	Yes [1]		2-by-many vectorLast closed flux surface contour
-	hf.create_dataset('verBphi',	data=verBphi); 	#	No		nr-vector	Verification array for Bphi
-	hf.create_dataset('verBr',	data=verBr); 	#	No		nr-vector	Verification array for Br
-	hf.create_dataset('verBz',	data=verBz); 	#	No		nr-vector	Verification array for Bz
-	hf.create_dataset('wall',	data=wall); 	#	Yes [1]		2-by-many vectorTokamak wall contour
-	hf.create_dataset('z',		data=z); 	#	Yes		nz-vector	Vertical grid
-	hf.close();
+	h5fn 	= gfilename+'_'+args.wallfile+'.h5';
+	with h5py.File(h5fn,'w') as hf:
+		hf.create_dataset('Bphi',	data=Bphi); 	#	Yes		nz-by-nr matrix	Toroidal field component
+		hf.create_dataset('Br',		data=Br); 	#	Yes		nz-by-nr matrix	Radial field component
+		hf.create_dataset('Bz',		data=Bz); 	#	Yes		nz-by-nr matrix	Vertical field component
+		hf.create_dataset('desc',	data=desc); 	#	Yes		String	(Meta) 	Description of data
+		hf.create_dataset('maxis',	data=maxis); 	#	Yes		2-vector	Location of magnetic axis
+		hf.create_dataset('name',	data=name); 	#	Yes		String	(Meta) 	Name of magnetic field data
+		hf.create_dataset('Psi',	data=Psi); 	#	No		nz-by-nr matrix	Poloidal magnetic flux
+		hf.create_dataset('r',		data=r); 	#	Yes		nr-vector	Radial grid
+		hf.create_dataset('separatrix',	data=separatrix)#	Yes [1]		2-by-many vectorLast closed flux surface contour
+		hf.create_dataset('verBphi',	data=verBphi); 	#	No		nr-vector	Verification array for Bphi
+		hf.create_dataset('verBr',	data=verBr); 	#	No		nr-vector	Verification array for Br
+		hf.create_dataset('verBz',	data=verBz); 	#	No		nr-vector	Verification array for Bz
+		hf.create_dataset('wall',	data=wall); 	#	Yes [1]		2-by-many vectorTokamak wall contour
+		hf.create_dataset('z',		data=z); 	#	Yes		nz-vector	Vertical grid
 	
-	if read:# Test getting file
-		hfnew 	= h5py.File(h5fn,'r');
-		keys 	= hfnew.keys();
-		for key in keys:	print(key+', '+str(np.shape(hfnew.get(key))));
+	if args.read:# Test getting file
+		with h5py.File(h5fn,'r') as hfnew:
+			keys 	= hfnew.keys();
+			for key in keys:	print(key+', '+str(np.shape(hfnew.get(key))));
 			
 	
-if plot:### Plots ###
+if args.plot:### Plots ###
 	
 	if 1: 	# Br, Bz
 		fig 	= plt.figure();
