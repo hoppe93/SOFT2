@@ -21,7 +21,7 @@ tools              = rad;
 
 # Phase space grid
 @ParticleGenerator PGen {
-    a      = 0.0, 0.95, 1200; # Normalized minor radius
+    a      = 0.0, 0.95, 120; # Normalized minor radius
     p      = 60, 60, 1;
     thetap = 0.2, 0.2, 1;
 }
@@ -57,6 +57,8 @@ tools              = rad;
 
 @RadiationOutput image (image) {
     pixels = 600;
-    output = "data/image.mat";
+    #output = "data/image.jpg";
+    output = image.png;
 }
+
 
