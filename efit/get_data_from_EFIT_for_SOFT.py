@@ -25,14 +25,14 @@ import geqdsk
 
 parser = argparse.ArgumentParser('Export data from EFIT to SOFT equilibrium file')
 
-parser.add_argument('-h', '--no-hdf5', dest='hdf5',
+parser.add_argument('-H', '--no-hdf5', dest='hdf5',
                     help='Do NOT write EFIT data to HDF5 file.',
                     action='store_false', default=True)
 parser.add_argument('-p', '--plot', help='Generate plots.',
                     action='store_true', default=False)
 parser.add_argument('-v', '--verbose', help='Print to terminal.',
                     action='store_true', default=False)
-parser.add_argument('-r', '--read-back',
+parser.add_argument('-r', '--read-back',dest='read',
                     help='Try to read back the written file.',
                     action='store_true', default=False)
 parser.add_argument('-t', '--itot',
@@ -220,7 +220,7 @@ if args.ienc:# Integrate Bpol around LCFS, i.e. integral(B.dl) = u0*Ienc
 
 if args.hdf5:### Write to HDF5 ###
 	
-	h5fn 	= gfilename+'_'+args.wallfile+'.h5';
+	h5fn 	= name+'_'*(args.wallfile!='')+args.wallfile+'.h5';
 	with h5py.File(h5fn,'w') as hf:
 		hf.create_dataset('Bphi',	data=Bphi); 	#	Yes		nz-by-nr matrix	Toroidal field component
 		hf.create_dataset('Br',		data=Br); 	#	Yes		nz-by-nr matrix	Radial field component
@@ -328,11 +328,10 @@ BCENTR: Vacuum toroidal magnetic field in Tesla at RCENTR
 CURRENT: Plasma current in Ampere
 FPOL: Poloidal current function in m-T, F = RBT on flux grid
 PRES: Plasma pressure in nt / m2 on uniform flux grid
-FFPRIM: FF’(y) in (mT)2
-
+FFPRIM: FF'(y) in (mT)2
 / (Weber /rad) on uniform flux grid
 
-PPRIME: P’(y) in (nt /m2
+PPRIME: P'(y) in (nt /m2
 
 ) / (Weber /rad) on uniform flux grid
 PSIZR: Poloidal flux in Weber / rad on the rectangular grid points
@@ -351,7 +350,7 @@ in n/m2
 
 PWPRIM PW
 
-’(y) in (n/m2 )/(web/rad)
+'(y) in (n/m2 )/(web/rad)
 
 DMION Mass density on uniform poloidal flux grid
 RHOVN Normalized toroidal flux on uniform poloidal flux grid
