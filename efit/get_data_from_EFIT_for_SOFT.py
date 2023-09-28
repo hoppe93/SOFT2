@@ -246,7 +246,7 @@ if args.hdf5:### Write to HDF5 ###
 if args.plot:### Plots ###
 	
 	if 1: 	# Br, Bz
-		fig 	= plt.figure();
+		#fig 	= plt.figure();
 		plt.contour(r,z,Psi,levels=21);
 		plt.plot(RBBBS,ZBBBS,'r');
 		plt.plot(RFW,ZFW,'k');
@@ -256,10 +256,11 @@ if args.plot:### Plots ###
 		plt.ylabel('Z (m)');
 		plt.title('Radial and vertical B-field vectors');
 		plt.axis('equal');
-		fig.show();
-		
+		#fig.show();
+		plt.show();
+
 	if 1: 	# Bphi
-		fig 	= plt.figure();
+		#fig 	= plt.figure();
 		plt.contourf(r,z,Bphi);
 		plt.plot(RBBBS,ZBBBS,'r');
 		plt.plot(RFW,ZFW,'k');
@@ -268,10 +269,11 @@ if args.plot:### Plots ###
 		plt.ylabel('Z (m)');
 		plt.title('Toroidal B-field');
 		plt.axis('equal');
-		fig.show();
+		#fig.show();
+		plt.show();
 		
 	if 1: 	# Psi
-		fig 	= plt.figure();
+		#fig 	= plt.figure();
 		plt.contourf(r,z,Psi,levels=21);
 		plt.plot(RBBBS,ZBBBS,'r');
 		plt.plot(RFW,ZFW,'k');
@@ -280,10 +282,11 @@ if args.plot:### Plots ###
 		plt.ylabel('Z (m)');
 		plt.title('Poloidal flux');
 		plt.axis('equal');
-		fig.show();
-		
-	if 1: 	# JPHI
-		fig 	= plt.figure();
+		#fig.show();
+		plt.show();
+
+	if args.itot: 	# JPHI
+		#fig 	= plt.figure();
 		plt.contourf(r,z,Jphi,levels=21);
 		plt.plot(RBBBS,ZBBBS,'r');
 		plt.plot(RFW,ZFW,'k');
@@ -292,8 +295,8 @@ if args.plot:### Plots ###
 		plt.ylabel('Z (m)');
 		plt.title('Toroidal current density');
 		plt.axis('equal');
-		fig.show();
-
+		#fig.show();
+		plt.show();
 		
 ''' from https://soft2.readthedocs.io/en/latest/magnetic_field.html#numerical-magnetic-field
 Variable	Mandatory	Type		Description
