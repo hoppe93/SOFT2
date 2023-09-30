@@ -185,12 +185,13 @@ ZMAXIS       	= gfile.Ginfo['ZMAXIS'];     	# m, vertical position of magnetic a
 maxis		= np.vstack((RMAXIS,ZMAXIS));	# location of magnetic axis
 
 
+# Should contain the values of Br/Bz/Bphi at all radii, in just the very first Z point.
 #mf verBphi	No		nr-vector	Verification array for Bphi
 #mf verBr	No		nr-vector	Verification array for Br
 #mf verBz	No		nr-vector	Verification array for Bz
-verBphi		= r;
-verBr 		= r;
-verBz 		= r;
+verBphi		= Bphi[0,:];
+verBr 		= Br[0,:];
+verBz 		= Bz[0,:];
 
 
 if args.itot:# Get current density *inside LCFS*
