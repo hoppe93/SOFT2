@@ -563,6 +563,6 @@ void ParticlePusher::RunIntegrator(SOFTEquation *eqn, Integrator<6> *intg, Parti
  * j: If true, runs 'integrator2' to solve for an extra orbit
  *    that can be used to calculate the spatial Jacobian.
  */
-void ParticlePusher::ToggleJacobianCalculation(bool j) {
-    this->calculateJacobianOrbit = j;
+void ParticlePusher::EnableJacobianCalculation() {
+    this->calculateJacobianOrbit = true;
 }

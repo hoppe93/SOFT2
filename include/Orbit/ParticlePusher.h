@@ -22,7 +22,7 @@ enum orbittimeunit {
 
 class ParticlePusher {
 	private:
-        bool calculateJacobianOrbit = true;
+        bool calculateJacobianOrbit = false;
 		ConfigBlock *settings;
 		Integrator<6> *integrator1, *integrator2, *timingIntegrator=nullptr;
         MagneticField2D *magfield;
@@ -97,7 +97,7 @@ class ParticlePusher {
         void RunIntegrator(SOFTEquation*, Integrator<6>*, Particle*);
         slibreal_t RunTimingIntegrator(Particle*);
 
-        void ToggleJacobianCalculation(bool);
+        void EnableJacobianCalculation();
 };
 
 class ParticlePusherException : public SOFTException {
