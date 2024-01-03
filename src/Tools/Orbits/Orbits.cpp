@@ -173,8 +173,9 @@ void Orbits::Initialize() { }
  * Enables or disables computation of the Jacobian's related
  * to the orbit.
  */
-void Orbits::ToggleJacobianCalculation(bool compJ) {
-    this->computeJacobian = compJ;
-    pusher->ToggleJacobianCalculation(compJ);
+void Orbits::ToggleJacobianCalculation(bool j) {
+    this->computeJacobian = j;
+	if (j)
+		pusher->EnableJacobianCalculation();
 }
 

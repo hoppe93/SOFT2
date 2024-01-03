@@ -22,7 +22,7 @@ Radiation::Radiation(
 ) : Tool("Radiation") {
     this->magfield = mf;
     this->pgen = pgen;
-    pusher->ToggleJacobianCalculation(true);
+    pusher->EnableJacobianCalculation();
 }
 
 /**
