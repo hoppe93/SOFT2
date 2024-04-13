@@ -17,8 +17,8 @@ namespace __Radiation {
             int nrowpixels, ncolpixels, ntotpixels;
 
             slibreal_t *image, *imageQ, *imageU, *imageV;
-            static slibreal_t *global_image,
-                *global_imageQ, *global_imageU, *global_imageV;
+            slibreal_t *global_image=nullptr,
+                *global_imageQ=nullptr, *global_imageU=nullptr, *global_imageV=nullptr;
 
             bool storeStokesParameters = false;
 

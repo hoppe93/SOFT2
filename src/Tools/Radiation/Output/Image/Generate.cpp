@@ -9,6 +9,7 @@
 #include <softlib/config.h>
 #include <softlib/ImageGenerator/ImageGenerator.h>
 #include "config.h"
+#include "MemoryManager.h"
 #include "Tools/Radiation/Output/Image.h"
 
 #ifdef WITH_MPI
@@ -18,11 +19,6 @@
 using namespace __Radiation;
 using namespace std;
 
-slibreal_t *Image::global_image = nullptr,
-           *Image::global_imageQ = nullptr,
-           *Image::global_imageU = nullptr,
-           *Image::global_imageV = nullptr;
-
 /**
  * Finish gathering output and merge output
  * stored on individual threads to the global
@@ -31,15 +27,22 @@ slibreal_t *Image::global_image = nullptr,
 void Image::Finish() {
     #pragma omp critical (Image_Finish)
     {
-        if (global_image == nullptr) {
-            global_image = this->image;
+        if (!MemoryManager::block_exists(this->GetName())) {
+			global_image = (slibreal_t*)MemoryManager::set_block(this->GetName(), this->ntotpixels, this->image);
             
             if (this->MeasuresPolarization()) {
-                global_imageQ = this->imageQ;
-                global_imageU = this->imageU;
-                global_imageV = this->imageV;
+				global_imageQ = (slibreal_t*)MemoryManager::set_block(this->GetName()+"Q", this->ntotpixels, this->imageQ);
+				global_imageU = (slibreal_t*)MemoryManager::set_block(this->GetName()+"U", this->ntotpixels, this->imageU);
+				global_imageV = (slibreal_t*)MemoryManager::set_block(this->GetName()+"V", this->ntotpixels, this->imageV);
             }
         } else {
+			this->global_image = (slibreal_t*)MemoryManager::get_block(this->GetName());
+			if (this->MeasuresPolarization()) {
+				this->global_imageQ = (slibreal_t*)MemoryManager::get_block(this->GetName()+"Q");
+				this->global_imageU = (slibreal_t*)MemoryManager::get_block(this->GetName()+"U");
+				this->global_imageV = (slibreal_t*)MemoryManager::get_block(this->GetName()+"V");
+			}
+
             for (int i = 0; i < this->ntotpixels; i++)
                 global_image[i] += this->image[i];
 
