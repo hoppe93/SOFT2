@@ -17,6 +17,10 @@
 #   include "SMPI.h"
 #endif
 
+#if !defined(NDEBUG) && defined(__linux__)
+#	include <fenv.h>
+#endif
+
 using namespace std;
 
 /**
@@ -32,6 +36,10 @@ using namespace std;
 int main(int argc, char *argv[]) {
 	ConfigurationScript *conf;
     SOFT *soft;
+
+#if !defined(NDEBUG) && defined(__linux__)
+	feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);
+#endif
 
 #ifdef WITH_MPI
     try {

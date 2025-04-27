@@ -41,6 +41,7 @@
 
 #include "config.h"
 #include "constants.h"
+#include "MemoryManager.h"
 #include "PhaseSpace/Particle.h"
 #include "PhaseSpace/ParticleGenerator.h"
 #include "SOFT.h"
@@ -309,6 +310,22 @@ ParticleGenerator::~ParticleGenerator() {
     delete [] this->p2grid;
     delete [] this->p1grid;
     delete [] this->rgrid;
+
+	#pragma omp critical
+	{
+		if (MemoryManager::block_exists("partgen_distribution_f"))
+			MemoryManager::deallocate("partgen_distribution_f");
+	}
+}
+
+/**
+ * Request storage of the particle distribution function. When this request is
+ * made, sufficient memory to store the distribution function is allocated.
+ */
+void ParticleGenerator::RequestStoreF() {
+	size_t N = size_t(nr) * size_t(n1) * size_t(n2);
+	const char *_name = "partgen_distribution_f";
+	this->distribution_f = (slibreal_t*)MemoryManager::allocate(_name, N*sizeof(slibreal_t));
 }
 
 #ifdef WITH_MPI
@@ -600,6 +617,10 @@ void ParticleGenerator::InitializeParticle(
 		part->SetF(f->Eval(rho, part->GetMomentum(), part->GetXi(), d));
 	else
 		part->SetF(1.0);
+	
+	// Save value of distribution function as diagnostic output?
+	if (this->distribution_f != nullptr)
+		distribution_f[(ir*size_t(n2) + i2)*size_t(n1) + i1] = part->GetF();
 
     if (dr == 0)
         part->InitializePosition(this->specified_position, rho, z0, 1.0, d);

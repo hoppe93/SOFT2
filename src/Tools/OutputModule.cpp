@@ -14,7 +14,8 @@ using namespace std;
 
 const char
     OutputModule::DATETIME[]           = "datetime",
-	OutputModule::RO_DOMAIN[]		  = "domain",
+	OutputModule::DISTRIBUTION[]       = "distribution",
+	OutputModule::RO_DOMAIN[]		   = "domain",
 	OutputModule::PARAM1[]             = "param1",
 	OutputModule::PARAM1NAME[]         = "param1name",
 	OutputModule::PARAM2[]             = "param2",
@@ -57,6 +58,20 @@ void OutputModule::InitializeCommonQuantities() {
             sf->WriteString(this->DATETIME, buffer);
         }
     );
+
+	// distribution
+	DefineCommonQuantity(
+		DISTRIBUTION, [this](SFile *sf) {
+			size_t nr = this->particlegenerator->GetNr();
+			size_t n1 = this->particlegenerator->GetN1();
+			size_t n2 = this->particlegenerator->GetN2();
+
+			slibreal_t *f = this->particlegenerator->GetF();
+
+			sfilesize_t dims[3] = {nr,n2,n1};
+			sf->WriteMultiArray(this->DISTRIBUTION, f, 3, dims);
+		}
+	);
 
 	// param1
     DefineCommonQuantity(
@@ -231,6 +246,12 @@ void OutputModule::ConfigureCommonQuantities(
 			}
 		}
 	}
+
+	// Perform necessary initializations
+	for (string &qty : common_quantities) {
+		if (qty == DISTRIBUTION)
+			this->particlegenerator->RequestStoreF();
+	}
 }
 
 /**
@@ -242,12 +263,12 @@ void OutputModule::ConfigureCommonQuantities(
 void OutputModule::WriteCommonQuantities(SFile *output) {
 	vector<string> notFound;
 
-		for (vector<string>::iterator it = common_quantities.begin(); it != common_quantities.end(); it++) {
-			if (all_quantities.find(*it) != all_quantities.end()) {
-				all_quantities[*it](output);
-			} else
-				notFound.push_back(*it);
-		}
+	for (vector<string>::iterator it = common_quantities.begin(); it != common_quantities.end(); it++) {
+		if (all_quantities.find(*it) != all_quantities.end()) {
+			all_quantities[*it](output);
+		} else
+			notFound.push_back(*it);
+	}
 
 	// Emit warning if some quantity was not found
 	if (notFound.size() > 0) {
