@@ -23,6 +23,18 @@ where :math:`n_e` is the electron density, :math:`e` the elementary charge,
 :math:`\ln\lambda` the Coulomb logarithm, :math:`\epsilon_0` the permittivity of
 free space, :math:`m_e` the electron mass and :math:`c` the speed of light in vacuum.
 
+Since the synchrotron radiation emitted by these electrons primarily comes from
+those electrons with the highest energy, the distribution above can be combined
+with a Gaussian-shaped envelope for :math:`p>p_{\rm max}`, for some
+:math:`p_{\rm max}`, that cuts off the distribution function at high energies:
+
+.. math::
+
+   f(p, \xi) \to f(p,\xi) \exp\left[ - \left(\frac{p - p_{\rm max}}{\Delta p}\right)^2 \right].
+
+Note that this cut-off is only applied for :math:`p\geq p_{\rm max}`, and so for
+lower values of momentum the standard Connor-Hastie distribution is used.
+
 .. [#connor1975] Connor and Hastie, 1975 "Relativistic limitations on runaway electrons". *Nuclear Fusion* **15** (3), 415 `doi:10.1088/0029-5515/15/3/007 <https://doi.org/10.1088/0029-5515/15/3/007>`_.
 
 Summary of options
@@ -31,6 +43,10 @@ The following parameters can be set on a Connor-Hastie distribution function.
 
 +----------------------------------+----------------------------------------------------------------------+
 | **Option**                       | **Description**                                                      |
++----------------------------------+----------------------------------------------------------------------+
+| :option:`connorhastie deltaP`    | Width of the Gaussian envelope to apply to cut-off the distribution. |
++----------------------------------+----------------------------------------------------------------------+
+| :option:`connorhastie pMax`      | Momentum value above which to apply the Gaussian cut-off.            |
 +----------------------------------+----------------------------------------------------------------------+
 | :option:`connorhastie EHat`      | Electric field strength, normalized to the threshold electric field. |
 +----------------------------------+----------------------------------------------------------------------+
@@ -58,6 +74,24 @@ All options
 ^^^^^^^^^^^
 
 .. program:: connorhastie
+
+.. option:: deltaP
+
+   :Default value: None
+   :Allowed values: Any positive real number
+
+   Width of the Gaussian envelope to apply for :math:`p > p_{\rm max}` in order
+   to cut off the distribution function at high energies.
+
+.. option:: pMax
+
+   :Default value: None
+   :Allowed values: Any positive real number
+
+   Momentum above which the Connor-Hastie distribution function will be modified
+   by a Gaussian envelope function. The purpose of this is to cut-off the
+   distribution at high energies, so that ``pMax`` effectively corresponds to
+   the "maximum" momentum value in the distribution function.
 
 .. option:: EHat
 
