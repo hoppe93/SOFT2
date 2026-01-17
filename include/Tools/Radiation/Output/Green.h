@@ -61,7 +61,7 @@ namespace __Radiation {
             enum ParticleGenerator::MPI_Distribute_Mode mpi_distribute_mode;
             enum MPI_Output_Mode mpi_output_mode = MPI_Output_Mode::CONTIGUOUS;
         public:
-            Green(Detector*, MagneticField2D*, ParticleGenerator*);
+            Green(Detector*, MagneticField2D*, ParticleGenerator*, SOFT*);
             ~Green();
 
             virtual void Configure(ConfigBlock*, ConfigBlock*) override;

@@ -10,6 +10,8 @@
 
 class Orbits : public Tool, public OutputModule {
     private:
+		SOFT *soft;
+
         unsigned int norbits;
         unsigned int nr, np1, np2;
         unsigned int ntau;
@@ -48,7 +50,7 @@ class Orbits : public Tool, public OutputModule {
 
         ParticlePusher *pusher; // Reference to pusher object
     public:
-        Orbits(MagneticField2D*, ParticleGenerator*, ParticlePusher*);
+        Orbits(SOFT*, MagneticField2D*, ParticleGenerator*, ParticlePusher*);
 
         slibreal_t **Allocate(const unsigned int, const unsigned int, const unsigned int);
         orbit_class_t *Allocate_class(const unsigned int);

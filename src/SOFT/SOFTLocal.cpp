@@ -43,5 +43,5 @@ SOFTLocal::SOFTLocal(SOFT *parent, unsigned int id, bool clone) {
     }
 
     this->pusher = InitPusher(this->magfield, parent->GetGlobalSettings(), parent->configuration);
-    this->thandler = InitTools(parent->GetGlobalSettings(), parent->configuration, this->partgen, this->pusher, this->magfield);
+    this->thandler = InitTools(parent, parent->GetGlobalSettings(), parent->configuration, this->partgen, this->pusher, this->magfield);
 }

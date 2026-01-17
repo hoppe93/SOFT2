@@ -17,9 +17,10 @@ using namespace __Radiation;
  * Constructor.
  */
 Radiation::Radiation(
-    MagneticField2D *mf, ParticleGenerator *pgen,
-    ParticlePusher *pusher
+    SOFT *soft, MagneticField2D *mf,
+	ParticleGenerator *pgen, ParticlePusher *pusher
 ) : Tool("Radiation") {
+	this->soft = soft;
     this->magfield = mf;
     this->pgen = pgen;
     pusher->EnableJacobianCalculation();

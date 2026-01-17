@@ -8,8 +8,9 @@ namespace __SOFT {
     class Integrator : public Tool, public OutputModule {
     private:
         slibreal_t I;
+		SOFT *soft;
     public:
-        Integrator(MagneticField2D*, ParticleGenerator*, ParticlePusher*);
+        Integrator(SOFT*, MagneticField2D*, ParticleGenerator*, ParticlePusher*);
 
         virtual void Configure(struct global_settings*, ConfigBlock*, ConfigBlock*) override {}
         virtual void Finish() override {}

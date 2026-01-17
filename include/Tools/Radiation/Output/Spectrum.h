@@ -24,7 +24,7 @@ namespace __Radiation {
 			static const unsigned int NDEFAULT_QUANTITIES;
 
         public:
-            Spectrum(Detector*, MagneticField2D*, ParticleGenerator*);
+            Spectrum(Detector*, MagneticField2D*, ParticleGenerator*, SOFT*);
             ~Spectrum();
 
             virtual void Configure(ConfigBlock*, ConfigBlock*) override;

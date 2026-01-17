@@ -8,8 +8,8 @@
 /**
  * Constructor.
  */
-__SOFT::Integrator::Integrator(MagneticField2D *mf, ParticleGenerator *pgen, ParticlePusher *pp)
-    : Tool("Integrator"), OutputModule(mf, pgen) {
+__SOFT::Integrator::Integrator(SOFT *soft, MagneticField2D *mf, ParticleGenerator *pgen, ParticlePusher *pp)
+    : Tool("Integrator"), OutputModule(mf, pgen, soft), soft(soft) {
     
     this->I = 0;
 }

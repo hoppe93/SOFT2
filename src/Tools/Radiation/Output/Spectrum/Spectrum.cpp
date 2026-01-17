@@ -12,7 +12,10 @@ using namespace __Radiation;
 /**
  * Constructor.
  */
-Spectrum::Spectrum(Detector *d, MagneticField2D *m, ParticleGenerator *pgen) : RadiationOutput(d, m, pgen) {
+Spectrum::Spectrum(
+	Detector *d, MagneticField2D *m,
+	ParticleGenerator *pgen, SOFT *soft
+) : RadiationOutput(d, m, pgen, soft) {
     this->nwavelengths = d->GetNWavelengths();
 
     if (this->nwavelengths == 0)

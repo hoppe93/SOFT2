@@ -12,7 +12,7 @@
 struct soft_toolspec {
     std::string name;
     confblock_t id;
-    Tool *(*init)(struct global_settings*, ConfigBlock*, ConfigBlock*, ParticleGenerator*, ParticlePusher*, MagneticField2D*);
+    Tool *(*init)(SOFT*, struct global_settings*, ConfigBlock*, ConfigBlock*, ParticleGenerator*, ParticlePusher*, MagneticField2D*);
     void (*prepare)(Configuration*);
 };
 

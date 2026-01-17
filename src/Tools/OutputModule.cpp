@@ -14,7 +14,8 @@ using namespace std;
 
 const char
     OutputModule::DATETIME[]           = "datetime",
-	OutputModule::RO_DOMAIN[]		  = "domain",
+	OutputModule::RO_DOMAIN[]		   = "domain",
+	OutputModule::DISTFUNC[]		   = "distribution",
 	OutputModule::PARAM1[]             = "param1",
 	OutputModule::PARAM1NAME[]         = "param1name",
 	OutputModule::PARAM2[]             = "param2",
@@ -57,6 +58,52 @@ void OutputModule::InitializeCommonQuantities() {
             sf->WriteString(this->DATETIME, buffer);
         }
     );
+
+	// distribution
+	DefineCommonQuantity(
+		DISTFUNC, [this](SFile *sf) {
+			slibreal_t *r = this->particlegenerator->GetRGrid();
+			slibreal_t *param1 = this->particlegenerator->GetP1Grid();
+			slibreal_t *param2 = this->particlegenerator->GetP2Grid();
+			int p1type = this->particlegenerator->GetP1Type();
+			int p2type = this->particlegenerator->GetP2Type();
+
+			size_t nr = this->particlegenerator->GetNr();
+			size_t n1 = this->particlegenerator->GetN1();
+			size_t n2 = this->particlegenerator->GetN2();
+
+			Particle *p = new Particle();
+			slibreal_t **rhoeff = this->particlegenerator->GetRhoEff();
+
+			DistributionFunction *dist = this->soft->distribution;
+			slibreal_t *f = new slibreal_t[nr*n1*n2];
+			for (size_t k = 0; k < nr; k++) {
+				 for (size_t j = 0; j < n2; j++) {
+				 	for (size_t i = 0; i < n1; i++) {
+						p->InitializeMomentum(
+							(enum Particle::coordinate)p1type,
+							(enum Particle::coordinate)p2type,
+							param1[i], param2[j],
+							// zeta, dp1, dp2, dzeta
+							0, 0, 0, 0
+						);
+
+						slibreal_t d = 0;
+						if (this->particlegenerator->HasDrifts())
+							d = rhoeff[i][j] - this->particlegenerator->GetRhoMin();
+
+						f[(k*n2 + j)*n1 + i] = dist->Eval(r[k], p->GetMomentum(), p->GetXi(), d);
+					}
+				 }
+			}
+
+			sfilesize_t dims[3] = {nr, n2, n1};
+			sf->WriteMultiArray("distribution", f, 3, dims);
+
+			delete p;
+			delete [] f;
+		}
+	);
 
 	// param1
     DefineCommonQuantity(

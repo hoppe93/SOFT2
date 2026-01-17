@@ -25,7 +25,7 @@ namespace __Radiation {
 			static const std::string DEFAULT_QUANTITIES[];
 			static const unsigned int NDEFAULT_QUANTITIES;
         public:
-            Image(Detector*, MagneticField2D*, ParticleGenerator*);
+            Image(Detector*, MagneticField2D*, ParticleGenerator*, SOFT*);
             ~Image();
 
             virtual void Configure(ConfigBlock*, ConfigBlock*) override;

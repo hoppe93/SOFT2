@@ -45,7 +45,7 @@ using namespace std;
  */
 
 template<class T>
-Tool *InitTool(struct global_settings*, ConfigBlock*, ConfigBlock*, ParticleGenerator*, ParticlePusher*, MagneticField2D*);
+Tool *InitTool(SOFT*, struct global_settings*, ConfigBlock*, ConfigBlock*, ParticleGenerator*, ParticlePusher*, MagneticField2D*);
 template<class T>
 void PrepareToolConfiguration(Configuration*);
 
@@ -72,12 +72,12 @@ struct soft_toolspec toolinit_tools[INIT_TOOLS_NTOOLS] = {
  */
 template<class T>
 Tool *InitTool(
-    struct global_settings *globset,
+    SOFT *soft, struct global_settings *globset,
     ConfigBlock *conf, ConfigBlock *root,
     ParticleGenerator *pgen, ParticlePusher *pusher,
     MagneticField2D *mf
 ) {
-    T *t = new T(mf, pgen, pusher);
+    T *t = new T(soft, mf, pgen, pusher);
     t->Configure(globset, conf, root);
 
     return t;
@@ -104,7 +104,7 @@ void PrepareToolConfiguration(Configuration *conf) {
  * partgen: Particle generator object to use in run.
  */
 ToolHandler *SOFTLocal::InitTools(
-    struct global_settings *globset, Configuration *input,
+    SOFT *soft, struct global_settings *globset, Configuration *input,
     ParticleGenerator *partgen, ParticlePusher *pusher,
     MagneticField2D *magfield
 ) {
@@ -117,7 +117,7 @@ ToolHandler *SOFTLocal::InitTools(
         for (j = 0; j < INIT_TOOLS_NTOOLS; j++) {
             if (root->HasSubBlock(toolinit_tools[j].id, tools[i])) {
                 ConfigBlock *cb = root->GetConfigBlock(toolinit_tools[j].id, tools[i]);
-                Tool *t = toolinit_tools[j].init(globset, cb, root, partgen, pusher, magfield);
+                Tool *t = toolinit_tools[j].init(soft, globset, cb, root, partgen, pusher, magfield);
 
                 th->AddTool(t);
                 break;

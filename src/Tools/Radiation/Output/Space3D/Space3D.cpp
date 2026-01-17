@@ -12,7 +12,10 @@ using namespace __Radiation;
 /**
  * Constructor.
  */
-Space3D::Space3D(Detector *d, MagneticField2D *m, ParticleGenerator *pgen) : RadiationOutput(d, m, pgen) { }
+Space3D::Space3D(
+	Detector *d, MagneticField2D *m,
+	ParticleGenerator *pgen, SOFT *soft
+) : RadiationOutput(d, m, pgen, soft) { }
 
 /**
  * Destructor.

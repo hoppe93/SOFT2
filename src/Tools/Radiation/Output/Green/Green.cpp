@@ -13,7 +13,10 @@ using namespace std;
 /**
  * Constructor.
  */
-Green::Green(Detector *d, MagneticField2D *m, ParticleGenerator *pgen) : RadiationOutput(d, m, pgen) {
+Green::Green(
+	Detector *d, MagneticField2D *m,
+	ParticleGenerator *pgen, SOFT *soft
+) : RadiationOutput(d, m, pgen, soft) {
     this->nr = pgen->GetNr();
     this->n1 = pgen->GetN1();
     this->n2 = pgen->GetN2();

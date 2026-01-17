@@ -50,7 +50,7 @@ int Radiation::CONFBLOCK_T_OUTPUT;
 template<class T>
 Model *InitModel(struct global_settings*, ConfigBlock*, ConfigBlock*, Radiation*);
 template<class T>
-RadiationOutput *InitRadiationOutput(ConfigBlock*, ConfigBlock*, Detector*, MagneticField2D*, ParticleGenerator*);
+RadiationOutput *InitRadiationOutput(ConfigBlock*, ConfigBlock*, Detector*, MagneticField2D*, ParticleGenerator*, SOFT*);
 
 const unsigned int RADIATION_NMODELS=3;
 struct radiation_modelspec radmodels[RADIATION_NMODELS] = {
@@ -96,8 +96,8 @@ Model *InitModel(struct global_settings *globset, ConfigBlock *conf, ConfigBlock
  *       for any sub-modules.
  */
 template<class T>
-RadiationOutput *InitRadiationOutput(ConfigBlock *conf, ConfigBlock *root, Detector *d, MagneticField2D *m, ParticleGenerator *pgen) {
-    T *t = new T(d, m, pgen);
+RadiationOutput *InitRadiationOutput(ConfigBlock *conf, ConfigBlock *root, Detector *d, MagneticField2D *m, ParticleGenerator *pgen, SOFT *soft) {
+    T *t = new T(d, m, pgen, soft);
     t->Configure(conf, root);
 
     return t;
@@ -292,7 +292,7 @@ RadiationOutput *Radiation::SetupRadiationOutput(ConfigBlock *conf, ConfigBlock 
 
     for (unsigned int i = 0; i < RADIATION_NOUTPUTS; i++) {
         if (radoutputs[i].name == stype) {
-            return radoutputs[i].init(conf, root, detector, magfield, pgen);
+            return radoutputs[i].init(conf, root, detector, magfield, pgen, soft);
         }
     }
 

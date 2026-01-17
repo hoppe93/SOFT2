@@ -24,7 +24,7 @@ const char
 
 void RadiationOutput::InitializeCommonQuantities() {
     // Initialize base common quantities first
-    //OutputModule::InitializeCommonQuantities();
+    this->OutputModule::InitializeCommonQuantities();
 
 	// detectorAperture
     DefineCommonQuantity(
@@ -70,6 +70,7 @@ void RadiationOutput::InitializeCommonQuantities() {
 		}
 	);
 
+	// detectorRoll
     DefineCommonQuantity(
         DETECTOR_ROLL, [this](SFile *sf) {
             slibreal_t roll = this->detector->GetRoll();

@@ -24,7 +24,7 @@ namespace __Radiation {
 			static const unsigned int NDEFAULT_QUANTITIES;
 
         public:
-            Space3D(Detector*, MagneticField2D*, ParticleGenerator*);
+            Space3D(Detector*, MagneticField2D*, ParticleGenerator*, SOFT*);
             virtual ~Space3D();
 
             virtual void Configure(ConfigBlock*, ConfigBlock*) override;

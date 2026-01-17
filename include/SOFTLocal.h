@@ -36,7 +36,7 @@ class SOFTLocal {
 
         // Initialization of sub-modules
         static ParticlePusher *InitPusher(MagneticField2D*, struct global_settings*, Configuration*);
-        static ToolHandler *InitTools(struct global_settings*, Configuration*, ParticleGenerator*, ParticlePusher*, MagneticField2D*);
+        static ToolHandler *InitTools(SOFT*, struct global_settings*, Configuration*, ParticleGenerator*, ParticlePusher*, MagneticField2D*);
 
         void Finish();
         void Run(unsigned int *invalid=nullptr);

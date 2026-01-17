@@ -34,8 +34,10 @@ namespace __Radiation {
                 DETECTOR_VISANG[];
 
         public:
-            RadiationOutput(Detector *d, MagneticField2D *m, ParticleGenerator *pgen)
-                : OutputModule(m, pgen) {
+            RadiationOutput(
+				Detector *d, MagneticField2D *m,
+				ParticleGenerator *pgen, SOFT *soft
+			) : OutputModule(m, pgen, soft) {
                 this->detector = d;
 
                 this->InitializeCommonQuantities();

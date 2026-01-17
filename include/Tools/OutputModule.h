@@ -7,6 +7,7 @@
 #include <vector>
 #include <softlib/config.h>
 #include <softlib/Configuration.h>
+#include <softlib/DistributionFunction/DistributionFunction.h>
 #include <softlib/SFile.h>
 //#include "Tools/Radiation/Models/Model.h"
 #include "PhaseSpace/ParticleGenerator.h"
@@ -26,9 +27,11 @@ class OutputModule {
     protected:
         MagneticField2D *magfield;
         ParticleGenerator *particlegenerator;
+		SOFT *soft;
 
         static const char
             DATETIME[],
+			DISTFUNC[],
             PARAM1[],
             PARAM1NAME[],
             PARAM2[],
@@ -40,9 +43,13 @@ class OutputModule {
             VERSION_SOFT[];
             //VERSION_SOFTLIB[];
     public:
-        OutputModule(MagneticField2D *m, ParticleGenerator *pgen) {
+        OutputModule(
+			MagneticField2D *m, ParticleGenerator *pgen,
+			SOFT *soft
+		) {
             this->magfield = m;
             this->particlegenerator = pgen;
+			this->soft = soft;
             this->InitializeCommonQuantities();
         }
         virtual ~OutputModule() { }

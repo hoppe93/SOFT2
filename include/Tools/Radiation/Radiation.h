@@ -28,7 +28,7 @@ namespace __Radiation {
     };
     struct radiation_outputspec {
         std::string name;
-        RadiationOutput *(*init)(ConfigBlock*, ConfigBlock*, Detector*, MagneticField2D*, ParticleGenerator*);
+        RadiationOutput *(*init)(ConfigBlock*, ConfigBlock*, Detector*, MagneticField2D*, ParticleGenerator*, SOFT*);
     };
 
     // Stokes parameter identifiers
@@ -75,6 +75,7 @@ namespace __Radiation {
             __Radiation::Detector *detector;
             __Radiation::Model *model;
 
+			SOFT *soft;
             MagneticField2D *magfield;
             ParticleGenerator *pgen;
 
@@ -82,7 +83,7 @@ namespace __Radiation {
             __Radiation::RadiationOutput **output = nullptr;
 
             Radiation() : Tool("Radiation") {};
-            Radiation(MagneticField2D*, ParticleGenerator*, ParticlePusher*);
+            Radiation(SOFT*, MagneticField2D*, ParticleGenerator*, ParticlePusher*);
             ~Radiation();
 
             virtual void Configure(struct global_settings*, ConfigBlock*, ConfigBlock*) override;

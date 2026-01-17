@@ -24,7 +24,7 @@ namespace __Radiation {
 			static const unsigned int NDEFAULT_QUANTITIES;
 
         public:
-            Topview(Detector*, MagneticField2D*, ParticleGenerator*);
+            Topview(Detector*, MagneticField2D*, ParticleGenerator*, SOFT*);
             ~Topview();
 
             virtual void Configure(ConfigBlock*, ConfigBlock*) override;

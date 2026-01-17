@@ -61,6 +61,8 @@ class ParticleGenerator {
         void GenerateCoordinateGrids(enum MPI_Distribute_Mode mpi_distribute_parameter=MPI_Distribute_Mode::MPI_DISTMODE_RADIUS);
         void GenerateRhoeffTable(MagneticField2D*);
         void GetRadialCoordinate(ConfigBlock*, const std::string&, slibreal_t, slibreal_t);
+		slibreal_t **GetRhoEff() { return this->rhoeff; }
+		slibreal_t GetRhoMin() { return this->rhomin; }
 		void InitializeParticle(
             Particle*, DistributionFunction*, MagneticField2D*,
             const slibreal_t, const slibreal_t, const slibreal_t, const slibreal_t,
@@ -71,6 +73,8 @@ class ParticleGenerator {
 
         // Getters
         enum MPI_Distribute_Mode GetDistributeMode() { return this->mpi_distribute_mode; }
+
+		bool HasDrifts() { return this->include_drifts; }
 
         unsigned int GetEndR() { return this->end_ir; }
         unsigned int GetEnd1() { return this->end_i1; }

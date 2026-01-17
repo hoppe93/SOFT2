@@ -43,7 +43,8 @@ def loadTopview(filename):
     wall    = None
 
     with h5py.File(filename, 'r') as f:
-        detpos  = f['detectorPosition'][0,:].T
+        #detpos  = f['detectorPosition'][0,:].T
+        detpos  = f['detectorPosition'][:].T
         topview = f['image'][:,:].T
         wall    = f['wall'][:,:]
 
