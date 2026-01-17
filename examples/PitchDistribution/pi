@@ -1,0 +1,69 @@
+# Generate a basic single-particle
+# synchrotron radiation image.
+##################################
+
+magnetic_field     = mf;
+tools              = rad;
+distribution_function = pitch_dist;
+
+@DistributionFunction pitch_dist (pitch) {
+	C0 = -573;
+	C1 = 16.4;
+}
+
+# Configuration of EAST-like magnetic equilibrium
+@MagneticField mf (analytical) {
+    B0     = 5;     # On-axis field strength (T)
+    Rm     = 0.68;  # Major radius (m)
+    rminor = 0.22;  # Minor radius (m)
+
+    # Safety-factor
+    qtype  = linear;
+    qa1    = 2;
+    qa2    = 1;
+
+    sigmaB = cw;
+}
+
+# Phase space grid
+@ParticleGenerator PGen {
+    a      = 0.0, 0.95, 10; # Normalized minor radius
+    p      = 40, 60, 11;
+    thetap = 0.1, 0.4, 12;
+}
+
+# Orbit generator
+@ParticlePusher PPusher {
+    nt = 2000;        # Number of timesteps per orbit (resolution parameter)
+}
+
+# Radiation tool
+@Radiation rad {
+    detector = det;
+
+    ntoroidal   = 7000;    # No. of toroidal sections in tokamak (resolution parameter)
+    model       = cone;    # Radiation model to use
+    output      = 12;   # List of configuration of output
+}
+
+# Detector properties
+# Set up a tangentially viewing HXR camera.
+@Detector det {
+    aperture     = 0.006;
+    position     = 0.68, -0.68, 0;
+    direction    = 0, 1, 0;
+    vision_angle = 0.55 fov;
+    spectrum     = no;
+}
+
+# Radiation model
+@RadiationModel cone (cone) {
+    emission = synchrotron;
+}
+
+@RadiationOutput 12 (green) {
+	format = 12;
+    output = "12.h5";
+	common = distribution param1 param2 r;
+}
+
