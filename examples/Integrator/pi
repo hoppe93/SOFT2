@@ -34,5 +34,6 @@ include_drifts     = no;
 
 # Integrator tool
 @Integrator intg {
+	output = "integrator.h5";
 }
 
