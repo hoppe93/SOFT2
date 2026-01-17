@@ -26,6 +26,7 @@ class ParticleGenerator {
                    dzeta,
                    **rhoeff, rhomax, rhomin;
         slibreal_t *rgrid=nullptr, *p1grid=nullptr, *p2grid=nullptr, *zetagrid=nullptr;
+		slibreal_t *distribution_f=nullptr;
 		slibreal_t charge, mass;
 		unsigned int ir, i1, i2, izeta,
 					 nr, n1, n2, nzeta,
@@ -84,6 +85,11 @@ class ParticleGenerator {
         unsigned int GetStart1() { return this->start_i1; }
         unsigned int GetStart2() { return this->start_i2; }
 
+		slibreal_t *GetF() { return this->distribution_f; }
+		slibreal_t GetF(unsigned int ir, unsigned int i1, unsigned int i2) {
+			return this->distribution_f[(ir*size_t(nr) + i2)*size_t(n2) + i1];
+		}
+
         unsigned int Size()  { return this->nr*this->n1*this->n2; }
 
         int GetP1Type() { return mom1type; }
@@ -94,6 +100,8 @@ class ParticleGenerator {
         slibreal_t *GetP2Grid() { return this->p2grid; }
 
         slibreal_t GetDriftShiftTolerance() { return this->drift_shift_tolerance; }
+
+		void RequestStoreF();
 
         enum MPI_Distribute_Mode GetMPIDistributionMode() { return this->mpi_distribute_mode; }
 };

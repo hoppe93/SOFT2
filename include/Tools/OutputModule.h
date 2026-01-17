@@ -24,11 +24,13 @@ class OutputModule {
         void write_domain(SFile*, const std::string&);
         void write_separatrix(SFile*, const std::string&);
     protected:
+		DistributionFunction *distfunc;
         MagneticField2D *magfield;
         ParticleGenerator *particlegenerator;
 
         static const char
             DATETIME[],
+			DISTRIBUTION[],
             PARAM1[],
             PARAM1NAME[],
             PARAM2[],

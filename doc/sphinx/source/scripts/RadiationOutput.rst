@@ -55,6 +55,8 @@ in the file. The available options are shown in the table below.
 +------------------------------+-------------------------------------------------------------+
 | ``detectorVisang``           | Detector vision angle (FOV).                                |
 +------------------------------+-------------------------------------------------------------+
+| ``distribution``             | Distribution function, as evaluated by SOFT.                |
++------------------------------+-------------------------------------------------------------+
 | ``domain``                   | Orbit solution domain. Either tokamak wall or separatrix.   |
 +------------------------------+-------------------------------------------------------------+
 | ``param1``                   | First momentum grid                                         |
