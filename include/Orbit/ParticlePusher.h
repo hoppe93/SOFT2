@@ -35,7 +35,7 @@ class ParticlePusher {
         bool useTimingIntegrator = false;
 
         slibreal_t integrator_tol;
-        slibreal_t maxtime;
+        slibreal_t maxtime, timestep0=1.0;
         enum orbittimeunit timeunit;
 
         // The value by which a particle is 'nudged' in the

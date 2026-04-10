@@ -38,7 +38,8 @@ const string ParticlePusher_config =
 "time=1;\n"
 "nt=1e3;\n"
 "force_numerical_jacobian=no;\n"
-"nudgevalue=__default__;\n";
+"nudgevalue=__default__;\n"
+"timestep0 = 1.0;\n";
 
 const string ParticlePusher::equation_defaults =
 "@Equation guiding-center (guiding-center) {\n"
@@ -82,6 +83,9 @@ ParticlePusher::ParticlePusher(
 				SOFT::PrintWarning(SOFT::WARNING_OPP_UNRECOGNIZED_SETTING, "ParticlePusher: Unrecognized setting '%s' ignored.", (*v)[i].c_str());
 		}
 	}
+
+	// Initial time step to use
+	this->timestep0 = init_get_scalar(settings, "timestep0", "ParticlePusher");
 
 	// Interpret settings
 	InitEquation((*settings)["equation"], *eqnconf);
@@ -201,7 +205,7 @@ void ParticlePusher::SetupTimingIntegrator() {
 
     // Set up integrator
     slibreal_t integrator_tol = 1e-6;
-    RKDP45<6> *rkdp45 = new RKDP45<6>(integrator_tol);
+    RKDP45<6> *rkdp45 = new RKDP45<6>(integrator_tol, this->timestep0);
     rkdp45->SetEquation(eq);
 
     this->timingIntegrator = rkdp45;
@@ -232,8 +236,8 @@ void ParticlePusher::InitGeneralIntegrator(ConfigBlock& conf, IntegratorEquation
         else if (integrator_tol <= REAL_EPSILON)
             throw ParticlePusherException("Assigned relative tolerance is smaller than the machine epsilon (%e).", REAL_EPSILON);
 
-		RKDP45<6> *rkdp45_1 = new RKDP45<6>(integrator_tol),
-                  *rkdp45_2 = new RKDP45<6>(integrator_tol);
+		RKDP45<6> *rkdp45_1 = new RKDP45<6>(integrator_tol, this->timestep0),
+                  *rkdp45_2 = new RKDP45<6>(integrator_tol, this->timestep0);
 		rkdp45_1->SetEquation(eq);
         rkdp45_2->SetEquation(eq);
 
