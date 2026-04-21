@@ -31,6 +31,7 @@ include_drifts     = yes;
 # Orbit generator
 @ParticlePusher PPusher {
     nt       = 100;        # Number of timesteps per orbit (resolution parameter)
+	timestep0 = 1e-4;
 }
 
 # Define equations
