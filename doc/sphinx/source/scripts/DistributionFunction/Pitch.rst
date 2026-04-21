@@ -7,21 +7,35 @@ angle:
 
 .. math::
 
-   f(\xi) = \exp\left( C\xi \right),
+   f(p,\xi) = \exp\left[ C(p) \left(\left|\xi\right|-1\right) \right],
 
-where :math:`\xi = \cos\theta_{\rm p}` and :math:`C` is an input parameter.
-This is the pitch part of the analytical avalanche distribution function
-(see :ref:`module-distribution-avalanche`).
+where :math:`\xi = \cos\theta_{\rm p}` and
+
+.. math::
+
+   C(p) = C_0 + C_1p
+
+describes the slope of the distribution function. This is the pitch part of the
+analytical avalanche distribution function (see
+:ref:`module-distribution-avalanche`).
+
 
 Summary of options
 ^^^^^^^^^^^^^^^^^^
 +-------------------------+-----------------------------------------------------------------+
 | **Option**              | **Description**                                                 |
 +-------------------------+-----------------------------------------------------------------+
-| :option:`pitch C`       | Distribution function exponent.                                 |
+| :option:`pitch C0`      | Constant term in exponent.                                      |
++-------------------------+-----------------------------------------------------------------+
+| :option:`pitch C1`      | Linear term pre-factor in exponent.                             |
 +-------------------------+-----------------------------------------------------------------+
 | :option:`pitch radprof` | Name of configuration block defining the radial profile to use. |
 +-------------------------+-----------------------------------------------------------------+
+
+.. note::
+
+   The default value for ``C1`` is zero, so that the pitch spectrum becomes
+   a simple exponential.
 
 Example configuration
 ^^^^^^^^^^^^^^^^^^^^^
@@ -31,7 +45,16 @@ simulation::
    distribution_function = ourDistribution;
 
    @DistributionFunction ourDistribution (pitch) {
-       C = 100;
+       C0 = 100;
+   }
+
+A linear variation with momentum can also be obtained by setting::
+
+   distribution_function = ourDistribution;
+
+   @DistributionFunction ourDistribution (pitch) {
+       C0 = -573;
+       C1 = 16.4;
    }
 
 If a pitch distribution with a varying radial distribution function is desired,
@@ -56,12 +79,21 @@ The pitch distribution function has no options.
 
 .. program:: pitch
 
-.. option:: C
+.. option:: C0
 
    :Default value: None
    :Allowed values: Any positive real number
 
-   Specifies the value of the exponent in the pitch distribution.
+   Specifies the constant term in the exponent of the pitch distribution.
+
+
+.. option:: C1
+
+   :Default value: 0
+   :Allowed values: Any positive real number
+
+   Specifes the pre-factor for the linear term in the exponent of the pitch
+   distribution.
 
 .. option:: radprof
 

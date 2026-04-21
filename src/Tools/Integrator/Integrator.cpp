@@ -17,6 +17,19 @@ __SOFT::Integrator::Integrator(MagneticField2D *mf, ParticleGenerator *pgen, Par
 /**
  * Configure this module.
  */
+void __SOFT::Integrator::Configure(
+	struct global_settings*, ConfigBlock *conf, ConfigBlock*
+) {
+	this->Tool::SetName(conf->GetName());
+	this->OutputModule::SetName(conf->GetName());
+
+	if (conf->HasSetting("output"))
+		this->output = (*conf)["output"];
+}
+
+/**
+ * Handle the given particle orbit.
+ */
 void __SOFT::Integrator::Handle(Orbit *o, Particle *p) {
     unsigned int ntau = o->GetNTau();
     slibreal_t s = 0;
@@ -53,7 +66,15 @@ void __SOFT::Integrator::Handle(Orbit *o, Particle *p) {
  * Generate output from this module.
  */
 void __SOFT::Integrator::Output() {
-    SOFT::PrintInfo("Integral:  %.16e", this->I);
+	if (this->output.empty())
+		SOFT::PrintInfo("Integral:  %.16e", this->I);
+	else {
+		SFile *sf = SFile::Create(this->output, SFILE_MODE_WRITE);
+
+		sf->WriteScalar("V", this->I);
+
+		sf->Close();
+	}
 }
 
 /**

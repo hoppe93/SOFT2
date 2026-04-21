@@ -448,14 +448,9 @@ SOFTDistributionFunction *InitNumericalDistribution(MagneticField2D *magfield, C
  * conf:     Configuration of module.
  */
 RadialDistributionFunction *InitExponentialPitchDistribution(MagneticField2D *magfield, ConfigBlock *conf, ConfigBlock *root) {
-    slibreal_t C;
+    slibreal_t C0, C1 = 0;
 
-    if (!conf->HasSetting("C")) {
-        throw SOFTException(
-            "Distribution function '%s': Pitch distribution exponent 'C' not specified.",
-            conf->GetName().c_str()
-        );
-    } else {
+    if (conf->HasSetting("C")) {
         Setting *s = conf->GetSetting("C");
         if (!s->IsScalar())
             throw SOFTException(
@@ -463,8 +458,32 @@ RadialDistributionFunction *InitExponentialPitchDistribution(MagneticField2D *ma
                 conf->GetName().c_str()
             );
 
-        C = s->GetScalar();
-    }
+        C0 = s->GetScalar();
+	} else if (conf->HasSetting("C0")) {
+        Setting *s = conf->GetSetting("C0");
+        if (!s->IsScalar())
+            throw SOFTException(
+                "Distribution function '%s': The given pitch distribution exponent 'C0' is not a scalar.",
+                conf->GetName().c_str()
+            );
+
+        C0 = s->GetScalar();
+	} else
+        throw SOFTException(
+            "Distribution function '%s': Pitch distribution exponent 'C0' not specified.",
+            conf->GetName().c_str()
+        );
+	
+	if (conf->HasSetting("C1")) {
+		Setting *s = conf->GetSetting("C1");
+		if (!s->IsScalar())
+			throw SOFTException(
+				"Distribution function '%s': The given pitch distribution exponent 'C1' is not a scalar.",
+				conf->GetName().c_str()
+			);
+
+		C1 = s->GetScalar();
+	}
 
     RadialProfile *radprof;
     if (conf->HasSetting("radprof")) {
@@ -475,7 +494,7 @@ RadialDistributionFunction *InitExponentialPitchDistribution(MagneticField2D *ma
 
     // Combine...
     return new RadialDistributionFunction(
-        radprof, new ExponentialPitch(C)
+        radprof, new ExponentialPitch(C0, C1)
     );
 }
 

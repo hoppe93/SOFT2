@@ -1,6 +1,7 @@
 #ifndef _SOFT_INTEGRATOR_H
 #define _SOFT_INTEGRATOR_H
 
+#include <string>
 #include "Tools/OutputModule.h"
 #include "Tools/Tool.h"
 
@@ -8,10 +9,12 @@ namespace __SOFT {
     class Integrator : public Tool, public OutputModule {
     private:
         slibreal_t I;
+
+		std::string output;
     public:
         Integrator(MagneticField2D*, ParticleGenerator*, ParticlePusher*);
 
-        virtual void Configure(struct global_settings*, ConfigBlock*, ConfigBlock*) override {}
+        virtual void Configure(struct global_settings*, ConfigBlock*, ConfigBlock*) override;
         virtual void Finish() override {}
         virtual void Handle(Orbit*, Particle*) override;
         virtual void Initialize() override {}
