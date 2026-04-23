@@ -161,7 +161,8 @@ BPHI		= Bphi.T; 			# Bphi(r,z)
 
 #mf Bphi	Yes				nz-by-nr matrix	Toroidal field component
 FPOL		= gfile.Ginfo['FPOL']; 		# Poloidal current function in m-T, F = RBT on flux grid
-Btor 		= FPOL/r; 			# T, toroidal magnetic field Btor(r)
+# Note that B0 = FPOL[0]/R0, and Btor(r) = B0*R0/r, so Btor(r) = FPOL[0]/R0*R0/r = FPOL[0]/r
+Btor 		= FPOL[0]/r; 			# T, toroidal magnetic field Btor(r)
 Bphi 		= np.zeros(shape=np.shape(RGRID)); # to store data
 for iZ in range(len(z)): Bphi[iZ,:] = Btor; 	# T, toroidal magnetic field, Bphi(z,r)
 BPHI		= Bphi.T; 			# Bphi(r,z)
