@@ -246,7 +246,7 @@ DREAMDistributionFunction *InitDREAMDistributionFunction(MagneticField2D *magfie
     // Name of distribution function to load (usually 'f_re' or 'f_hot')
     if (conf->HasSetting("distribution")) {
         set = conf->GetSetting("distribution");
-        if (!set->GetNumberOfValues() != 1)
+        if (set->GetNumberOfValues() != 1)
             throw SOFTException("Distribution function '%s': distribution: Invalid value assigned to parameter. Expected string.", conf->GetName().c_str());
 
         distname = set->GetString();
