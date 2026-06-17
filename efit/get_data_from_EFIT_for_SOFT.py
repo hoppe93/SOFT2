@@ -3,6 +3,8 @@
 	and write to an hdf5 file
 	See https://soft2.readthedocs.io/en/latest/magnetic_field.html#numerical-magnetic-field
 	Author: Alex Tinguely 230817
+	Update: Alex Tinguely 240406 - there is something off with MEQ file's flux and 2*pi
+	Update: Alex Tinguely 240829 - the calculation of Bphi is now more accurate
 	Usage: python3 get_data_from_EFIT_for_SOFT.py /path/to/gfile [/path/to/wallfile]
 '''
 
@@ -12,6 +14,7 @@ import argparse
 import numpy as np
 from matplotlib import pyplot as plt
 import scipy.interpolate as interp
+from scipy.interpolate import InterpolatedUnivariateSpline
 from scipy.optimize import curve_fit
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
@@ -46,6 +49,13 @@ parser.add_argument('gFilename', help='Name of EFIT Gfile to load equilibrium fr
 parser.add_argument('-w', '--wall', dest='wallfile',
                     help='Name of file containing wall.',
                     nargs='?', default='')
+parser.add_argument('-meq', '--meq',
+                    help='Applies 2pi factors for MEQ files.',
+                    action='store_true', default=False)
+parser.add_argument('-saveplot', '--saveplot', help='Save nice plots.',
+                    action='store_true', default=False)
+parser.add_argument('-flipBt', '--flipBt', help='Flip direction of toroidal field.',
+                    action='store_true', default=False)
 
 args = parser.parse_args()
 
@@ -137,7 +147,10 @@ dz		= np.mean(np.diff(z));  	# m, mean vertical spacing
 
 #mf Psi		No				nz-by-nr matrix	Poloidal magnetic flux
 Psi        	= gfile.Ginfo['PSIRZ']*2*np.pi; # poloidal flux on 2D grid, psi(z,r) [Weber]; need factor of 2pi
-
+Psi0		= gfile.Ginfo['SIMAG']*2*np.pi; # poloidal flux at magnetic axis psi(z=0,r=0) [Weber]
+Psi1		= gfile.Ginfo['SIBRY']*2*np.pi; # poloidal flux at boundary psi(bdy) [Weber]
+PsiN 		= (Psi-Psi0)/(Psi1-Psi0); 	# normalized poloidal flux (0 at center, 1 at boundary) psi_n(z,r)
+if args.meq:	Psi/=2*np.pi;			# MEQ file already saves in Weber
 
 #mf separatrix	Yes [1]				2-by-many vectorLast closed flux surface contour
 RBBBS       	= gfile.Ginfo['RBBBS'];     	# m, major radial points at boundary
@@ -145,27 +158,17 @@ ZBBBS       	= gfile.Ginfo['ZBBBS'];     	# m, vertical points at boundary
 separatrix	= np.vstack((RBBBS,ZBBBS)); 	# boundary of plasma
 
 # Find points inside separatrix
-BBBS 		= Polygon(np.vstack((RBBBS,ZBBBS)).T); 		# boundary of plasma
+BBBS 		= Polygon(np.vstack((RBBBS,ZBBBS)).T); 			# boundary of plasma
 boolIn 		= np.zeros(shape=(len(r),len(z)),dtype=bool);
 for ir in range(len(r)):
 	for iz in range(len(z)):
 		boolIn[ir,iz] = BBBS.contains(Point(r[ir],z[iz]));
 
-'''
 #mf Bphi	Yes				nz-by-nr matrix	Toroidal field component
-B0		= gfile.Ginfo['BCENTR']; 	# Vacuum toroidal magnetic field in Tesla at RCENTR
-R0	 	= gfile.Ginfo['RCENTR'];	# R in meter of vacuum toroidal magnetic field BCENTR
-Bphi 		= B0*R0/RGRID; 			# T, toroidal magnetic field, Bphi(z,r)
-BPHI		= Bphi.T; 			# Bphi(r,z)
-'''
-
-#mf Bphi	Yes				nz-by-nr matrix	Toroidal field component
-FPOL		= gfile.Ginfo['FPOL']; 		# Poloidal current function in m-T, F = RBT on flux grid
-Btor 		= FPOL/r; 			# T, toroidal magnetic field Btor(r)
-Bphi 		= np.zeros(shape=np.shape(RGRID)); # to store data
-for iZ in range(len(z)): Bphi[iZ,:] = Btor; 	# T, toroidal magnetic field, Bphi(z,r)
-BPHI		= Bphi.T; 			# Bphi(r,z)
-
+FPOL 		= gfile.Ginfo['FPOL'];		# Poloidal current function in m-T, F = R*B_T on flux grid
+fpol 		= InterpolatedUnivariateSpline(r,FPOL); 	
+Bphi 		= fpol(PsiN)/r;			# T, B_T = F/R
+if args.flipBt: Bphi*=-1; 			# T, flips direction of Btor
 
 #mf Br		Yes				nz-by-nr matrix	Radial field component
 #mf Bz		Yes				nz-by-nr matrix	Vertical field component
@@ -219,9 +222,10 @@ if args.ienc:# Integrate Bpol around LCFS, i.e. integral(B.dl) = u0*Ienc
 	if args.verbose: 	print('Ienc = '+str(Ienc*1e-6)+' MA');
 
 
-if args.hdf5:### Write to HDF5 ###
+fn 	= name+'_'*(args.wallfile!='')+args.wallfile+'_flipBt'*(args.flipBt);
+if args.hdf5:	### Write to HDF5 ###
 	
-	h5fn 	= name+'_'*(args.wallfile!='')+args.wallfile+'.h5';
+	h5fn 	= fn+'.h5';
 	with h5py.File(h5fn,'w') as hf:
 		hf.create_dataset('Bphi',	data=Bphi); 	#	Yes		nz-by-nr matrix	Toroidal field component
 		hf.create_dataset('Br',		data=Br); 	#	Yes		nz-by-nr matrix	Radial field component
@@ -298,6 +302,37 @@ if args.plot:### Plots ###
 		plt.axis('equal');
 		#fig.show();
 		plt.show();
+
+	if 0: 	# Plot Bphi with different approximations
+		#fig 	= plt.figure();
+		i0 	= np.argmin(np.abs(z-0));
+		plt.plot(r,Bphi[0,:]/Bphi[i0,:]-1,'-o',label='Bphi(R,Zmin)');
+		plt.plot(r,Bphi[-1,:]/Bphi[i0,:]-1,'-*',label='Bphi(R,Zmax)');
+		plt.plot(r,FPOL[0]/r/Bphi[i0,:]-1,'-s',label='Fpol(0)/R');
+		plt.plot(r,FPOL/r/Bphi[i0,:]-1,'-d',label='Fpol(R)/R');
+		plt.xlabel('R (m)');
+		plt.ylabel('(label)/Bphi(R,Z=0) - 1');
+		plt.title('Ratio of Bphi approximations');
+		plt.legend();
+		#fig.show();
+		plt.show();
+
+if args.saveplot:
+	if 1: 	# rhopol
+		figfn 	= fn+'.png';
+		fig 	= plt.figure(figsize=(3,6));
+		plt.contour(r,z,PsiN**0.5,levels=np.linspace(0,1,11));
+		plt.plot(RBBBS,ZBBBS,'k--');
+		plt.plot(RFW,ZFW,'k');
+		plt.xlabel('R (m)');
+		plt.ylabel('Z (m)');
+		plt.title(r'$\sqrt{\psi_\mathrm{N}}$');
+		plt.axis('equal');
+		plt.ylim((-1.7,1.7));
+		fig.tight_layout();
+		fig.show();
+		fig.savefig(figfn,dpi=250);
+
 		
 ''' from https://soft2.readthedocs.io/en/latest/magnetic_field.html#numerical-magnetic-field
 Variable	Mandatory	Type		Description
